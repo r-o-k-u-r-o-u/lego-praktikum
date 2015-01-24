@@ -1,3 +1,4 @@
+package kit.edu.helloworld;
 
 public class HelloWorld {
 
