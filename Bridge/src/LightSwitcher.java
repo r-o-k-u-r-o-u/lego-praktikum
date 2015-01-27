@@ -1,4 +1,5 @@
 import lejos.nxt.Motor;
+import lejos.nxt.NXTRegulatedMotor;
 
 /***
  * der Thread als LightSwitcher.
@@ -16,31 +17,34 @@ class LightSwitcher extends Thread{
 	final static int rotationSpeed = 500;
 	final static int rotationSpeedInit = 100;
 	final static int angleLeft = 0;
-	final static int angleMiddle = 90;
-	final static int angleRigth = 180;
+	final static int angleMiddle = 95;
+	final static int angleRigth = 190;
+	final static NXTRegulatedMotor motor = Motor.A;
+	
+	
 	
 	public void run() {
 		try {
-			Motor.A.setSpeed(rotationSpeed);
+			motor.setSpeed(rotationSpeed);
 			while(true){
-				Motor.A.rotateTo(angleMiddle, true);
+				motor.rotateTo(angleMiddle, true);
 				Thread.sleep(rotationAngle * 1000 / (rotationSpeed * 2));
-				Motor.A.rotateTo(angleRigth, true);
+				motor.rotateTo(angleRigth, true);
 				Thread.sleep(rotationAngle * 1000 / (rotationSpeed * 2));
-				Motor.A.rotateTo(angleMiddle, true);
+				motor.rotateTo(angleMiddle, true);
 				Thread.sleep(rotationAngle * 1000 / (rotationSpeed * 2));
-				Motor.A.rotateTo(angleLeft, true);
+				motor.rotateTo(angleLeft, true);
 				Thread.sleep(rotationAngle * 1000 / (rotationSpeed * 2));
 			}
 		} catch (InterruptedException e) {
-			Motor.A.stop();
+			motor.stop();
 		}
 	}
 	
 	public void init(){
-		Motor.A.setSpeed(rotationSpeed);
-		Motor.A.rotateTo(90);
-		Motor.A.rotateTo(0);
+		motor.setSpeed(rotationSpeed);
+		motor.rotateTo(90);
+		motor.rotateTo(0);
 	}
 	
 	public void startWithInit(){
@@ -49,9 +53,17 @@ class LightSwitcher extends Thread{
 	}
 	
 	public static void initAngles(){
-		Motor.A.setSpeed(rotationSpeedInit);
-		Motor.A.rotate(-rotationAngle);
-		Motor.A.stop();
-		Motor.A.resetTachoCount();
+		motor.setSpeed(rotationSpeedInit);
+		motor.rotate(-rotationAngle);
+		motor.stop();
+		motor.resetTachoCount();
+	}
+	
+	public static int getRegulatedCurrentAngle(){
+		return (motor.getPosition() - angleMiddle) * 90 / angleMiddle;
+	}
+	
+	public static double getRegulatedCurrentAngleDouble(){
+		return (motor.getPosition() - angleMiddle) * 90.0 / angleMiddle;
 	}
 }
