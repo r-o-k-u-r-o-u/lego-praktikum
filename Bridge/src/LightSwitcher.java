@@ -4,6 +4,8 @@ import lejos.nxt.Motor;
  * der Thread als LightSwitcher.
  * !!! am Anfang muss initAngles ausgeführt werden
  * !!! vor den start() muss init() ausgeführt werden (oder startWithInit())
+ * 
+ * bei interrupt() wird der Motor grstoppt, danach muss ein neuer Thread erstellt werden
  * @author Florian
  *
  */
