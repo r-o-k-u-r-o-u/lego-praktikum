@@ -66,4 +66,12 @@ class LightSwitcher extends Thread{
 	public static double getRegulatedCurrentAngleDouble(){
 		return (motor.getPosition() - angleMiddle) * 90.0 / angleMiddle;
 	}
+	
+	/**
+	 * only use when thread is not running
+	 * @param angle angle from -90 to +90
+	 */
+	public static void setAngle(double angle){
+		motor.rotateTo((int)((angle * angleMiddle / 90.0) + angleMiddle));
+	}
 }
