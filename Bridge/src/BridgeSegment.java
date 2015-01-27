@@ -1,5 +1,5 @@
 
-public class LineSegment extends ParcoursSegment {
+public class BridgeSegment extends ParcoursSegment {
 
 	public void run() {
 		
@@ -8,4 +8,5 @@ public class LineSegment extends ParcoursSegment {
 	public void stop() {
 		
 	}
+
 }

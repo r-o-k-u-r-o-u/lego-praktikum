@@ -1,7 +1,11 @@
 
-public class LabyrinthSegment implements ParcoursSegment {
+public class LabyrinthSegment extends ParcoursSegment {
 
-	public void normalDrive() {
+	public void run() {
+		
+	}
+	
+	public void stop() {
 		
 	}
 }
