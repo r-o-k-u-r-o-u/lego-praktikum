@@ -47,6 +47,10 @@ class LightSwitcher extends Thread{
 		motor.rotateTo(0);
 	}
 	
+	@Deprecated
+	/**
+	 * use start() only instead
+	 */
 	public void startWithInit(){
 		this.init();
 		super.start();
@@ -60,11 +64,21 @@ class LightSwitcher extends Thread{
 	}
 	
 	public static int getRegulatedCurrentAngle(){
-		return (motor.getPosition() - angleMiddle) * 90 / angleMiddle;
+		int angle = motor.getPosition();
+		if(angle < angleLeft)
+			angle = angleLeft;
+		if (angle > angleRigth)
+			angle = angleRigth;
+		return (angle - angleMiddle) * 90 / angleMiddle;
 	}
 	
 	public static double getRegulatedCurrentAngleDouble(){
-		return (motor.getPosition() - angleMiddle) * 90.0 / angleMiddle;
+		int angle = motor.getPosition();
+		if(angle < angleLeft)
+			angle = angleLeft;
+		if (angle > angleRigth)
+			angle = angleRigth;
+		return (angle - angleMiddle) * 90.0 / angleMiddle;
 	}
 	
 	/**
