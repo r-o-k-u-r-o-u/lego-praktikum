@@ -6,6 +6,7 @@ import lejos.nxt.Motor;
  * !!! vor den start() muss init() ausgeführt werden (oder startWithInit())
  * 
  * bei interrupt() wird der Motor grstoppt, danach muss ein neuer Thread erstellt werden
+ * 
  * @author Florian
  *
  */
