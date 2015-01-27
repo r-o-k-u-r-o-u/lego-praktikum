@@ -8,88 +8,27 @@ import lejos.robotics.navigation.DifferentialPilot;
 
 public class BridgeRun {
 	
+	final static int angleRotateBridge = 20;
+	final static int travelSpeedBridge = 10;
+	
 	public static void main(String[] args) {
 		//wait until it is pressed
 		TouchSensor touchright = new TouchSensor(SensorPort.S3);
 		TouchSensor touchleft = new TouchSensor(SensorPort.S2);
 		LightSensor ligthSensor = new LightSensor(SensorPort.S1, true);
-		
 		DifferentialPilot pilot = new DifferentialPilot(3, 13, Motor.C, Motor.B, true);
 				
 		//Thread zum switchen
 		LightSwitcher switchThread = new LightSwitcher();
 		
-//		// Thread zum Piepen
-//		Thread lightRecognition = new Thread(new Runnable() {
-//			
-//			@Override
-//			public void run() {
-//				try {
-//					while(true){
-//						if(ligthSensor.readValue() < 30){
-//							Sound.beep();
-//							
-//						}
-//						Thread.sleep(10);
-//					}
-//				} catch (InterruptedException e) {
-//					
-//				}
-//				
-//			}
-//		});
-		
-		
 		while(!touchright.isPressed() && !touchleft.isPressed());
 		LightSwitcher.initAngles();
 		
-		
-//		while(!touchright.isPressed() && !touchleft.isPressed());
-//		switchThread = new LightSwitcher();
-//		switchThread.init();
-//		switchThread.start();
-//		try {
-//			Thread.sleep(1000);
-//		} catch (InterruptedException e1) {
-//			e1.printStackTrace();
-//		}
-//		while(!touchright.isPressed() && !touchleft.isPressed());
-//		switchThread.interrupt();
-//		try {
-//			switchThread.join();
-//		} catch (InterruptedException e2) {
-//			e2.printStackTrace();
-//		}
-//		switchThread = new LightSwitcher();
-//		switchThread.init();
-//		switchThread.start();
-//		try {
-//			Thread.sleep(1000);
-//		} catch (InterruptedException e1) {
-//			e1.printStackTrace();
-//		}
-//		while(!touchright.isPressed() && !touchleft.isPressed());
-//		switchThread.interrupt();
-//		try {
-//			switchThread.join();
-//		} catch (InterruptedException e2) {
-//			e2.printStackTrace();
-//		}
-//		switchThread = new LightSwitcher();
-//		switchThread.init();
-//		switchThread.start();
-//		try {
-//			Thread.sleep(1000);
-//		} catch (InterruptedException e1) {
-//			e1.printStackTrace();
-//		}
-		
-		
-		int counter = 0;
+		pilot.setTravelSpeed(travelSpeedBridge);
 		while(!touchright.isPressed() && !touchleft.isPressed()){
-			System.out.println("counter: " + counter);
 			switchThread = new LightSwitcher();
-			switchThread.startWithInit();
+			switchThread.start();
+			pilot.stop();
 			pilot.forward();
 			while(ligthSensor.readValue() > 30){
 				Thread.yield();	
@@ -98,9 +37,19 @@ public class BridgeRun {
 			pilot.stop();
 			
 			while(ligthSensor.readValue() <= 30) {
-				pilot.rotate((Motor.A.getPosition() < 90) ? -10 : 10);
+				double value = LightSwitcher.getRegulatedCurrentAngleDouble();
+				double converted = value < 0 ? - value : value;
+				if(converted > 89.5)
+					converted = 89.5;
+				converted = -converted + 90;
+				if(value < 0)
+					converted *= -1;
+				System.out.println("value: " + value + "conv: " + converted);
+				pilot.arcForward(converted / 10.0);
+				//pilot.rotate((LightSwitcher.getRegulatedCurrentAngleDouble() < 0) ? -angleRotateBridge : angleRotateBridge);
 			}
-			counter++;
+			//pilot.forward();
+			//pilot.stop();
 		}
 		
 		
