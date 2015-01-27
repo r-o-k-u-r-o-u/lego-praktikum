@@ -3,86 +3,117 @@ import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
 import lejos.nxt.Sound;
 import lejos.nxt.TouchSensor;
+import lejos.robotics.navigation.DifferentialPilot;
 
 
 public class BridgeRun {
-
-	final static int rotationAngle = 200;
-	final static int rotationSpeed = 500;
 	
 	public static void main(String[] args) {
 		//wait until it is pressed
 		TouchSensor touchright = new TouchSensor(SensorPort.S3);
 		TouchSensor touchleft = new TouchSensor(SensorPort.S2);
-		while(!touchright.isPressed() && !touchleft.isPressed());
-		
-		//init Light-Sensor rotation
-		System.out.println(Motor.A.getPosition());
-		Motor.A.setSpeed(100);
-		//Motor.A.setStallThreshold(5, 200);
-		Motor.A.rotate(-rotationAngle);
-		Motor.A.stop();
-		//Motor.A.resetTachoCount();
-		System.out.println(Motor.A.getPosition());
-		
 		LightSensor ligthSensor = new LightSensor(SensorPort.S1, true);
 		
-		
-		
+		DifferentialPilot pilot = new DifferentialPilot(3, 13, Motor.C, Motor.B, true);
+				
 		//Thread zum switchen
-		Thread switchThread = new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
-				try {
-					Motor.A.setSpeed(rotationSpeed);
-					while(true){
-						Motor.A.rotate(rotationAngle, true);
-						Thread.sleep(rotationAngle * 1000 / rotationSpeed);
-						Motor.A.rotate(-rotationAngle, true);
-						Thread.sleep(rotationAngle * 1000 / rotationSpeed);
-					}
-				} catch (InterruptedException e) {
-					Motor.A.stop();
-				}
-				
+		LightSwitcher switchThread = new LightSwitcher();
+		
+//		// Thread zum Piepen
+//		Thread lightRecognition = new Thread(new Runnable() {
+//			
+//			@Override
+//			public void run() {
+//				try {
+//					while(true){
+//						if(ligthSensor.readValue() < 30){
+//							Sound.beep();
+//							
+//						}
+//						Thread.sleep(10);
+//					}
+//				} catch (InterruptedException e) {
+//					
+//				}
+//				
+//			}
+//		});
+		
+		
+		while(!touchright.isPressed() && !touchleft.isPressed());
+		LightSwitcher.initAngles();
+		
+		
+//		while(!touchright.isPressed() && !touchleft.isPressed());
+//		switchThread = new LightSwitcher();
+//		switchThread.init();
+//		switchThread.start();
+//		try {
+//			Thread.sleep(1000);
+//		} catch (InterruptedException e1) {
+//			e1.printStackTrace();
+//		}
+//		while(!touchright.isPressed() && !touchleft.isPressed());
+//		switchThread.interrupt();
+//		try {
+//			switchThread.join();
+//		} catch (InterruptedException e2) {
+//			e2.printStackTrace();
+//		}
+//		switchThread = new LightSwitcher();
+//		switchThread.init();
+//		switchThread.start();
+//		try {
+//			Thread.sleep(1000);
+//		} catch (InterruptedException e1) {
+//			e1.printStackTrace();
+//		}
+//		while(!touchright.isPressed() && !touchleft.isPressed());
+//		switchThread.interrupt();
+//		try {
+//			switchThread.join();
+//		} catch (InterruptedException e2) {
+//			e2.printStackTrace();
+//		}
+//		switchThread = new LightSwitcher();
+//		switchThread.init();
+//		switchThread.start();
+//		try {
+//			Thread.sleep(1000);
+//		} catch (InterruptedException e1) {
+//			e1.printStackTrace();
+//		}
+		
+		
+		int counter = 0;
+		while(!touchright.isPressed() && !touchleft.isPressed()){
+			System.out.println("counter: " + counter);
+			switchThread = new LightSwitcher();
+			switchThread.startWithInit();
+			pilot.forward();
+			while(ligthSensor.readValue() > 30){
+				Thread.yield();	
 			}
-		});
-		
-		
-		// Thread zum Piepen
-		Thread lightRecognition = new Thread(new Runnable() {
+			switchThread.interrupt();
+			pilot.stop();
 			
-			@Override
-			public void run() {
-				try {
-					while(true){
-						if(ligthSensor.readValue() >= 40){
-							Sound.beep();
-							System.out.println(Motor.A.getPosition());
-						}
-						Thread.sleep(10);
-					}
-				} catch (InterruptedException e) {
-					
-				}
-				
+			while(ligthSensor.readValue() <= 30) {
+				pilot.rotate((Motor.A.getPosition() < 90) ? -10 : 10);
 			}
-		});
+			counter++;
+		}
 		
 		
-		
-		
-		switchThread.start();
-		lightRecognition.start();
+//		switchThread.start();
+//		lightRecognition.start();
 		
 		while(!touchright.isPressed() && !touchleft.isPressed());
 		switchThread.interrupt();
-		lightRecognition.interrupt();
+//		lightRecognition.interrupt();
 		System.out.println("interrupted");
 		try {
 			switchThread.join();
-			lightRecognition.join();
+//			lightRecognition.join();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -93,3 +124,5 @@ public class BridgeRun {
 	}
 
 }
+
+
