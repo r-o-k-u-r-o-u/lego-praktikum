@@ -14,7 +14,7 @@ public class Labyrinth {
 
 	private volatile static boolean impact = false, leftImpact = false,
 			rightImpact = false;
-	private volatile static int usedAngle = 0;
+	private volatile static int oldDistance = 0;
 	UltrasonicSensor sonic = new UltrasonicSensor(SensorPort.S4);
 
 	public static void main(String[] args) {
@@ -39,6 +39,9 @@ public class Labyrinth {
 				trackWidth, leftMotor, rightMotor, reverse);
 
 		sonic.continuous();
+
+		LightSwitcher.initAngles();
+		LightSwitcher.setAngle(-90);
 
 		// Detect when the robot hit a wall
 		Thread collisionControl = new Thread(new Runnable() {
@@ -74,19 +77,21 @@ public class Labyrinth {
 				wait(pilot);
 				Sound.playTone(800, 1000);
 				if (d > 20) {
-					pilot.rotate(-90);
+					pilot.rotate(90);
 					wait(pilot);
 				} else {
 					pilot.rotate(90);
 					wait(pilot);
 				}
 				impact = false;
+				leftImpact = false;
+				rightImpact = false;
 			} else if (leftImpact) {
 
 				pilot.stop();
 				pilot.travel(-5);
 				wait(pilot);
-				pilot.rotate(-20);
+				pilot.rotate(20);
 				wait(pilot);
 				leftImpact = false;
 			} else if (rightImpact) {
@@ -94,16 +99,18 @@ public class Labyrinth {
 				pilot.stop();
 				pilot.travel(-5);
 				wait(pilot);
-				pilot.rotate(20);
+				pilot.rotate(40);
 				wait(pilot);
 				rightImpact = false;
 
 			} else if (d > 40) {
-				pilot.travel(10);
+				pilot.travel(5);
 				wait(pilot);
-				pilot.rotate(-85);
+				pilot.rotate(-90);
 				wait(pilot);
-				pilot.travel(20);
+				while (sonic.getDistance() > 20 && !impact())
+					pilot.forward();
+				pilot.travelArc(-50, 7);
 				wait(pilot);
 			} else {
 				drive(pilot, sonic);
@@ -114,24 +121,32 @@ public class Labyrinth {
 
 	private static void drive(DifferentialPilot pilot, UltrasonicSensor s) {
 
+		pilot.setTravelSpeed(pilot.getMaxTravelSpeed());
 		int d = s.getDistance();
-		if (d < 15 && d > 10) { // If not too close or too far to the // //
-								// wall, move // forward
+		if (d <= 25 && d > 10 && oldDistance >= d) { // If not too close or too
+														// far to the // //
+														// wall, move // forward
 			pilot.forward();
-		} else if (d > 15 && d < 20) { // If a bit far move to the wall
-			if (!pilot.isMoving())
-				pilot.forward();
+		} else if (d > 10 && d <= 25 && oldDistance < d) { // If a bit far move
+															// // to the wall
 			pilot.steer(-20);
-		} else if (d < 10) {
-			if (!pilot.isMoving())
-				pilot.forward();
-			pilot.steer(10); // If a bit too close, move away from the wall
-		} else {
-			if (!pilot.isMoving())
-				pilot.forward();
-			pilot.steer(-20);
-		}
+		} else if (d <= 10 && oldDistance < d) {
+			pilot.steer(20); // If a bit too close, move away from the wall
+		} else if (d <= 10 && oldDistance >= d) {
 
+			pilot.forward();
+
+		} else if (d <= 40 && d > 25 && oldDistance > d) { // If too far move
+															// toward the wall
+			pilot.rotate(-30);
+			pilot.travelArc(20, 20);
+		}
+		oldDistance = d;
+
+	}
+
+	private static boolean impact() {
+		return impact && rightImpact && leftImpact;
 	}
 
 	private static void wait(DifferentialPilot pilot) {
