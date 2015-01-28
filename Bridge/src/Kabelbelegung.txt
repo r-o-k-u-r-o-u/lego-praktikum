@@ -1,0 +1,3 @@
+gelb := A
+rot := B
+nichts := C
