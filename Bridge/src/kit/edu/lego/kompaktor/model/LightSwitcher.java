@@ -35,10 +35,16 @@ public class LightSwitcher extends Thread{
 	
 	private RotantionRange rotationRange;
 	private RotantionDirection rotationDirection;
+	private int switchCounter;
 	
 	public LightSwitcher() {
 		rotationRange = RotantionRange.FULL;
 		rotationDirection = RotantionDirection.Left;
+		switchCounter = 0;
+	}
+	
+	public int getSwitchCounter() {
+		return switchCounter;
 	}
 	
 	public void startSweep(){
@@ -99,6 +105,8 @@ public class LightSwitcher extends Thread{
 	//				Thread.sleep((actualAngleLeft - angleMiddle) * 1000 / (rotationSpeed));
 					Thread.sleep(rotationAngle * 1000 / (rotationSpeed * 2) + 100);
 				}
+				//set the switchCounter up
+				switchCounter++;
 			}
 		} catch (InterruptedException e) {
 			motor.stop();

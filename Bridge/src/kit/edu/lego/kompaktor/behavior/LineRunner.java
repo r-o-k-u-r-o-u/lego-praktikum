@@ -52,9 +52,18 @@ public class LineRunner extends Thread{
 		this.pilot = pilot;
 	}
 	
+	public int getSwitchCounter() {
+		if (switchThread != null)
+			return switchThread.getSwitchCounter();
+		else
+			return 0;
+	}
+	
 	public boolean isLightSwitcherActive(){
 		return switchThread.isAlive();
 	}
+	
+
 	
 	public void run(){
 		try{

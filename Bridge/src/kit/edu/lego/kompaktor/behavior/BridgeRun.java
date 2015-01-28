@@ -1,5 +1,6 @@
 package kit.edu.lego.kompaktor.behavior;
 import kit.edu.lego.kompaktor.model.LightSwitcher;
+import kit.edu.lego.kompaktor.model.LightSwitcher.RotantionDirection;
 import lejos.nxt.LightSensor;
 import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
@@ -40,6 +41,11 @@ public class BridgeRun extends Thread{
 	private LightSensor ligthSensor;
 	private DifferentialPilot pilot;
 	private LightSwitcher switchThread;
+	private LightSwitcher.RotantionDirection lastHole;
+	
+	public LightSwitcher.RotantionDirection getLastHole(){
+		return lastHole;
+	}
 	
 	public boolean isLightSwitcherActive(){
 		return switchThread.isAlive();
@@ -72,6 +78,11 @@ public class BridgeRun extends Thread{
 					if(Thread.interrupted())
 						throw new InterruptedException();
 					double value = LightSwitcher.getRegulatedCurrentAngleDouble();
+					if(value < 0)
+						lastHole = RotantionDirection.Left;
+					else
+						lastHole = RotantionDirection.Right;
+
 					double converted = value < 0 ? - value : value;
 					if(converted > 89.5)
 						converted = 89.5;

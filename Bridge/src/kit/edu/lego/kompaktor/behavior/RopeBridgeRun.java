@@ -1,5 +1,6 @@
 package kit.edu.lego.kompaktor.behavior;
 import kit.edu.lego.kompaktor.model.LightSwitcher;
+import kit.edu.lego.kompaktor.model.LightSwitcher.RotantionDirection;
 import lejos.nxt.LightSensor;
 import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
@@ -20,12 +21,40 @@ public class RopeBridgeRun {
 		while(!touchright.isPressed() && !touchleft.isPressed());
 		LightSwitcher.initAngles();
 		
+		LineRunner before = new LineRunner(ligthSensor, pilot);
+		before.start();
+		
+		//stoppen wenn zu oft keine Linie gefunden
+		while(before.getSwitchCounter() < 4);
+		
+		before.interrupt();
+		try {
+			before.join();
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
+		
+		//ein Stück vorfahren damit auf Brücke
+		pilot.travel(20);
+		
 		BridgeRun bridge = new BridgeRun(ligthSensor, pilot);
 		bridge.start();
-		int value;
+		
+		
+		//Erkennen dass über 600ms kein Holz erkannt wurde, dann ist Ende der Hängebrücke
+		int value = 0;
 		boolean find = false;
-		while((value = ligthSensor.readValue()) < 55);
-		System.out.println("Lighth detected: " + value);
+		long lastMillis = System.currentTimeMillis();
+		while(!find){
+			value = ligthSensor.readValue();
+			if(value < 40 && value > 30){
+				lastMillis = System.currentTimeMillis();
+			}
+			find = (System.currentTimeMillis() - lastMillis > 600);
+		}
+		
+		
+//		System.out.println("Lighth detected: " + value);
 		bridge.interrupt();
 		try {
 			bridge.join();
@@ -33,6 +62,31 @@ public class RopeBridgeRun {
 			e.printStackTrace();
 		}
 
+		
+		//noch ein wenig nach vorn, damit von der Hängebrücke herunter
+		pilot.rotate(bridge.getLastHole() == RotantionDirection.Left ? 45 : -45);
+		LightSwitcher.setAngle(0);
+		pilot.setRotateSpeed(10);
+		if(bridge.getLastHole() == RotantionDirection.Left)
+			pilot.rotateRight();
+		else
+			pilot.rotateLeft();
+		while(ligthSensor.readValue() < 35);
+		pilot.stop();
+		pilot.travel(13);
+		
+		
+		LineRunner line = new LineRunner(ligthSensor, pilot);
+		line.start();
+		
+		while(!touchright.isPressed() && !touchleft.isPressed());
+		line.interrupt();
+		try {
+			line.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
 		//end
 		while(!touchright.isPressed() && !touchleft.isPressed());
 
