@@ -17,7 +17,7 @@ public class BridgeRun extends Thread{
 		TouchSensor touchright = new TouchSensor(SensorPort.S3);
 		TouchSensor touchleft = new TouchSensor(SensorPort.S2);
 		LightSensor ligthSensor = new LightSensor(SensorPort.S1, true);
-		DifferentialPilot pilot = new DifferentialPilot(3, 13, Motor.C, Motor.B, true);
+		DifferentialPilot pilot = new DifferentialPilot(3, 17, Motor.C, Motor.B, true);
 				
 		
 		while(!touchright.isPressed() && !touchleft.isPressed());
