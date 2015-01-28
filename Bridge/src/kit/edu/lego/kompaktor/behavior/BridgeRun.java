@@ -41,6 +41,9 @@ public class BridgeRun extends Thread{
 	private DifferentialPilot pilot;
 	private LightSwitcher switchThread;
 	
+	public boolean isLightSwitcherActive(){
+		return switchThread.isAlive();
+	}
 	
 	public BridgeRun(LightSensor ligthSensor, DifferentialPilot pilot){
 		this.ligthSensor = ligthSensor;
