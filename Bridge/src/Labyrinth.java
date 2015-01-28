@@ -1,5 +1,4 @@
-import java.util.Timer;
-
+import java.lang.annotation.ElementType;
 import lejos.nxt.SensorPort;
 import lejos.nxt.Sound;
 import lejos.nxt.TouchSensor;
@@ -8,14 +7,23 @@ import lejos.robotics.RegulatedMotor;
 import lejos.robotics.Touch;
 import lejos.robotics.navigation.DifferentialPilot;
 import lejos.util.PilotProps;
-import lejos.util.Stopwatch;
+import lejos.util.TimerListener;
 
 public class Labyrinth {
 
 	private volatile static boolean impact = false, leftImpact = false,
-			rightImpact = false;
-	private volatile static int oldDistance = 0;
+			rightImpact = false, timerFinished = false;
+	private static lejos.util.Timer timer = new lejos.util.Timer(0,
+			new TimerListener() {
+
+				@Override
+				public void timedOut() {
+					timerFinished = true;
+
+				}
+			});
 	UltrasonicSensor sonic = new UltrasonicSensor(SensorPort.S4);
+	private static final int TIMER_DELAY = 2000;
 
 	public static void main(String[] args) {
 
@@ -39,6 +47,7 @@ public class Labyrinth {
 				trackWidth, leftMotor, rightMotor, reverse);
 
 		sonic.continuous();
+		timer.setDelay(2000);
 
 		LightSwitcher.initAngles();
 		LightSwitcher.setAngle(-90);
@@ -49,13 +58,14 @@ public class Labyrinth {
 			public void run() {
 
 				while (true) {
-					if (sensorLeft.isPressed() && sensorRight.isPressed()) {
+					if (sensorLeft.isPressed() && sensorRight.isPressed())
 						impact = true;
-					} else if (sensorLeft.isPressed()) {
+
+					if (sensorLeft.isPressed())
 						leftImpact = true;
-					} else if (sensorRight.isPressed()) {
+					if (sensorRight.isPressed())
 						rightImpact = true;
-					}
+
 				}
 			}
 		});
@@ -71,47 +81,35 @@ public class Labyrinth {
 			 * is small then the robot is close to the wall, rotate right by 90
 			 * degrees, else rotate left by 90 degrees.
 			 */
-			if (impact == true) {
+			if (impact) {
 				pilot.stop();
 				pilot.travel(-7);
-				wait(pilot);
 				Sound.playTone(800, 1000);
 				if (d > 20) {
 					pilot.rotate(90);
-					wait(pilot);
 				} else {
 					pilot.rotate(90);
-					wait(pilot);
 				}
 				impact = false;
 				leftImpact = false;
 				rightImpact = false;
 			} else if (leftImpact) {
 
-				pilot.stop();
-				pilot.travel(-5);
-				wait(pilot);
-				pilot.rotate(20);
-				wait(pilot);
+				pilot.rotate(10);
 				leftImpact = false;
 			} else if (rightImpact) {
 
 				pilot.stop();
 				pilot.travel(-5);
-				wait(pilot);
-				pilot.rotate(40);
-				wait(pilot);
+				pilot.rotate(20);
 				rightImpact = false;
 
 			} else if (d > 40) {
 				pilot.travel(5);
-				wait(pilot);
 				pilot.rotate(-90);
-				wait(pilot);
 				while (sonic.getDistance() > 20 && !impact())
 					pilot.forward();
 				pilot.travelArc(-50, 7);
-				wait(pilot);
 			} else {
 				drive(pilot, sonic);
 			}
@@ -121,39 +119,45 @@ public class Labyrinth {
 
 	private static void drive(DifferentialPilot pilot, UltrasonicSensor s) {
 
-		pilot.setTravelSpeed(pilot.getMaxTravelSpeed());
 		int d = s.getDistance();
-		if (d <= 25 && d > 10 && oldDistance >= d) { // If not too close or too
-														// far to the // //
-														// wall, move // forward
+		if (d <= 20 && d > 10) { // If not too close or too
+									// far to the // //
+									// wall, move // forward
 			pilot.forward();
-		} else if (d > 10 && d <= 25 && oldDistance < d) { // If a bit far move
-															// // to the wall
-			pilot.steer(-20);
-		} else if (d <= 10 && oldDistance < d) {
-			pilot.steer(20); // If a bit too close, move away from the wall
-		} else if (d <= 10 && oldDistance >= d) {
+		} else if (d < 30 && d >= 20) { // If a bit far move
+										// // to the wall
 
-			pilot.forward();
+			timer.setDelay(TIMER_DELAY);
+			timer.start();
+			while (!timerFinished && !impact() && d < 40) {
+				pilot.steer(-5);
+				d = s.getDistance();
+			}
 
-		} else if (d <= 40 && d > 25 && oldDistance > d) { // If too far move
-															// toward the wall
-			pilot.rotate(-30);
-			pilot.travelArc(20, 20);
+		} else if (d <= 10) {
+			// If a bit too close, move away from the wall
+			timer.setDelay(TIMER_DELAY);
+			timer.start();
+			while (!timerFinished && !impact() && d < 40) {
+				pilot.steer(5);
+				d = s.getDistance();
+			}
+		} else if (d <= 40 && d > 30) { // If too far move
+										// toward the wall
+			pilot.rotate(-40);
+			timer.setDelay(TIMER_DELAY);
+			timer.start();
+			while (!timerFinished && !impact() && d < 40) {
+				d = s.getDistance();
+				pilot.steer(10);
+			}
 		}
-		oldDistance = d;
+		timerFinished = false;
 
 	}
 
 	private static boolean impact() {
-		return impact && rightImpact && leftImpact;
-	}
-
-	private static void wait(DifferentialPilot pilot) {
-
-		while (pilot.isMoving())
-			;
-
+		return impact || rightImpact || leftImpact;
 	}
 
 }
