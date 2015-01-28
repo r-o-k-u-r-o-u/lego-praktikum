@@ -10,7 +10,7 @@ import lejos.robotics.navigation.DifferentialPilot;
 
 //TODO Rückwärtsfahren wenn Linie nicht erkannt? --> nur wenn Linie nicht einfach endet
 
-public class LineRunner {
+public class LineRunner extends Thread{
 
 	final static int angleRotateLine = 20;
 	final static int travelSpeedLine = 20;
@@ -23,73 +23,89 @@ public class LineRunner {
 		TouchSensor touchleft = new TouchSensor(SensorPort.S2);
 		LightSensor ligthSensor = new LightSensor(SensorPort.S1, true);
 		DifferentialPilot pilot = new DifferentialPilot(3, 17, Motor.C, Motor.B, true);
-				
-		//Thread zum switchen
-		LightSwitcher switchThread = new LightSwitcher();
 		
 		while(!touchright.isPressed() && !touchleft.isPressed());
 		LightSwitcher.initAngles();
 		
-		double value = 0;
-		
-		pilot.setTravelSpeed(travelSpeedLine);
-		while(!touchright.isPressed() && !touchleft.isPressed()){
-			switchThread = new LightSwitcher();
-//			switchThread.start();
-			switchThread.startSweep();
-			if(value > 0)
-				switchThread.setDirection(LightSwitcher.RotantionDirection.Left);
-			else
-				switchThread.setDirection(LightSwitcher.RotantionDirection.Right);
-			
-			while(ligthSensor.readValue() < 40){
-				Thread.yield();	
-			}
-			value = LightSwitcher.getRegulatedCurrentAngleDouble();
-			switchThread.interrupt();
-			
-			double converted = value < 0 ? - value : value;
-			boolean straight = converted < ThresholdAngleForward;
-			if(converted > 70)
-				converted = 70;
-			converted = -converted + 90;
-			converted = converted * converted;
-			converted *= 90;
-			converted /= 90 * 90;
-			if(value < 0)
-				converted *= -1;
-			System.out.println("value: " + value + "conv: " + converted);
-			
-			while(ligthSensor.readValue() >= 40) {
-				if(straight){
-					pilot.travel(travelLengthLine, true);
-				} else {
-					
-					//pilot.arcForward(-converted / 4.0);
-					pilot.travelArc(-converted / 6.0, travelLengthLine, true);
-					//pilot.rotate((LightSwitcher.getRegulatedCurrentAngleDouble() < 0) ? -angleRotateBridge : angleRotateBridge);
-				}
-			}
-			//pilot.forward();
-			//pilot.stop();
-		}
-		
-		
-
+		LineRunner line = new LineRunner(ligthSensor, pilot);
+		line.start();
 		
 		while(!touchright.isPressed() && !touchleft.isPressed());
-		switchThread.interrupt();
-		System.out.println("interrupted");
+		line.interrupt();
 		try {
-			switchThread.join();
+			line.join();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		System.out.println("join is finish");
 		
 		//end
 		while(!touchright.isPressed() && !touchleft.isPressed());
 
 	}
 
+	private LightSensor ligthSensor;
+	private DifferentialPilot pilot;
+	private LightSwitcher switchThread;
+	
+	public LineRunner(LightSensor ligthSensor, DifferentialPilot pilot) {
+		this.ligthSensor = ligthSensor;
+		this.pilot = pilot;
+	}
+	
+	public boolean isLightSwitcherActive(){
+		return switchThread.isAlive();
+	}
+	
+	public void run(){
+		try{
+			double value = 0;
+			pilot.setTravelSpeed(travelSpeedLine);
+			while(true){
+				switchThread = new LightSwitcher();
+	//			switchThread.start();
+				switchThread.startSweep();
+				if(value > 0)
+					switchThread.setDirection(LightSwitcher.RotantionDirection.Left);
+				else
+					switchThread.setDirection(LightSwitcher.RotantionDirection.Right);
+				
+				while(ligthSensor.readValue() < 40){
+					if(Thread.interrupted())
+						throw new InterruptedException();
+					Thread.yield();	
+				}
+				value = LightSwitcher.getRegulatedCurrentAngleDouble();
+				switchThread.interrupt();
+				
+				double converted = value < 0 ? - value : value;
+				boolean straight = converted < ThresholdAngleForward;
+				if(converted > 70)
+					converted = 70;
+				converted = -converted + 90;
+				converted = converted * converted;
+				converted *= 90;
+				converted /= 90 * 90;
+				if(value < 0)
+					converted *= -1;
+				System.out.println("value: " + value + "conv: " + converted);
+				
+				while(ligthSensor.readValue() >= 40) {
+					if(Thread.interrupted())
+						throw new InterruptedException();
+					if(straight){
+						pilot.travel(travelLengthLine, true);
+					} else {
+						//pilot.arcForward(-converted / 4.0);
+						pilot.travelArc(-converted / 6.0, travelLengthLine, true);
+						//pilot.rotate((LightSwitcher.getRegulatedCurrentAngleDouble() < 0) ? -angleRotateBridge : angleRotateBridge);
+					}
+				}
+			} 
+		} catch (InterruptedException e){
+			pilot.stop();
+			if(!switchThread.isInterrupted())
+				switchThread.interrupt();
+		}
+	}
+	
 }
