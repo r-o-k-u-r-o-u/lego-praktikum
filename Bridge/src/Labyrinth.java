@@ -1,3 +1,5 @@
+import java.util.Timer;
+
 import lejos.nxt.SensorPort;
 import lejos.nxt.Sound;
 import lejos.nxt.TouchSensor;
@@ -6,11 +8,14 @@ import lejos.robotics.RegulatedMotor;
 import lejos.robotics.Touch;
 import lejos.robotics.navigation.DifferentialPilot;
 import lejos.util.PilotProps;
+import lejos.util.Stopwatch;
 
-public class Labyrinth{
+public class Labyrinth {
 
 	private volatile static boolean impact = false;
-	private static final short[] note = { 2349, 115, 0, 5, 1760, 165, 0, 35 };
+	private volatile static boolean impactRepeat = false;
+	private volatile static boolean closeToWall = false;
+	private static volatile Stopwatch sw;
 
 	UltrasonicSensor sonic = new UltrasonicSensor(SensorPort.S4);
 
@@ -45,16 +50,14 @@ public class Labyrinth{
 				while (true) {
 					if (sensorLeft.isPressed() || sensorRight.isPressed()) {
 						impact = true;
-						Sound.playTone(512, 200);
 					}
 				}
 			}
 		});
 
 		collisionControl.start();
-
 		// Movement
-		while (sonic.getDistance() < 500) {
+		while (true) {
 
 			int d = sonic.getDistance();
 
@@ -64,26 +67,100 @@ public class Labyrinth{
 			 * degrees, else rotate left by 90 degrees.
 			 */
 			if (impact == true) {
-				pilot.quickStop();
-				pilot.backward();
-				if (d > 100) {
-					pilot.rotate(-90);
+				pilot.stop();
+				pilot.travel(-10);
+				wait(pilot);
+				Sound.playTone(800, 1000);
+				if (d > 20) {
+					pilot.rotate(-80);
+					wait(pilot);
 				} else {
-					pilot.rotate(90);
+					pilot.rotate(80);
+					wait(pilot);
 				}
-
 				impact = false;
-			} else if (d < 30 && d > 10) { // If not too close to the wall, move
-											// forward
-				pilot.forward();
-			} else if (d > 40 && d < 60) { // If a bit far move to the wall
-				pilot.steer(-2);
-			} else if (d < 10) {
-				pilot.steer(2); // If a bit too close, move away from the wall
-			}
 
+			} else if (d < 15 && d > 10) { // If not too close or too far to the
+											// // wall, move // forward
+				pilot.forward();
+			} else if (d > 15 && d < 20) { // If a bit far move to the wall
+				if (!pilot.isMoving())
+					pilot.forward();
+				pilot.steer(-10);
+			} else if (d < 10) {
+				if (!pilot.isMoving())
+					pilot.forward();
+				pilot.steer(10); // If a bit too close, move away from the wall
+			} else if (d > 50){
+				if (!pilot.isMoving())
+					pilot.forward();
+				pilot.rotate(-80);
+				wait(pilot);
+				pilot.travel(10);
+				wait(pilot);
+			} else {
+				
+			}
 		}
 
 	}
+
+	
+
+	private static void wait(DifferentialPilot pilot) {
+
+		while (pilot.isMoving())
+			;
+
+	}
+
+	/*
+	 * private void runBehaviour(Behaviour b) { b.run(); }
+	 * 
+	 * private abstract class Behaviour {
+	 * 
+	 * protected DifferentialPilot pilot; protected UltrasonicSensor us;
+	 * protected TouchSensor l, r;
+	 * 
+	 * protected Behaviour(DifferentialPilot p, UltrasonicSensor us, TouchSensor
+	 * l, TouchSensor r) { pilot = p; this.us = us; this.l = l; this.r = r; }
+	 * 
+	 * abstract void run();
+	 * 
+	 * }
+	 * 
+	 * private class CloseToWall extends Behaviour {
+	 * 
+	 * protected CloseToWall(DifferentialPilot p, UltrasonicSensor us,
+	 * TouchSensor l, TouchSensor r) { super(p, us, l, r);
+	 * 
+	 * }
+	 * 
+	 * @Override public void run() {
+	 * 
+	 * while(impact != true) { int d = us.getDistance(); if(d < 30 && d > 10) {
+	 * pilot.forward(); } else if ( d < 10) { pilot.steer(4); } else if (d > 30
+	 * && d < 50) { pilot.steer(-4); } else { pilot.rotate(40);
+	 * pilot.travel(20); while(pilot.isMoving()){}
+	 * 
+	 * 
+	 * 
+	 * } } }
+	 * 
+	 * }
+	 * 
+	 * private class Impact extends Behaviour {
+	 * 
+	 * protected Impact(DifferentialPilot p, UltrasonicSensor us, TouchSensor l,
+	 * TouchSensor r) { super(p, us, l, r);
+	 * 
+	 * }
+	 * 
+	 * @Override public void run() { // TODO Auto-generated method stub
+	 * 
+	 * }
+	 * 
+	 * }
+	 */
 
 }
