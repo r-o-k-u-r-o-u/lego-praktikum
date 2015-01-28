@@ -1,5 +1,6 @@
 
-public interface ParcoursSegment {
+public abstract class ParcoursSegment extends Thread {
 
-	public void normalDrive();
+	public abstract void run();
+	public abstract void stop();
 }
