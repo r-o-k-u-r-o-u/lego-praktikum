@@ -36,3 +36,11 @@ local.properties
 
 # TeXlipse plugin
 .texlipse
+
+############
+## Lego
+############
+.pdf
+*.nxd
+*.nxt
+*.nxj
