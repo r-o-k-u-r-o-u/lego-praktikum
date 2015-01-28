@@ -5,6 +5,8 @@ import lejos.nxt.TouchSensor;
 import lejos.robotics.navigation.DifferentialPilot;
 
 
+//TODO Rückwärtsfahren wenn Linie nicht erkannt? --> nur wenn Linie nicht einfach endet
+
 public class LineRunner3 {
 
 	final static int angleRotateLine = 20;
