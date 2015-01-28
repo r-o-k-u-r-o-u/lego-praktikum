@@ -41,9 +41,9 @@ public class RotationTest {
 			System.out.println("pressed");
 			
 			if (left) {
-				pilot.rotate(-90);
+				pilot.rotate(-180);
 			} else if (right) {
-				pilot.rotate(90);
+				pilot.rotate(180);
 			}
 			
 			left = false;

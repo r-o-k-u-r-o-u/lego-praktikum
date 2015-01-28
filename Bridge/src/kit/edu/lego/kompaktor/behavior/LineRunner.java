@@ -22,7 +22,7 @@ public class LineRunner {
 		TouchSensor touchright = new TouchSensor(SensorPort.S3);
 		TouchSensor touchleft = new TouchSensor(SensorPort.S2);
 		LightSensor ligthSensor = new LightSensor(SensorPort.S1, true);
-		DifferentialPilot pilot = new DifferentialPilot(3, 13, Motor.C, Motor.B, true);
+		DifferentialPilot pilot = new DifferentialPilot(3, 17, Motor.C, Motor.B, true);
 				
 		//Thread zum switchen
 		LightSwitcher switchThread = new LightSwitcher();
