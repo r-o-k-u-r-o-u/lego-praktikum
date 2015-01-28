@@ -1,6 +1,6 @@
 package kit.edu.lego.kompaktor.test;
 import kit.edu.lego.kompaktor.model.LightSwitcher;
-import lejos.nxt.Motor;
+//import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
 import lejos.nxt.TouchSensor;
 

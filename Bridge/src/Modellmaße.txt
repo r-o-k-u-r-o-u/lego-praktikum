@@ -1,0 +1,16 @@
+gelb := A
+rot := B
+nichts := C
+
+Radius-Rad:
+3cm
++5mm Gummi
+
+Breite-Rad
+2cm
+
+Abstand-R‰der
+10cm Innen
+14cm Auﬂen
+12cm Mitte-Mitte
+

@@ -23,7 +23,7 @@ public class RopeBridgeRun {
 		BridgeRun bridge = new BridgeRun(ligthSensor, pilot);
 		bridge.start();
 		int value;
-		boolean find = false;
+//		boolean find = false;
 		while((value = ligthSensor.readValue()) < 55);
 		System.out.println("Lighth detected: " + value);
 		bridge.interrupt();
