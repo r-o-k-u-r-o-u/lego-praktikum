@@ -9,11 +9,11 @@ import lejos.robotics.navigation.DifferentialPilot;
 
 public class UTurnRunner {
 	
-	final static int travelSpeedUTurn = 20;
+	final static int travelSpeedUTurn = 200;
 	final static int travelLengthUTurn = 5;
-	final static int travelDistance = 20;
+	final static int travelDistance = 15;
 	final static int distanceWallLost = 70;
-	final static int ThresholdDistanceForward = 1;
+	final static int ThresholdDistanceForward = 2;
 
 	public static void main(String[] args) {
 		//wait until it is pressed
@@ -28,14 +28,14 @@ public class UTurnRunner {
 		double lastDiff = 0;
 		int lastDistance = 0;
 		long timeLastCorrect = System.currentTimeMillis();
-		
+		//pilot.setTravelSpeed(travelSpeedUTurn);
 		boolean test = true;
 		
 		while(test){ //!touchright.isPressed() && !touchleft.isPressed()
 			
 			int distance = sonic.getDistance();
 			if(distance >= 255){ //reject errors
-				if((System.currentTimeMillis() - timeLastCorrect) < 300){
+				if((System.currentTimeMillis() - timeLastCorrect) < 350){
 					distance = lastDistance;
 				}
 			} else { //correct value
@@ -44,19 +44,23 @@ public class UTurnRunner {
 			
 			double diff = distance - travelDistance;
 			
-			
 			//teste ob Wand vorne ist
 			if (touchright.isPressed() || touchleft.isPressed()){
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 				int angle = 90;
 				if(touchright.isPressed() && touchleft.isPressed()){
 					//rechts drehen
 					angle = 90;
 				} else if(touchleft.isPressed()){
 					//kleine Linksdrehung
-					angle = -45;
+					angle = 100;
 				} else if(touchright.isPressed()){
 					//kleine Rechtsdrehung
-					angle = 45;
+					angle = 30;
 				}
 				
 				//etwas zurück
@@ -66,40 +70,43 @@ public class UTurnRunner {
 				
 			} else { //freie fahrt
 			
-				if(distance >= distanceWallLost) {//wall lost
-	
-					pilot.travel(10);
-					pilot.rotate(-90);
-					while(sonic.getDistance() > distanceWallLost){
-						pilot.travel(travelLengthUTurn, true);
-						try {
-							Thread.sleep(100);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-					}
-					pilot.travel(5);
-					
-				} else {
+//				if(distance >= distanceWallLost) {//wall lost
+//	
+//					pilot.travel(10);
+//					pilot.rotate(-90);
+//					while(sonic.getDistance() > distanceWallLost){
+//						
+//						//TODO wenn Wand erreicht ist muss reagiert werden
+//						
+//						pilot.travel(travelLengthUTurn, true);
+//						try {
+//							Thread.sleep(100);
+//						} catch (InterruptedException e) {
+//							e.printStackTrace();
+//						}
+//					}
+//					pilot.travel(5);
+//					
+//				} else {
 					//normales Wand folgen
 					if(Math.abs(diff) < ThresholdDistanceForward){
 						pilot.travel(travelLengthUTurn, true);
 					} else {
 						double value = Math.abs(diff);
-						if(value > 8){
-							value = 8;
+						if(value > 200){
+							value = 20;
 						}
-						value = 10.5 - value;
+						value = 220 - value;
 						value = Math.sqrt(value);
 						if (diff < 0)
 							value *= -1;
-						value *= -56;
+						value *= -30;
 						
 						System.out.println("dist: " + distance + "val: " + value);
 						
 						if(diff > 0){
 							//zurück zur Wand
-							if(lastDiff > diff + 200){ //sich immer weiter annähert (diff > 10 ? + 1 : -1)
+							if(lastDiff > diff + 1){ //sich immer weiter annähert (diff > 10 ? + 1 : - 1)
 								//nur geradeaus fahren
 								pilot.travel(travelLengthUTurn, true);
 							} else { //roboter entfernt sich shon
@@ -110,9 +117,10 @@ public class UTurnRunner {
 							}
 						} else {
 							//weg von der Wand
-							if(lastDiff > diff - 200){ //sich immer weiter annähert
+							if(lastDiff > diff - 1){ //sich immer weiter annähert (diff < -10 ? - 1 : + 1)
 								//starke veränderung
 								//double value = -300 / diff;
+								value /= 2;
 								pilot.travelArc(value, travelLengthUTurn, true);
 								//Sound.buzz();
 							} else { //roboter entfernt sich shon
@@ -121,7 +129,7 @@ public class UTurnRunner {
 							}
 						}
 					}
-				}
+//				}
 			}
 			
 			//letzte differenz / distanz speichern
@@ -129,7 +137,7 @@ public class UTurnRunner {
 			lastDistance = distance;
 			
 			try {
-				Thread.sleep(100);
+				Thread.sleep(150);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
