@@ -4,7 +4,6 @@ import kit.edu.lego.kompaktor.model.LightSwitcher;
 import lejos.nxt.LightSensor;
 import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
-import lejos.nxt.Sound;
 import lejos.nxt.TouchSensor;
 import lejos.robotics.navigation.DifferentialPilot;
 
