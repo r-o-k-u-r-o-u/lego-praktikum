@@ -7,11 +7,11 @@ import lejos.nxt.TouchSensor;
 import lejos.nxt.UltrasonicSensor;
 import lejos.robotics.navigation.DifferentialPilot;
 
-public class UTurnRunner {
+public class UTurnRunner extends Thread{
 	
 	final static int travelSpeedUTurn = 200;
 	final static int travelLengthUTurn = 5;
-	final static int travelDistance = 15;
+	final static int travelDistance = 20;
 	final static int distanceWallLost = 70;
 	final static int ThresholdDistanceForward = 2;
 
@@ -25,128 +25,17 @@ public class UTurnRunner {
 		while(!touchright.isPressed() && !touchleft.isPressed());
 		LightSwitcher.initAngles();
 		
-		double lastDiff = 0;
-		int lastDistance = 0;
-		long timeLastCorrect = System.currentTimeMillis();
-		//pilot.setTravelSpeed(travelSpeedUTurn);
+		LightSwitcher.setAngle(-90);
+		
+		UTurnRunner uturn = new UTurnRunner(touchright, touchleft, sonic, pilot);
+		uturn.start();
+		
 		boolean test = true;
-		
-		while(test){ //!touchright.isPressed() && !touchleft.isPressed()
-			
-			int distance = sonic.getDistance();
-			if(distance >= 255){ //reject errors
-				if((System.currentTimeMillis() - timeLastCorrect) < 350){
-					distance = lastDistance;
-				}
-			} else { //correct value
-				timeLastCorrect = System.currentTimeMillis();
-			}
-			
-			double diff = distance - travelDistance;
-			
-			//teste ob Wand vorne ist
-			if (touchright.isPressed() || touchleft.isPressed()){
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				int angle = 90;
-				if(touchright.isPressed() && touchleft.isPressed()){
-					//rechts drehen
-					angle = 90;
-				} else if(touchleft.isPressed()){
-					//kleine Linksdrehung
-					angle = 100;
-				} else if(touchright.isPressed()){
-					//kleine Rechtsdrehung
-					angle = 30;
-				}
-				
-				//etwas zurück
-				pilot.travel(-10);
-				//drehen
-				pilot.rotate(angle);
-				
-			} else { //freie fahrt
-			
-//				if(distance >= distanceWallLost) {//wall lost
-//	
-//					pilot.travel(10);
-//					pilot.rotate(-90);
-//					while(sonic.getDistance() > distanceWallLost){
-//						
-//						//TODO wenn Wand erreicht ist muss reagiert werden
-//						
-//						pilot.travel(travelLengthUTurn, true);
-//						try {
-//							Thread.sleep(100);
-//						} catch (InterruptedException e) {
-//							e.printStackTrace();
-//						}
-//					}
-//					pilot.travel(5);
-//					
-//				} else {
-					//normales Wand folgen
-					if(Math.abs(diff) < ThresholdDistanceForward){
-						pilot.travel(travelLengthUTurn, true);
-					} else {
-						double value = Math.abs(diff);
-						if(value > 200){
-							value = 20;
-						}
-						value = 220 - value;
-						value = Math.sqrt(value);
-						if (diff < 0)
-							value *= -1;
-						value *= -30;
-						
-						System.out.println("dist: " + distance + "val: " + value);
-						
-						if(diff > 0){
-							//zurück zur Wand
-							if(lastDiff > diff + 1){ //sich immer weiter annähert (diff > 10 ? + 1 : - 1)
-								//nur geradeaus fahren
-								pilot.travel(travelLengthUTurn, true);
-							} else { //roboter entfernt sich shon
-								//starke veränderung
-								//double value = -500 / diff;
-								pilot.travelArc(value, travelLengthUTurn, true);
-								//Sound.beep();
-							}
-						} else {
-							//weg von der Wand
-							if(lastDiff > diff - 1){ //sich immer weiter annähert (diff < -10 ? - 1 : + 1)
-								//starke veränderung
-								//double value = -300 / diff;
-								value /= 2;
-								pilot.travelArc(value, travelLengthUTurn, true);
-								//Sound.buzz();
-							} else { //roboter entfernt sich shon
-								//nur geradeaus fahren
-								pilot.travel(travelLengthUTurn, true);
-							}
-						}
-					}
-//				}
-			}
-			
-			//letzte differenz / distanz speichern
-			lastDiff = diff;
-			lastDistance = distance;
-			
-			try {
-				Thread.sleep(150);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		while(!touchright.isPressed() && !touchleft.isPressed());
+		while(test);
 
+		uturn.interrupt();
 		try {
-			Thread.sleep(1000);
+			uturn.join();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -156,4 +45,132 @@ public class UTurnRunner {
 
 	}
 
+	private TouchSensor touchright;
+	private TouchSensor touchleft;
+	private UltrasonicSensor sonic;
+	private DifferentialPilot pilot;
+	
+	public UTurnRunner(TouchSensor touchright, TouchSensor touchleft, UltrasonicSensor sonic, DifferentialPilot pilot) {
+		this.touchright = touchright;
+		this.touchleft = touchleft;
+		this.sonic = sonic;
+		this.pilot = pilot;
+	}
+	
+	
+	public void run(){
+		try{
+			double lastDiff = 0;
+			int lastDistance = 0;
+			long timeLastCorrect = System.currentTimeMillis();
+			//pilot.setTravelSpeed(travelSpeedUTurn);
+			
+			while(true){ //!touchright.isPressed() && !touchleft.isPressed()
+				if(Thread.interrupted())
+					throw new InterruptedException();
+				int distance = sonic.getDistance();
+				if(distance >= 255){ //reject errors
+					if((System.currentTimeMillis() - timeLastCorrect) < 350){
+						distance = lastDistance;
+					}
+				} else { //correct value
+					timeLastCorrect = System.currentTimeMillis();
+				}
+				
+				double diff = distance - travelDistance;
+				
+				//teste ob Wand vorne ist
+				if (touchright.isPressed() || touchleft.isPressed()){
+					Thread.sleep(100);
+					int angle = 90;
+					if(touchright.isPressed() && touchleft.isPressed()){
+						//rechts drehen
+						angle = 90;
+					} else if(touchleft.isPressed()){
+						//kleine Linksdrehung
+						angle = 100;
+					} else if(touchright.isPressed()){
+						//kleine Rechtsdrehung
+						angle = 30;
+					}
+					
+					//etwas zurück
+					pilot.travel(-10);
+					//drehen
+					pilot.rotate(angle);
+					
+				} else { //freie fahrt
+				
+					if(distance >= distanceWallLost) {//wall lost
+		
+						pilot.travel(10);
+						pilot.rotate(-90);
+						while(sonic.getDistance() > distanceWallLost){
+							if(Thread.interrupted())
+								throw new InterruptedException();
+							
+							//TODO wenn Wand erreicht ist muss reagiert werden
+							
+							pilot.travel(travelLengthUTurn, true);
+							Thread.sleep(100);
+						}
+						pilot.travel(5);
+						
+					} else {
+						//normales Wand folgen
+						if(Math.abs(diff) < ThresholdDistanceForward){
+							pilot.travel(travelLengthUTurn, true);
+						} else {
+							double value = Math.abs(diff);
+							if(value > 200){
+								value = 200;
+							}
+							value = 220 - value;
+							value = Math.sqrt(value);
+							if (diff < 0)
+								value *= -1;
+							value *= -30;
+							
+							System.out.println("dist: " + distance + "val: " + value);
+							
+							if(diff > 0){
+								//zurück zur Wand
+								if(lastDiff > diff + 1){ //sich immer weiter annähert (diff > 10 ? + 1 : - 1)
+									//nur geradeaus fahren
+									pilot.travel(travelLengthUTurn, true);
+								} else { //roboter entfernt sich shon
+									//starke veränderung
+									//double value = -500 / diff;
+									pilot.travelArc(value, travelLengthUTurn, true);
+									//Sound.beep();
+								}
+							} else {
+								//weg von der Wand
+								if(lastDiff > diff - 1){ //sich immer weiter annähert (diff < -10 ? - 1 : + 1)
+									//starke veränderung
+									//double value = -300 / diff;
+									value /= 2;
+									pilot.travelArc(value, travelLengthUTurn, true);
+									//Sound.buzz();
+								} else { //roboter entfernt sich shon
+									//nur geradeaus fahren
+									pilot.travel(travelLengthUTurn, true);
+								}
+							}
+						}
+					}
+				}
+				
+				//letzte differenz / distanz speichern
+				lastDiff = diff;
+				lastDistance = distance;
+				
+				Thread.sleep(150);
+
+			}
+		} catch (InterruptedException e){
+			pilot.stop();
+		}
+	}
+	
 }
