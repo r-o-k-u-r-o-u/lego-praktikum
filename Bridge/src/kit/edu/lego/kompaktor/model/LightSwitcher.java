@@ -14,7 +14,9 @@ import lejos.nxt.NXTRegulatedMotor;
 public class LightSwitcher extends Thread{
 	
 	final static int rotationAngle = 200;
-	final static int rotationSpeed = 500;
+	final static int rotationSpeedFull = 400;
+	final static int rotationSpeedMiddle = 200;
+	final static int rotationSpeedSmall = 200;
 	final static int rotationSpeedInit = 100;
 	final static int angleMiddle = 100;
 	final static int angleLeftFull = 0;
@@ -35,6 +37,7 @@ public class LightSwitcher extends Thread{
 	
 	private RotantionRange rotationRange;
 	private RotantionDirection rotationDirection;
+	private RotantionDirection lastRotationDirection;
 	private int switchCounter;
 	
 	public LightSwitcher() {
@@ -56,54 +59,66 @@ public class LightSwitcher extends Thread{
 		this.rotationDirection = rotationDirection;
 	}
 	
+	public RotantionDirection getLastRotationDirection() {
+		return lastRotationDirection;
+	}
+
 	public void run() {
 		try {
-			motor.setSpeed(rotationSpeed);
 			while(true){
 				int actualAngleLeft;
 				int actualAngleRigth;
+				int rotationSpeed;
 				switch (rotationRange) {
 				case SMALL:
 					actualAngleLeft = angleLeftSmall;
 					actualAngleRigth = angleRigthSmall;
+					rotationSpeed = rotationSpeedSmall;
 					rotationRange = RotantionRange.MIDDLE;
 					break;
 				case MIDDLE:
 					actualAngleLeft = angleLeftMiddle;
 					actualAngleRigth = angleRigthMiddle;
+					rotationSpeed = rotationSpeedMiddle;
 					rotationRange = RotantionRange.FULL;
 					break;
 				default:
 					actualAngleLeft = angleLeftFull;
 					actualAngleRigth = angleRigthFull;
+					rotationSpeed = rotationSpeedFull;
 					break;
 				}
-				if(rotationDirection == RotantionDirection.Left){
+				motor.setSpeed(rotationSpeed);
+				if(rotationDirection == RotantionDirection.Right){
+					lastRotationDirection = RotantionDirection.Right;
 					motor.rotateTo(angleMiddle, true);
-					Thread.sleep(rotationAngle * 1000 / (rotationSpeed * 2));
+					Thread.sleep(rotationAngle * 1000 / (rotationSpeedFull * 4));
 	//				Thread.sleep(angleMiddle * 1000 / (rotationSpeed * 2));
 					motor.rotateTo(actualAngleRigth, true);
 	//				Thread.sleep((angleMiddle - actualAngleRigth) * 1000 / (rotationSpeed));
-					Thread.sleep(rotationAngle * 1000 / (rotationSpeed * 2) + 100);
+					Thread.sleep(rotationAngle * 1000 / (rotationSpeedFull * 2) + 100);
+					lastRotationDirection = RotantionDirection.Left;
 					motor.rotateTo(angleMiddle, true);
 	//				Thread.sleep((angleMiddle - actualAngleRigth) * 1000 / (rotationSpeed));
-					Thread.sleep(rotationAngle * 1000 / (rotationSpeed * 2));
+					Thread.sleep(rotationAngle * 1000 / (rotationSpeedFull * 2));
 					motor.rotateTo(actualAngleLeft, true);
 	//				Thread.sleep((actualAngleLeft - angleMiddle) * 1000 / (rotationSpeed));
-					Thread.sleep(rotationAngle * 1000 / (rotationSpeed * 2) + 100);
+					Thread.sleep(rotationAngle * 1000 / (rotationSpeedFull * 2) + 100);
 				} else {
+					lastRotationDirection = RotantionDirection.Left;
 					motor.rotateTo(angleMiddle, true);
-					Thread.sleep(rotationAngle * 1000 / (rotationSpeed * 2));
+					Thread.sleep(rotationAngle * 1000 / (rotationSpeedFull * 4));
 	//				Thread.sleep(angleMiddle * 1000 / (rotationSpeed * 2));
 					motor.rotateTo(actualAngleLeft, true);
 	//				Thread.sleep((angleMiddle - actualAngleRigth) * 1000 / (rotationSpeed));
-					Thread.sleep(rotationAngle * 1000 / (rotationSpeed * 2) + 100);
+					Thread.sleep(rotationAngle * 1000 / (rotationSpeedFull * 2) + 100);
+					lastRotationDirection = RotantionDirection.Right;
 					motor.rotateTo(angleMiddle, true);
 	//				Thread.sleep((angleMiddle - actualAngleRigth) * 1000 / (rotationSpeed));
-					Thread.sleep(rotationAngle * 1000 / (rotationSpeed * 2));
+					Thread.sleep(rotationAngle * 1000 / (rotationSpeedFull * 2));
 					motor.rotateTo(actualAngleRigth, true);
 	//				Thread.sleep((actualAngleLeft - angleMiddle) * 1000 / (rotationSpeed));
-					Thread.sleep(rotationAngle * 1000 / (rotationSpeed * 2) + 100);
+					Thread.sleep(rotationAngle * 1000 / (rotationSpeedFull * 2) + 100);
 				}
 				//set the switchCounter up
 				switchCounter++;
@@ -114,7 +129,7 @@ public class LightSwitcher extends Thread{
 	}
 	
 	public void init(){
-		motor.setSpeed(rotationSpeed);
+		motor.setSpeed(rotationSpeedFull);
 		motor.rotateTo(90);
 		motor.rotateTo(0);
 	}

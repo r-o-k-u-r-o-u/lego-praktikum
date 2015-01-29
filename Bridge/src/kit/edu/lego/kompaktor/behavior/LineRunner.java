@@ -4,6 +4,7 @@ import kit.edu.lego.kompaktor.model.LightSwitcher;
 import lejos.nxt.LightSensor;
 import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
+import lejos.nxt.Sound;
 import lejos.nxt.TouchSensor;
 import lejos.robotics.navigation.DifferentialPilot;
 
@@ -15,7 +16,8 @@ public class LineRunner extends Thread{
 	final static int angleRotateLine = 20;
 	final static int travelSpeedLine = 20;
 	final static int travelLengthLine = 3;
-	final static int ThresholdAngleForward = 5;
+	final static int ThresholdAngleForward = 10;
+	final static int ThresholdLine = 42;
 	
 	public static void main(String[] args) {
 		//wait until it is pressed
@@ -38,6 +40,13 @@ public class LineRunner extends Thread{
 			e.printStackTrace();
 		}
 		
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		
 		//end
 		while(!touchright.isPressed() && !touchleft.isPressed());
 
@@ -46,6 +55,7 @@ public class LineRunner extends Thread{
 	private LightSensor ligthSensor;
 	private DifferentialPilot pilot;
 	private LightSwitcher switchThread;
+	private static int value = 0;
 	
 	public LineRunner(LightSensor ligthSensor, DifferentialPilot pilot) {
 		this.ligthSensor = ligthSensor;
@@ -67,48 +77,66 @@ public class LineRunner extends Thread{
 	
 	public void run(){
 		try{
-			double value = 0;
 			pilot.setTravelSpeed(travelSpeedLine);
+			//int failure = 0; //zählt wie oft er stehen geblieben ist, aber die Linie nicht gesehen hat
 			while(true){
 				switchThread = new LightSwitcher();
+				if(value >= 0 ) //^ (failure % 2 > 0)
+					switchThread.setDirection(LightSwitcher.RotantionDirection.Right);
+				else
+					switchThread.setDirection(LightSwitcher.RotantionDirection.Left);
+				
 	//			switchThread.start();
 				switchThread.startSweep();
-				if(value > 0)
-					switchThread.setDirection(LightSwitcher.RotantionDirection.Left);
-				else
-					switchThread.setDirection(LightSwitcher.RotantionDirection.Right);
 				
-				while(ligthSensor.readValue() < 40){
+				
+				while(ligthSensor.readValue() < ThresholdLine){
 					if(Thread.interrupted())
 						throw new InterruptedException();
 					Thread.yield();	
 				}
-				value = LightSwitcher.getRegulatedCurrentAngleDouble();
+				value = LightSwitcher.getRegulatedCurrentAngle();
 				switchThread.interrupt();
+				switchThread.join();
+				//setzen des Winkels wo etwas entdeckt wurde, damit die verzögerung durch interrupt (Motor stoppen) korrigiert wird
+				//wenn failure zu groß dann hat er durch einen Überschwinger etwas gefunden --> Überschwinger hinzuaddieren
+//				if(failure < 2){
+//					LightSwitcher.setAngle(value);
+//				} else {
+//					int overSwing = switchThread.getLastRotationDirection() == RotantionDirection.Right ? value - 10 : (value + 10);
+//					LightSwitcher.setAngle(overSwing);
+//				}
 				
 				double converted = value < 0 ? - value : value;
 				boolean straight = converted < ThresholdAngleForward;
-				if(converted > 70)
-					converted = 70;
+				if(converted > 50)
+					converted = 50;
 				converted = -converted + 90;
 				converted = converted * converted;
 				converted *= 90;
 				converted /= 90 * 90;
 				if(value < 0)
 					converted *= -1;
-				System.out.println("value: " + value + "conv: " + converted);
+				//System.out.println("value: " + value + "conv: " + converted);
 				
-				while(ligthSensor.readValue() >= 40) {
+//				if(ligthSensor.readValue() < 40)
+//					failure++;
+//				else
+//					failure = 0;
+				
+				do {
+					//Sound.beep();
 					if(Thread.interrupted())
 						throw new InterruptedException();
 					if(straight){
 						pilot.travel(travelLengthLine, true);
 					} else {
 						//pilot.arcForward(-converted / 4.0);
-						pilot.travelArc(-converted / 6.0, travelLengthLine, true);
+						pilot.travelArc(-converted / 2.5, travelLengthLine, true);
 						//pilot.rotate((LightSwitcher.getRegulatedCurrentAngleDouble() < 0) ? -angleRotateBridge : angleRotateBridge);
 					}
-				}
+					Thread.yield();
+				} while(ligthSensor.readValue() >= ThresholdLine);
 			} 
 		} catch (InterruptedException e){
 			pilot.stop();
