@@ -33,7 +33,8 @@ public class TransitionUTurnToLineFollow {
 		LightSensor ligthSensor = new LightSensor(SensorPort.S1, true);
 		UltrasonicSensor sonic = new UltrasonicSensor(SensorPort.S4);
 		DifferentialPilot pilot = new DifferentialPilot(3, 17, Motor.C, Motor.B, false);
-				
+			
+		
 		// Stelle sicher dass der Lichtsensor nicht im Weg ist.
 		LightSwitcher.initAngles();
 		LightSwitcher.setAngle(-90);
