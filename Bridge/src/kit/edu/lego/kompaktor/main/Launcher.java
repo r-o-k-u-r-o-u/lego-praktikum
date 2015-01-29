@@ -2,6 +2,7 @@ package kit.edu.lego.kompaktor.main;
 
 import kit.edu.lego.kompaktor.behavior.LineRunner;
 import kit.edu.lego.kompaktor.model.LightSwitcher;
+import kit.edu.lego.kompaktor.threading.ParcoursRunner;
 import lejos.nxt.Button;
 import lejos.nxt.LCD;
 import lejos.nxt.LightSensor;
@@ -13,26 +14,29 @@ import lejos.nxt.TouchSensor;
 import lejos.robotics.navigation.DifferentialPilot;
 
 public class Launcher {
+	
+	public static Launcher launcher = null;
+	public static Launcher getLauncher() {
+		if (launcher == null)
+			launcher = new Launcher();
+		return launcher;
+	}
+	
+	private final int numMaxProgramms = ParcoursRunner.LEVELNAMES.length;
+	
+	private ParcoursRunner currentRunner;
+	
+	public static void main(String[] args) {	
+		getLauncher();	
+	}
+	
+	private Launcher() {
 
-	static String[] levelNames = {"UTurn",
-								  "LineFollow",
-								  "Bridge",
-								  "LED-Cube",
-								  "Fahrstuhl",
-								  "Labyrinth",
-								  "Rollenfeld"};
-	
-	static int numMaxProgramms = levelNames.length;
-	
-	public static void main(String[] args) {
-		
-		
 		TouchSensor touchright = new TouchSensor(SensorPort.S3);
 		TouchSensor touchleft = new TouchSensor(SensorPort.S2);
 		LightSensor lightSensor = new LightSensor(SensorPort.S1, true);
 //		UltrasonicSensor sonic = new UltrasonicSensor(SensorPort.S4);
-		DifferentialPilot pilot = new DifferentialPilot(3, 17, Motor.C, Motor.B, true);
-		
+		DifferentialPilot pilot = new DifferentialPilot(3, 17, Motor.C, Motor.B, true);	
 		
 		boolean selected = false;
 		int curr = 0;
@@ -41,7 +45,7 @@ public class Launcher {
 		while (!selected) {
 			
 			LCD.clear();
-			System.out.println("Level=\n"+levelNames[curr]+"\n\nStart with ENTER.");
+			System.out.println("Level=\n"+ParcoursRunner.LEVELNAMES[curr]+"\n\nStart with ENTER.");
 			
 			clicked = Button.waitForAnyPress();
 			
@@ -55,7 +59,6 @@ public class Launcher {
 				selected = true;
 				curr = -1;
 			}
-			
 			clicked = 0;
 		}
 		
@@ -65,7 +68,7 @@ public class Launcher {
 			Sound.beep();
 			
 			LCD.clear();
-			System.out.println("Selected LEVEL = "+levelNames[curr]);
+			System.out.println("Selected LEVEL = "+ParcoursRunner.LEVELNAMES[curr]);
 			// start something else
 			
 			while(!touchright.isPressed() && !touchleft.isPressed());
@@ -78,12 +81,12 @@ public class Launcher {
 				
 				run.start();
 			}
-			
-			
 		}
-
 		Button.waitForAnyPress();
-		
+	}
+	
+	public ParcoursRunner getSegmentRunnerThread(String levelName, LightSensor lightSensor, DifferentialPilot pilot) {
+		return ParcoursRunner.getNewRunner(levelName, lightSensor, pilot);
 	}
 
 }
