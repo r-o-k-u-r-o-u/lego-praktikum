@@ -7,7 +7,7 @@ import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
 import lejos.nxt.Sound;
 import lejos.nxt.TouchSensor;
-import lejos.nxt.UltrasonicSensor;
+//import lejos.nxt.UltrasonicSensor;
 import lejos.robotics.navigation.DifferentialPilot;
 
 
@@ -31,7 +31,7 @@ public class TransitionUTurnToLineFollow {
 		TouchSensor touchright = new TouchSensor(SensorPort.S3);
 		TouchSensor touchleft = new TouchSensor(SensorPort.S2);
 		LightSensor ligthSensor = new LightSensor(SensorPort.S1, true);
-		UltrasonicSensor sonic = new UltrasonicSensor(SensorPort.S4);
+//		UltrasonicSensor sonic = new UltrasonicSensor(SensorPort.S4);
 		DifferentialPilot pilot = new DifferentialPilot(3, 17, Motor.C, Motor.B, false);
 			
 		

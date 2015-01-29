@@ -5,14 +5,12 @@ package kit.edu.lego.kompaktor.test;
 import lejos.nxt.LightSensor;
 import lejos.nxt.Button;
 import lejos.nxt.LCD;
-import lejos.nxt.Motor;
+//import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
-import lejos.nxt.TouchSensor;
-import lejos.robotics.navigation.DifferentialPilot;
+//import lejos.nxt.TouchSensor;
+//import lejos.robotics.navigation.DifferentialPilot;
 import lejos.util.Datalogger;
 
-
-//TODO Rückwärtsfahren wenn Linie nicht erkannt? --> nur wenn Linie nicht einfach endet
 
 public class DataTest {
 
