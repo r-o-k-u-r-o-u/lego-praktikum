@@ -9,7 +9,7 @@ import lejos.nxt.TouchSensor;
 import lejos.robotics.navigation.DifferentialPilot;
 
 
-public class TurntableRunner extends ParcoursRunner {
+public class TurnTableRunner extends ParcoursRunner {
 
 	final static int angleRotateLine = 20;
 	final static int travelSpeedLine = 20;
@@ -19,12 +19,12 @@ public class TurntableRunner extends ParcoursRunner {
 	
 	public static void main(String[] args) {
 		//wait until it is pressed
-		TouchSensor touchright = new TouchSensor(SensorPort.S3);
-		TouchSensor touchleft = new TouchSensor(SensorPort.S2);
+		TouchSensor touchRight = new TouchSensor(SensorPort.S3);
+		TouchSensor touchLeft = new TouchSensor(SensorPort.S2);
 		LightSensor ligthSensor = new LightSensor(SensorPort.S1, true);
 		DifferentialPilot pilot = new DifferentialPilot(3, 17, Motor.C, Motor.B, true);
 		
-		while(!touchright.isPressed() && !touchleft.isPressed());
+		while(!touchRight.isPressed() && !touchLeft.isPressed());
 		LightSwitcher.initAngles();
 		
 		TurnTable turnTable = new TurnTable();
@@ -51,7 +51,7 @@ public class TurntableRunner extends ParcoursRunner {
 		pilot.backward();
 		LightSwitcher.setAngle(-90);
 		
-		while(!touchright.isPressed() && !touchleft.isPressed());
+		while(!touchRight.isPressed() && !touchLeft.isPressed());
 		
 		pilot.stop();
 		
@@ -76,23 +76,22 @@ public class TurntableRunner extends ParcoursRunner {
 		turnTable.sendCYA();
 		
 		//end
-		while(!touchright.isPressed() && !touchleft.isPressed());
+		while(!touchRight.isPressed() && !touchLeft.isPressed());
 
 	}
-
-	private LightSensor ligthSensor;
-	private DifferentialPilot pilot;
-	private TouchSensor touchright = new TouchSensor(SensorPort.S3);
-	private TouchSensor touchleft = new TouchSensor(SensorPort.S2);
 	
-	public TurntableRunner(LightSensor ligthSensor, DifferentialPilot pilot) {
-		this.ligthSensor = ligthSensor;
+	public TurnTableRunner(LightSensor ligthSensor, DifferentialPilot pilot) {
+		this.lightSensor = ligthSensor;
 		this.pilot = pilot;
+	}
+	
+	public TurnTableRunner() {
+		
 	}
 	
 	public void run(){
 	
-		while(!touchright.isPressed() && !touchleft.isPressed());
+		while(!touchRight.isPressed() && !touchLeft.isPressed());
 		LightSwitcher.initAngles();
 		
 		TurnTable turnTable = new TurnTable();
@@ -101,7 +100,7 @@ public class TurntableRunner extends ParcoursRunner {
 		
 		turnTable.waitHello();
 		
-		LineRunner line = new LineRunner(ligthSensor, pilot);
+		LineRunner line = new LineRunner(lightSensor, pilot);
 		line.start();
 		
 		while (!line.isDone());
@@ -119,7 +118,7 @@ public class TurntableRunner extends ParcoursRunner {
 		pilot.backward();
 		LightSwitcher.setAngle(-90);
 		
-		while(!touchright.isPressed() && !touchleft.isPressed());
+		while(!touchRight.isPressed() && !touchLeft.isPressed());
 		
 		pilot.stop();
 		
@@ -128,7 +127,7 @@ public class TurntableRunner extends ParcoursRunner {
 		turnTable.waitDone();
 		
 		pilot.travel(15);
-		LineRunner line2 = new LineRunner(ligthSensor, pilot);
+		LineRunner line2 = new LineRunner(lightSensor, pilot);
 		line2.start();
 		
 		pilot.travel(20);
@@ -144,7 +143,7 @@ public class TurntableRunner extends ParcoursRunner {
 		turnTable.sendCYA();
 		
 		//end
-		while(!touchright.isPressed() && !touchleft.isPressed());
+		while(!touchRight.isPressed() && !touchLeft.isPressed());
 	}
 
 

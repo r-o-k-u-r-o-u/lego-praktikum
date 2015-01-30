@@ -8,7 +8,7 @@ import lejos.nxt.TouchSensor;
 import lejos.robotics.navigation.DifferentialPilot;
 
 
-public class BridgeRun extends ParcoursRunner{
+public class BridgeRun extends ParcoursRunner {
 	
 	final static int angleRotateBridge = 20;
 	final static int travelSpeedBridge = 10;
@@ -17,14 +17,14 @@ public class BridgeRun extends ParcoursRunner{
 		//wait until it is pressed
 		TouchSensor touchright = new TouchSensor(SensorPort.S3);
 		TouchSensor touchleft = new TouchSensor(SensorPort.S2);
-		LightSensor ligthSensor = new LightSensor(SensorPort.S1, true);
+		LightSensor lightSensor = new LightSensor(SensorPort.S1, true);
 		DifferentialPilot pilot = new DifferentialPilot(3, 17, Motor.C, Motor.B, true);
 				
 		
 		while(!touchright.isPressed() && !touchleft.isPressed());
 		LightSwitcher.initAngles();
 		
-		BridgeRun bridge = new BridgeRun(ligthSensor, pilot);
+		BridgeRun bridge = new BridgeRun(lightSensor, pilot);
 		bridge.init();
 		bridge.start();
 		while(!touchright.isPressed() && !touchleft.isPressed());
@@ -38,8 +38,6 @@ public class BridgeRun extends ParcoursRunner{
 		while(!touchright.isPressed() && !touchleft.isPressed());
 	}
 	
-	private LightSensor ligthSensor;
-	private DifferentialPilot pilot;
 	private LightSwitcher switchThread;
 	private LightSwitcher.RotantionDirection lastHole;
 	
@@ -51,9 +49,13 @@ public class BridgeRun extends ParcoursRunner{
 		return switchThread.isAlive();
 	}
 	
-	public BridgeRun(LightSensor ligthSensor, DifferentialPilot pilot){
-		this.ligthSensor = ligthSensor;
+	public BridgeRun(LightSensor lightSensor, DifferentialPilot pilot){
+		this.lightSensor = lightSensor;
 		this.pilot = pilot;
+	}
+	
+	public BridgeRun() {
+		
 	}
 	
 	public void run(){
@@ -63,7 +65,7 @@ public class BridgeRun extends ParcoursRunner{
 				switchThread.start();
 				pilot.stop();
 				pilot.forward();
-				while(ligthSensor.readValue() > 30){
+				while(lightSensor.readValue() > 30){
 					if(Thread.interrupted())
 						throw new InterruptedException();
 					Thread.yield();	
@@ -73,7 +75,7 @@ public class BridgeRun extends ParcoursRunner{
 				switchThread.join();
 				
 				
-				while(ligthSensor.readValue() <= 30) {
+				while(lightSensor.readValue() <= 30) {
 					if(Thread.interrupted())
 						throw new InterruptedException();
 					double value = LightSwitcher.getRegulatedCurrentAngleDouble();

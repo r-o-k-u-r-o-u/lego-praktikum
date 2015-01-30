@@ -1,41 +1,74 @@
 package kit.edu.lego.kompaktor.behavior;
 
 import lejos.nxt.LightSensor;
+import lejos.nxt.Motor;
+import lejos.nxt.SensorPort;
+import lejos.nxt.TouchSensor;
+import lejos.nxt.UltrasonicSensor;
 import lejos.robotics.navigation.DifferentialPilot;
 
 public abstract class ParcoursRunner extends Thread {
 	
-	public static final String LINE_FOLLOW = "LineFollow";
-	public static final String U_TURN = "UTurn";
-	public static final String LABYRINTH = "Labyrinth";
-	public static final String BRIDGE = "Bridge";
-	public static final String ELEVATOR = "Elevator";
-	public static final String LED_CUBE = "LED-Cube";
-	public static final String ROLLS = "Rolls";
-	public static final String ROPE_BRIDGE = "RopeBridge";
-	public static final String TURN_TABLE = "TurnTable";
-	
-	public static final String[] LEVEL_NAMES = {
-		U_TURN,
-		LINE_FOLLOW,
-		BRIDGE,
-		LED_CUBE,
-		ELEVATOR,
-		LABYRINTH,
-		ROPE_BRIDGE,
-		ROLLS,
-		TURN_TABLE};
-	
-	public static final String[] getLevelNames() {
-		return LEVEL_NAMES;
+	public static enum LEVEL_NAMES {
+		
+		LINE_FOLLOW("LineFollow"),
+		U_TURN("UTurn"),
+		LABYRINTH("Labyrinth"),
+		BRIDGE("Bridge"),
+		ELEVATOR("Elevator"),
+		LED_CUBE("LED-Cube"),
+		ROLLS("Rolls"),
+		ROPE_BRIDGE("RopeBridge"),
+		TURN_TABLE("TurnTable"),
+		DOOR("door");
+		
+	    private final String text;
+
+	    private LEVEL_NAMES(final String text) {
+	        this.text = text;
+	    }
+
+	    @Override
+	    public String toString() {
+	        return text;
+	    }
+	    
 	}
 	
-	public static final ParcoursRunner getNewRunner(String levelName, LightSensor lightSensor, DifferentialPilot pilot) {
+	public static final TouchSensor TOUCH_RIGHT = new TouchSensor(SensorPort.S3);
+	public static final TouchSensor TOUCH_LEFT = new TouchSensor(SensorPort.S2);
+	public static final LightSensor LIGHT_SENSOR = new LightSensor(SensorPort.S1, true);
+	public static final UltrasonicSensor SONIC_SENSOR = new UltrasonicSensor(SensorPort.S4);
+	public static final DifferentialPilot DIFF_PILOT = new DifferentialPilot(3, 17, Motor.C, Motor.B, true);	
+
+	public static final ParcoursRunner getNewRunner(LEVEL_NAMES levelName) {
 		switch (levelName) {
-		//case LINEFOLLOW:	return new LineRunner(lightSensor, pilot);
-		//case UTURN:			return new UTurnRunner(lightSensor, pilot);
+		case LINE_FOLLOW:	return new LineRunner();
+		case U_TURN:		return new UTurnRunner();
+		case BRIDGE:		return new BridgeRun();
+//		case LED_CUBE:		return new ;
+//		case ELEVATOR:		return new ;
+//		case LABYRINTH:		return new ;
+//		case ROLLS: 		return new ;
+//		case DOOR: 			return new ;
+		case ROPE_BRIDGE:	return new RopeBridgeRun();
+		case TURN_TABLE:	return new TurnTableRunner();
 		default: return null;
 		}
+	}
+	
+	protected TouchSensor touchRight;
+	protected TouchSensor touchLeft;
+	protected LightSensor lightSensor;
+	protected UltrasonicSensor sonicSensor;
+	protected DifferentialPilot pilot;
+	
+	public ParcoursRunner() {
+		touchRight = TOUCH_RIGHT;
+		touchLeft = TOUCH_LEFT;
+		lightSensor = LIGHT_SENSOR;
+		sonicSensor = SONIC_SENSOR;
+		pilot = DIFF_PILOT;
 	}
 	
 	public abstract void run();

@@ -54,14 +54,15 @@ public class LineRunner extends ParcoursRunner{
 
 	}
 
-	private LightSensor ligthSensor;
-	private DifferentialPilot pilot;
 	private LightSwitcher switchThread;
 	private static int value = 0;
 	
+	public LineRunner() {
+		
+	}
+	
 	public LineRunner(LightSensor ligthSensor, DifferentialPilot pilot) {
-		this.ligthSensor = ligthSensor;
-		this.pilot = pilot;
+		
 	}
 	
 	@Deprecated
@@ -92,7 +93,7 @@ public class LineRunner extends ParcoursRunner{
 				switchThread.startSweep();
 				
 				
-				while(ligthSensor.readValue() < ThresholdLine){
+				while(lightSensor.readValue() < ThresholdLine){
 					if(Thread.interrupted())
 						throw new InterruptedException();
 					Thread.yield();	
@@ -138,7 +139,7 @@ public class LineRunner extends ParcoursRunner{
 						//pilot.rotate((LightSwitcher.getRegulatedCurrentAngleDouble() < 0) ? -angleRotateBridge : angleRotateBridge);
 					}
 					Thread.yield();
-				} while(ligthSensor.readValue() >= ThresholdLine);
+				} while(lightSensor.readValue() >= ThresholdLine);
 			} 
 		} catch (InterruptedException e){
 			pilot.stop();

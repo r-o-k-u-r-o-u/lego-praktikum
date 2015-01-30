@@ -14,14 +14,14 @@ public class RopeBridgeRun extends ParcoursRunner{
 		//wait until it is pressed
 		TouchSensor touchright = new TouchSensor(SensorPort.S3);
 		TouchSensor touchleft = new TouchSensor(SensorPort.S2);
-		LightSensor ligthSensor = new LightSensor(SensorPort.S1, true);
+		LightSensor lightSensor = new LightSensor(SensorPort.S1, true);
 		DifferentialPilot pilot = new DifferentialPilot(3, 17, Motor.C, Motor.B, true);
 				
 		
 		while(!touchright.isPressed() && !touchleft.isPressed());
 		LightSwitcher.initAngles();
 		
-		RopeBridgeRun ropeBridge = new RopeBridgeRun(ligthSensor, pilot);
+		RopeBridgeRun ropeBridge = new RopeBridgeRun(lightSensor, pilot);
 		ropeBridge.init();
 		ropeBridge.start();
 		while(!ropeBridge.isDone());
@@ -36,22 +36,24 @@ public class RopeBridgeRun extends ParcoursRunner{
 
 	}
 
-	private LightSensor ligthSensor;
-	private DifferentialPilot pilot;
 	private LineRunner before = null;
 	private BridgeRun bridge = null;
 	private LineRunner line = null;
 	
-	public RopeBridgeRun(LightSensor ligthSensor, DifferentialPilot pilot) {
-		this.ligthSensor = ligthSensor;
+	public RopeBridgeRun(LightSensor lightSensor, DifferentialPilot pilot) {
+		this.lightSensor = lightSensor;
 		this.pilot = pilot;
+	}
+	
+	public RopeBridgeRun() {
+		
 	}
 	
 	@Override
 	public void run() {
 		try{
 			
-			before = new LineRunner(ligthSensor, pilot);
+			before = new LineRunner(lightSensor, pilot);
 			before.init();
 			before.start();
 			
@@ -66,7 +68,7 @@ public class RopeBridgeRun extends ParcoursRunner{
 			//ein Stück vorfahren damit auf Brücke
 			pilot.travel(28);
 			
-			bridge = new BridgeRun(ligthSensor, pilot);
+			bridge = new BridgeRun(lightSensor, pilot);
 			bridge.init();
 			bridge.start();
 			
@@ -77,7 +79,7 @@ public class RopeBridgeRun extends ParcoursRunner{
 			while(!find){
 				if(Thread.interrupted())
 					throw new InterruptedException();
-				value = ligthSensor.readValue();
+				value = lightSensor.readValue();
 				if(value < 40 && value > 30){
 					lastMillis = System.currentTimeMillis();
 				}
@@ -100,7 +102,7 @@ public class RopeBridgeRun extends ParcoursRunner{
 			else 
 				pilot.rotateLeft();
 			//bis Holz erkennt
-			int valueWood = ligthSensor.readValue();
+			int valueWood = lightSensor.readValue();
 			
 			double speed = pilot.getRotateSpeed();
 			int timeFor70Deg_ms = (int) (70 * 1000 / speed);
@@ -109,7 +111,7 @@ public class RopeBridgeRun extends ParcoursRunner{
 			while(valueWood < 30 && (System.currentTimeMillis() - begin) < timeFor70Deg_ms){
 				if(Thread.interrupted())
 					throw new InterruptedException();
-				valueWood = ligthSensor.readValue();
+				valueWood = lightSensor.readValue();
 			}
 			pilot.stop();
 			//30 Grad zurück drehen
@@ -124,7 +126,7 @@ public class RopeBridgeRun extends ParcoursRunner{
 				pilot.rotateLeft();
 			else
 				pilot.rotateRight();
-			while(ligthSensor.readValue() < 35){
+			while(lightSensor.readValue() < 35){
 				if(Thread.interrupted())
 					throw new InterruptedException();
 			}
@@ -134,7 +136,7 @@ public class RopeBridgeRun extends ParcoursRunner{
 			//Ausgang wiederherstellen
 			pilot.setRotateSpeed(rotSpeedDefalut);
 			
-			line = new LineRunner(ligthSensor, pilot);
+			line = new LineRunner(lightSensor, pilot);
 			line.start();
 			line.join();
 			
