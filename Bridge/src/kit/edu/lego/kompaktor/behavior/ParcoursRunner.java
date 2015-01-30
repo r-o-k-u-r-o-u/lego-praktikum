@@ -39,7 +39,8 @@ public abstract class ParcoursRunner extends Thread {
 	public static final TouchSensor TOUCH_LEFT = new TouchSensor(SensorPort.S2);
 	public static final LightSensor LIGHT_SENSOR = new LightSensor(SensorPort.S1, true);
 	public static final UltrasonicSensor SONIC_SENSOR = new UltrasonicSensor(SensorPort.S4);
-	public static final DifferentialPilot DIFF_PILOT = new DifferentialPilot(3, 17, Motor.C, Motor.B, true);	
+	public static final DifferentialPilot DIFF_PILOT = new DifferentialPilot(3, 17, Motor.C, Motor.B, true);
+	public static final DifferentialPilot DIFF_PILOT_REVERSE = new DifferentialPilot(3, 17, Motor.C, Motor.B, false);	
 
 	public static final ParcoursRunner getNewRunner(LEVEL_NAMES levelName) {
 		switch (levelName) {
@@ -62,6 +63,7 @@ public abstract class ParcoursRunner extends Thread {
 	protected LightSensor lightSensor;
 	protected UltrasonicSensor sonicSensor;
 	protected DifferentialPilot pilot;
+	protected DifferentialPilot pilot_reverse;
 	
 	public ParcoursRunner() {
 		touchRight = TOUCH_RIGHT;
@@ -69,6 +71,7 @@ public abstract class ParcoursRunner extends Thread {
 		lightSensor = LIGHT_SENSOR;
 		sonicSensor = SONIC_SENSOR;
 		pilot = DIFF_PILOT;
+		pilot_reverse = DIFF_PILOT_REVERSE;
 	}
 	
 	public abstract void run();

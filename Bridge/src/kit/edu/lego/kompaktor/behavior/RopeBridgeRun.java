@@ -1,27 +1,23 @@
 package kit.edu.lego.kompaktor.behavior;
 import kit.edu.lego.kompaktor.model.LightSwitcher;
 import kit.edu.lego.kompaktor.model.LightSwitcher.RotantionDirection;
-import lejos.nxt.LightSensor;
-import lejos.nxt.Motor;
-import lejos.nxt.SensorPort;
 import lejos.nxt.TouchSensor;
-import lejos.robotics.navigation.DifferentialPilot;
 
 
 public class RopeBridgeRun extends ParcoursRunner{
 
 	public static void main(String[] args) {
 		//wait until it is pressed
-		TouchSensor touchright = new TouchSensor(SensorPort.S3);
-		TouchSensor touchleft = new TouchSensor(SensorPort.S2);
-		LightSensor lightSensor = new LightSensor(SensorPort.S1, true);
-		DifferentialPilot pilot = new DifferentialPilot(3, 17, Motor.C, Motor.B, true);
+		TouchSensor touchright = ParcoursRunner.TOUCH_RIGHT;
+		TouchSensor touchleft = ParcoursRunner.TOUCH_LEFT;
+//		LightSensor lightSensor = new LightSensor(SensorPort.S1, true);
+//		DifferentialPilot pilot = new DifferentialPilot(3, 17, Motor.C, Motor.B, true);
 				
 		
 		while(!touchright.isPressed() && !touchleft.isPressed());
 		LightSwitcher.initAngles();
 		
-		RopeBridgeRun ropeBridge = new RopeBridgeRun(lightSensor, pilot);
+		RopeBridgeRun ropeBridge = new RopeBridgeRun();
 		ropeBridge.init();
 		ropeBridge.start();
 		while(!ropeBridge.isDone());
@@ -40,20 +36,11 @@ public class RopeBridgeRun extends ParcoursRunner{
 	private BridgeRun bridge = null;
 	private LineRunner line = null;
 	
-	public RopeBridgeRun(LightSensor lightSensor, DifferentialPilot pilot) {
-		this.lightSensor = lightSensor;
-		this.pilot = pilot;
-	}
-	
-	public RopeBridgeRun() {
-		
-	}
-	
 	@Override
 	public void run() {
 		try{
 			
-			before = new LineRunner(lightSensor, pilot);
+			before = new LineRunner();
 			before.init();
 			before.start();
 			
@@ -68,7 +55,7 @@ public class RopeBridgeRun extends ParcoursRunner{
 			//ein Stück vorfahren damit auf Brücke
 			pilot.travel(28);
 			
-			bridge = new BridgeRun(lightSensor, pilot);
+			bridge = new BridgeRun();
 			bridge.init();
 			bridge.start();
 			
@@ -136,7 +123,7 @@ public class RopeBridgeRun extends ParcoursRunner{
 			//Ausgang wiederherstellen
 			pilot.setRotateSpeed(rotSpeedDefalut);
 			
-			line = new LineRunner(lightSensor, pilot);
+			line = new LineRunner();
 			line.start();
 			line.join();
 			

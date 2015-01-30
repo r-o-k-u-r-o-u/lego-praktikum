@@ -1,12 +1,6 @@
 package kit.edu.lego.kompaktor.behavior;
 import kit.edu.lego.kompaktor.model.LightSwitcher;
-//import kit.edu.lego.kompaktor.model.LightSwitcher.RotantionDirection;
-import lejos.nxt.LightSensor;
-import lejos.nxt.Motor;
-import lejos.nxt.SensorPort;
-//import lejos.nxt.Sound;
 import lejos.nxt.TouchSensor;
-import lejos.robotics.navigation.DifferentialPilot;
 
 
 //TODO Rückwärtsfahren wenn Linie nicht erkannt? --> nur wenn Linie nicht einfach endet
@@ -22,22 +16,21 @@ public class LineRunner extends ParcoursRunner{
 	
 	public static void main(String[] args) {
 		//wait until it is pressed
-		TouchSensor touchright = new TouchSensor(SensorPort.S3);
-		TouchSensor touchleft = new TouchSensor(SensorPort.S2);
-		LightSensor ligthSensor = new LightSensor(SensorPort.S1, true);
-		DifferentialPilot pilot = new DifferentialPilot(3, 17, Motor.C, Motor.B, true);
+		TouchSensor touchright = ParcoursRunner.TOUCH_RIGHT;
+		TouchSensor touchleft = ParcoursRunner.TOUCH_LEFT;
+//		LightSensor ligthSensor = new LightSensor(SensorPort.S1, true);
+//		DifferentialPilot pilot = new DifferentialPilot(3, 17, Motor.C, Motor.B, true);
 		
 		while(!touchright.isPressed() && !touchleft.isPressed());
 		LightSwitcher.initAngles();
 		
-		LineRunner line = new LineRunner(ligthSensor, pilot);
+		LineRunner line = new LineRunner();
 		line.init();
 		line.start();
 		
 		while(!line.isDone());
-		line.interrupt();
 		try {
-			line.join();
+			line.stop();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -48,7 +41,6 @@ public class LineRunner extends ParcoursRunner{
 			e.printStackTrace();
 		}
 		
-		
 		//end
 		while(!touchright.isPressed() && !touchleft.isPressed());
 
@@ -56,14 +48,6 @@ public class LineRunner extends ParcoursRunner{
 
 	private LightSwitcher switchThread;
 	private static int value = 0;
-	
-	public LineRunner() {
-		
-	}
-	
-	public LineRunner(LightSensor ligthSensor, DifferentialPilot pilot) {
-		
-	}
 	
 	@Deprecated
 	public int getSwitchCounter() {
@@ -76,8 +60,6 @@ public class LineRunner extends ParcoursRunner{
 	public boolean isLightSwitcherActive(){
 		return switchThread.isAlive();
 	}
-	
-
 	
 	public void run(){
 		try{

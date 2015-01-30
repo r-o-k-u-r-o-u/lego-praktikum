@@ -74,7 +74,7 @@ public class Launcher {
 			while(!touchright.isPressed() && !touchleft.isPressed());
 			
 			if (curr == 1) {
-				LineRunner run = new LineRunner(lightSensor, pilot);
+				LineRunner run = new LineRunner();
 				LightSwitcher.initAngles();
 				
 				while(!touchright.isPressed() && !touchleft.isPressed());

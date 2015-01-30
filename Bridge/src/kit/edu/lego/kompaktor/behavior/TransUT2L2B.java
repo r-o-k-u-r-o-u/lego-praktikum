@@ -1,13 +1,8 @@
 package kit.edu.lego.kompaktor.behavior;
 import kit.edu.lego.kompaktor.model.LightSwitcher;
 import lejos.nxt.LightSensor;
-//import kit.edu.lego.kompaktor.model.LightSwitcher.RotantionDirection;
-//import lejos.nxt.LightSensor;
 import lejos.nxt.Motor;
-import lejos.nxt.SensorPort;
 import lejos.nxt.TouchSensor;
-import lejos.nxt.UltrasonicSensor;
-//import lejos.nxt.UltrasonicSensor;
 import lejos.robotics.navigation.DifferentialPilot;
 
 
@@ -28,24 +23,23 @@ public class TransUT2L2B {
 	
 	public static void main(String[] args) {
 		//wait until it is pressed
-		TouchSensor touchright = new TouchSensor(SensorPort.S3);
-		TouchSensor touchleft = new TouchSensor(SensorPort.S2);
-		LightSensor ligthSensor = new LightSensor(SensorPort.S1, true);
-		UltrasonicSensor sonic = new UltrasonicSensor(SensorPort.S4);
-		DifferentialPilot pilot = new DifferentialPilot(3, 17, Motor.C, Motor.B, false);
+		TouchSensor touchright = ParcoursRunner.TOUCH_RIGHT;
+		TouchSensor touchleft = ParcoursRunner.TOUCH_LEFT;
+		LightSensor ligthSensor = ParcoursRunner.LIGHT_SENSOR;
+		DifferentialPilot pilot = ParcoursRunner.DIFF_PILOT_REVERSE;
 			
 		while(!touchright.isPressed() && !touchleft.isPressed());
 		// Stelle sicher dass der Lichtsensor nicht im Weg ist.
 		LightSwitcher.initAngles();
 		LightSwitcher.setAngle(-90);
 		
-		BarcodeDedector bar = new BarcodeDedector(ligthSensor);
+		BarcodeDedector bar = new BarcodeDedector();
 		bar.init();
 		bar.start();
 		
 		pilot.setTravelSpeed(travelSpeedLine);
 		
-		UTurnRunner uturn = new UTurnRunner(touchright, touchleft, sonic, pilot);
+		UTurnRunner uturn = new UTurnRunner();
 		uturn.init();
 		uturn.start();
 		
@@ -72,7 +66,7 @@ public class TransUT2L2B {
 		pilot.stop();
 		
 		//LineRunner starten
-		LineRunner line = new LineRunner(ligthSensor, pilot);
+		LineRunner line = new LineRunner();
 		line.init();
 		line.start();
 		
@@ -88,7 +82,7 @@ public class TransUT2L2B {
 		//detector ausrichten
 		LightSwitcher.setAngle(0);
 		//neuen Barcode scannen
-		bar = new BarcodeDedector(ligthSensor);
+		bar = new BarcodeDedector();
 		bar.init();
 		bar.start();
 		//vorwärts fahren
@@ -105,7 +99,7 @@ public class TransUT2L2B {
 		//etwas vorfahren (auf die Brücke
 		LightSwitcher.setAngle(-90);
 		pilot.travel(20);
-		BridgeRun bridge = new BridgeRun(ligthSensor, pilot);
+		BridgeRun bridge = new BridgeRun();
 		bridge.init();
 		bridge.start();
 		
