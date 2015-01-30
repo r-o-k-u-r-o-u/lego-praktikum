@@ -105,16 +105,17 @@ public class UTurnRunner extends Thread{
 		
 						pilot.travel(10);
 						pilot.rotate(-90);
-						while(sonic.getDistance() > distanceWallLost){
+						//vorwärtsfahren bis Wand an der Seite sehen oder gegen Wand gefahren
+						while(sonic.getDistance() > distanceWallLost && !touchright.isPressed() && !touchleft.isPressed()){
 							if(Thread.interrupted())
 								throw new InterruptedException();
-							
-							//TODO wenn Wand erreicht ist muss reagiert werden
 							
 							pilot.travel(travelLengthUTurn, true);
 							Thread.sleep(100);
 						}
-						pilot.travel(5);
+						//nur ein stück vorwärtsfahren, wenn möglich
+						if(!touchright.isPressed() && !touchleft.isPressed())
+							pilot.travel(5);
 						
 					} else {
 						//normales Wand folgen

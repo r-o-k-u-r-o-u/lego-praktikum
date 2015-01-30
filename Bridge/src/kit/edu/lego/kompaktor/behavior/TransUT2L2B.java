@@ -5,7 +5,6 @@ import lejos.nxt.LightSensor;
 //import lejos.nxt.LightSensor;
 import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
-import lejos.nxt.Sound;
 import lejos.nxt.TouchSensor;
 import lejos.nxt.UltrasonicSensor;
 //import lejos.nxt.UltrasonicSensor;
@@ -91,7 +90,11 @@ public class TransUT2L2B {
 		//neuen Barcode scannen
 		bar = new BarcodeDedector(ligthSensor);
 		bar.start();
+		//vorwärts fahren
+		pilot.forward();
+		//sobald barcode gefunden wird gestoppt
 		while(!bar.barcodeFound());
+		pilot.stop();
 		bar.interrupt();
 		try {
 			bar.join();
@@ -99,15 +102,15 @@ public class TransUT2L2B {
 			e1.printStackTrace();
 		}
 		
-		//etwas vorfahren
+		//etwas vorfahren (auf die Brücke
 		LightSwitcher.setAngle(-90);
 		pilot.travel(20);
 		BridgeRun bridge = new BridgeRun(ligthSensor, pilot);
 		bridge.run();
 		
-		
-		
-		while(!touchright.isPressed() && !touchleft.isPressed());
+		while(!touchright.isPressed() && !touchleft.isPressed()){
+			Thread.yield();
+		};
 		bridge.interrupt();
 		try {
 			bridge.join();

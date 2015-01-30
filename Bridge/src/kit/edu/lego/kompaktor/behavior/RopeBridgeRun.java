@@ -62,18 +62,45 @@ public class RopeBridgeRun {
 		}
 
 		
-		//noch ein wenig nach vorn, damit von der Hängebrücke herunter
-		pilot.rotate(bridge.getLastHole() == RotantionDirection.Left ? 50 : -50);
+		
+		//drehen damit an linke seite schaut
+		//pilot.rotate(bridge.getLastHole() == RotantionDirection.Left ? 50 : -50);
 		LightSwitcher.setAngle(0);
-		pilot.setRotateSpeed(15);
+		double rotSpeedDefalut = pilot.getRotateSpeed();
+		pilot.setRotateSpeed(30);
 		if(bridge.getLastHole() == RotantionDirection.Left)
 			pilot.rotateRight();
-		else
+		else 
 			pilot.rotateLeft();
+		//bis Holz erkennt
+		int valueWood = ligthSensor.readValue();
+		
+		double speed = pilot.getRotateSpeed();
+		int timeFor70Deg_ms = (int) (70 * 1000 / speed);
+		
+		long begin = System.currentTimeMillis();
+		while(valueWood < 30 && (System.currentTimeMillis() - begin) < timeFor70Deg_ms){
+			valueWood = ligthSensor.readValue();
+		}
+		pilot.stop();
+		//30 Grad zurück drehen
+		pilot.setRotateSpeed(rotSpeedDefalut);
+		if(bridge.getLastHole() == RotantionDirection.Left)
+			pilot.rotate(30);
+		else
+			pilot.rotate(-30);
+		//suchen nach der linie
+		pilot.setRotateSpeed(15);
+		if(bridge.getLastHole() == RotantionDirection.Left)
+			pilot.rotateLeft();
+		else
+			pilot.rotateRight();
 		while(ligthSensor.readValue() < 35);
 		pilot.stop();
+		//noch ein wenig nach vorn, damit von der Hängebrücke herunter
 		pilot.travel(20);
-		
+		//Ausgang wiederherstellen
+		pilot.setRotateSpeed(rotSpeedDefalut);
 		
 		LineRunner line = new LineRunner(ligthSensor, pilot);
 		line.start();
