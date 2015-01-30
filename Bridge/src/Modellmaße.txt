@@ -14,3 +14,7 @@ Abstand-Räder
 14cm Außen
 12cm Mitte-Mitte
 
+Farben:
+Linie >40
+Holz 30 < x  <= 40
+Schwarz/Luft <= 30
