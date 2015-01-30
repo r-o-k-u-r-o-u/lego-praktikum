@@ -232,6 +232,7 @@ public class LabyrinthRunner extends ParcoursRunner {
 		while (pilot.getMovementIncrement() < driveDistance) {
 			drive(wallDistance);
 		}
+		pilot.stop();
 
 	}
 
