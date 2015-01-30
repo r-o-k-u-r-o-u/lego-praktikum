@@ -35,13 +35,12 @@ public class RopeBridgeRun {
 		}
 		
 		//ein Stück vorfahren damit auf Brücke
-		pilot.travel(20);
+		pilot.travel(28);
 		
 		BridgeRun bridge = new BridgeRun(ligthSensor, pilot);
 		bridge.start();
 		
-		
-		//Erkennen dass über 600ms kein Holz erkannt wurde, dann ist Ende der Hängebrücke
+		//Erkennen dass über 1000ms kein Holz erkannt wurde, dann ist Ende der Hängebrücke
 		int value = 0;
 		boolean find = false;
 		long lastMillis = System.currentTimeMillis();
@@ -50,7 +49,7 @@ public class RopeBridgeRun {
 			if(value < 40 && value > 30){
 				lastMillis = System.currentTimeMillis();
 			}
-			find = (System.currentTimeMillis() - lastMillis > 600);
+			find = (System.currentTimeMillis() - lastMillis > 1000);
 		}
 		
 		
@@ -64,16 +63,16 @@ public class RopeBridgeRun {
 
 		
 		//noch ein wenig nach vorn, damit von der Hängebrücke herunter
-		pilot.rotate(bridge.getLastHole() == RotantionDirection.Left ? 45 : -45);
+		pilot.rotate(bridge.getLastHole() == RotantionDirection.Left ? 50 : -50);
 		LightSwitcher.setAngle(0);
-		pilot.setRotateSpeed(10);
+		pilot.setRotateSpeed(15);
 		if(bridge.getLastHole() == RotantionDirection.Left)
 			pilot.rotateRight();
 		else
 			pilot.rotateLeft();
 		while(ligthSensor.readValue() < 35);
 		pilot.stop();
-		pilot.travel(13);
+		pilot.travel(20);
 		
 		
 		LineRunner line = new LineRunner(ligthSensor, pilot);

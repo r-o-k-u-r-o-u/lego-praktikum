@@ -12,6 +12,8 @@ public class BarcodeDedector extends Thread{
 
 	final static int travelSpeedBarcode = 20;
 	final static int numberBarcodeLines = 3;
+	final static int maxTimeElipsed = 2000;
+	final static int ThresholdLine = LineRunner.ThresholdLine;
 	
 	public static void main(String[] args) {
 		TouchSensor touchright = new TouchSensor(SensorPort.S3);
@@ -51,11 +53,13 @@ public class BarcodeDedector extends Thread{
 	private LightSensor ligthSensor;
 	private int lines;
 	private boolean testLine;
+	private long lastTime;
 	
 	public BarcodeDedector(LightSensor ligthSensor){
 		this.ligthSensor = ligthSensor;
 		lines = 0;
 		testLine = true;
+		lastTime = System.currentTimeMillis();
 	}
 	
 	public boolean barcodeFound(){
@@ -67,14 +71,21 @@ public class BarcodeDedector extends Thread{
 			while(true){
 				if(Thread.interrupted())
 					throw new InterruptedException();
+				if((System.currentTimeMillis() - lastTime) > maxTimeElipsed){
+					testLine = true;
+					lines = 0;
+					lastTime = System.currentTimeMillis();
+				}
 				if(testLine){
-					if(ligthSensor.readValue() >= 40){
+					if(ligthSensor.readValue() >= ThresholdLine){
 						lines++;
 						testLine = false;
+						lastTime = System.currentTimeMillis();
 					}
 				} else {
-					if(ligthSensor.readValue() < 40){
+					if(ligthSensor.readValue() < ThresholdLine){
 						testLine = true;
+						lastTime = System.currentTimeMillis();
 					}
 				}
 				Thread.yield();

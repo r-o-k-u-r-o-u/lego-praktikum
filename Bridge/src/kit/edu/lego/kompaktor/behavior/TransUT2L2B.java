@@ -7,6 +7,7 @@ import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
 import lejos.nxt.Sound;
 import lejos.nxt.TouchSensor;
+import lejos.nxt.UltrasonicSensor;
 //import lejos.nxt.UltrasonicSensor;
 import lejos.robotics.navigation.DifferentialPilot;
 
@@ -19,7 +20,7 @@ import lejos.robotics.navigation.DifferentialPilot;
  *
  */
 
-public class TransitionUTurnToLineFollow {
+public class TransUT2L2B {
 
 //	final static int angleRotateLine = 20;
 	final static int travelSpeedLine = 50;
@@ -31,10 +32,10 @@ public class TransitionUTurnToLineFollow {
 		TouchSensor touchright = new TouchSensor(SensorPort.S3);
 		TouchSensor touchleft = new TouchSensor(SensorPort.S2);
 		LightSensor ligthSensor = new LightSensor(SensorPort.S1, true);
-//		UltrasonicSensor sonic = new UltrasonicSensor(SensorPort.S4);
+		UltrasonicSensor sonic = new UltrasonicSensor(SensorPort.S4);
 		DifferentialPilot pilot = new DifferentialPilot(3, 17, Motor.C, Motor.B, false);
 			
-		
+		while(!touchright.isPressed() && !touchleft.isPressed());
 		// Stelle sicher dass der Lichtsensor nicht im Weg ist.
 		LightSwitcher.initAngles();
 		LightSwitcher.setAngle(-90);
@@ -42,57 +43,77 @@ public class TransitionUTurnToLineFollow {
 		BarcodeDedector bar = new BarcodeDedector(ligthSensor);
 		bar.start();
 		
-//		double value = 0;
-		
 		pilot.setTravelSpeed(travelSpeedLine);
-		pilot.forward();
+		
+		UTurnRunner uturn = new UTurnRunner(touchright, touchleft, sonic, pilot);
+		uturn.start();
+		
 		
 		while (!bar.barcodeFound()) {
 			Thread.yield();
 		}
-//		Sound.beep();
 		
-//		while (!bar.barcodeFound()) {
-//
-//			pilot.forward();
-//			Sound.beep();
-//			
-//			while (!touchright.isPressed() && !touchleft.isPressed()) {
-//				Thread.yield();
-//			}
-//
-//			pilot.stop();
-//			Sound.beep();
-//			
-//			pilot.travel(-10);
-//			pilot.rotate(-90);
-//			Thread.yield();
-//		}
+		uturn.interrupt();
+		bar.interrupt();
+		try {
+			uturn.join();
+			bar.join();
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
 		
-		pilot.stop();
+		//drehen
 		pilot.rotate(180);
+		//Sensor ausrichten
+		LightSwitcher.setAngle(0);
+		//vorwärts fahren bis Linie erkannt
 		pilot = new DifferentialPilot(3, 17, Motor.C, Motor.B, true);
+		pilot.forward();
+		while(ligthSensor.readValue() < LineRunner.ThresholdLine);
+		pilot.stop();
+		
+		//LineRunner starten
+		LineRunner line = new LineRunner(ligthSensor, pilot);
+		line.start();
+		
+		while(line.getSwitchCounter() < 3);
+		
+		//LineRunner stoppen
+		line.interrupt();
+		try {
+			line.join();
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
+		
+		//detector ausrichten
+		LightSwitcher.setAngle(0);
+		//neuen Barcode scannen
+		bar = new BarcodeDedector(ligthSensor);
+		bar.start();
+		while(!bar.barcodeFound());
 		bar.interrupt();
 		try {
 			bar.join();
-		} catch (InterruptedException e) {
-			Sound.beep();
-//			e.printStackTrace();
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
 		}
 		
-		LineRunner run = new LineRunner(ligthSensor, pilot);
-		LightSwitcher.setAngle(0);
-		pilot.forward();
+		//etwas vorfahren
+		LightSwitcher.setAngle(-90);
+		pilot.travel(20);
+		BridgeRun bridge = new BridgeRun(ligthSensor, pilot);
+		bridge.run();
 		
-		while (ligthSensor.readValue() < 40) {
-		}
-		pilot.stop();
-		
-		run.start();
 		
 		
 		while(!touchright.isPressed() && !touchleft.isPressed());
-		
+		bridge.interrupt();
+		try {
+			bridge.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		
 		//end
 		while(!touchright.isPressed() && !touchleft.isPressed());

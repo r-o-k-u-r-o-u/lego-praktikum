@@ -17,7 +17,7 @@ public class LineRunner extends Thread{
 	final static int travelSpeedLine = 20;
 	final static int travelLengthLine = 3;
 	final static int ThresholdAngleForward = 10;
-	final static int ThresholdLine = 42;
+	final static int ThresholdLine = 40;
 	
 	public static void main(String[] args) {
 		//wait until it is pressed
