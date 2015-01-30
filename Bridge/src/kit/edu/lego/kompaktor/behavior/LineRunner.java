@@ -3,9 +3,7 @@ import kit.edu.lego.kompaktor.model.LightSwitcher;
 import lejos.nxt.TouchSensor;
 
 
-//TODO Rückwärtsfahren wenn Linie nicht erkannt? --> nur wenn Linie nicht einfach endet
-
-public class LineRunner extends ParcoursRunner{
+public class LineRunner extends ParcoursRunner {
 
 	final static int angleRotateLine = 20;
 	final static int travelSpeedLine = 20;
@@ -137,7 +135,6 @@ public class LineRunner extends ParcoursRunner{
 
 	@Override
 	public boolean isDone() {
-		// TODO Auto-generated method stub
 		return switchThread != null && switchThread.getSwitchCounter() >= numberSwitchFinish;
 	}
 	
