@@ -1,4 +1,6 @@
 import java.lang.annotation.ElementType;
+
+import kit.edu.lego.kompaktor.model.LightSwitcher;
 import lejos.nxt.SensorPort;
 import lejos.nxt.Sound;
 import lejos.nxt.TouchSensor;
@@ -22,7 +24,7 @@ public class Labyrinth {
 
 				}
 			});
-	private volatile static int d , pd;
+	private volatile static int d, pd;
 
 	private static final int TIMER_DELAY = 200, STEER_POWER = 50;
 
@@ -115,7 +117,7 @@ public class Labyrinth {
 		collisionControl.start();
 		distanceMeasure.start();
 		d = 100;
-		
+
 		while (d > 40) {
 
 			pilot.forward();
@@ -207,54 +209,6 @@ public class Labyrinth {
 
 	}
 
-	private static void wait(DifferentialPilot pilot) {
-		while (pilot.isMoving())
-			;
-
-	}
-
-	private static void drive1(DifferentialPilot pilot) {
-
-		if (d < 15 && d > 7) { // If not too close or too
-								// far to the // //
-								// wall, move // forward
-
-			pilot.forward();
-
-		} else if (d <= 30 && d >= 15) { // If a bit far move
-											// // to the wall
-
-			timer.setDelay(TIMER_DELAY);
-			timer.start();
-			while (!timerFinished && !impact() && d < 40) {
-
-				pilot.steer(-10);
-			}
-
-		} else if (d <= 7) {
-			// If a bit too close, move away from the wall
-			timer.setDelay(TIMER_DELAY);
-			timer.start();
-			while (!timerFinished && !impact() && d < 40) {
-
-				pilot.steer(10);
-			}
-		} else if (d <= 40 && d > 30) { // If too far move
-										// toward the wall
-
-			timer.setDelay(TIMER_DELAY);
-			timer.start();
-			while (!timerFinished && !impact() && d < 40) {
-
-				pilot.steer(-20);
-
-			}
-
-		}
-		timerFinished = false;
-
-	}
-
 	private static void drive(DifferentialPilot pilot) {
 
 		if (d < 12 && d > 8) { // If not too close or too
@@ -267,43 +221,16 @@ public class Labyrinth {
 		} else if (d <= 30 && d >= 12) { // If a bit far move
 											// // to the wall
 
-			/*
-			 * timer.setDelay(TIMER_DELAY); timer.start(); while (!timerFinished
-			 * && !impact() && d < 40) {
-			 * 
-			 * double diff = d - pd; pilot.steer(diff / (double) d * STEER_POWER
-			 * - 5);
-			 * 
-			 * }
-			 */
 			double diff = d - pd;
 			pilot.steer(-8);
 
 		} else if (d <= 8) {
-			// If a bit too close, move away from the wall
-			/*
-			 * timer.setDelay(TIMER_DELAY); timer.start(); while (!timerFinished
-			 * && !impact() && d < 40) {
-			 * 
-			 * double diff = d - pd; pilot.steer(diff / (double) d * STEER_POWER
-			 * + 5);
-			 * 
-			 * }
-			 */
+
 			double diff = d - pd;
 			pilot.steer(4);
 		} else if (d <= 35 && d > 30) { // If too far move
 										// toward the wall
 
-			/*
-			 * timer.setDelay(TIMER_DELAY); timer.start(); while (!timerFinished
-			 * && !impact() && d < 40) {
-			 * 
-			 * double diff = d - pd; pilot.steer(diff / (double) d * STEER_POWER
-			 * - 5);
-			 * 
-			 * }
-			 */
 			double diff = d - pd;
 			pilot.steer(-8);
 
