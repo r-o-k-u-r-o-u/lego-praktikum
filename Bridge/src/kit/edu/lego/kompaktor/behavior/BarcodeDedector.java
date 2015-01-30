@@ -1,6 +1,7 @@
 package kit.edu.lego.kompaktor.behavior;
 
 import kit.edu.lego.kompaktor.model.LightSwitcher;
+import kit.edu.lego.kompaktor.threading.ParcoursRunner;
 import lejos.nxt.LightSensor;
 import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
@@ -8,7 +9,7 @@ import lejos.nxt.Sound;
 import lejos.nxt.TouchSensor;
 import lejos.robotics.navigation.DifferentialPilot;
 
-public class BarcodeDedector extends Thread{
+public class BarcodeDedector extends ParcoursRunner{
 
 	final static int travelSpeedBarcode = 20;
 	final static int numberBarcodeLines = 3;
@@ -32,12 +33,11 @@ public class BarcodeDedector extends Thread{
 		BarcodeDedector barcode = new BarcodeDedector(ligthSensor);
 		barcode.start();
 		
-		while(!barcode.barcodeFound());
+		while(!barcode.isDone());
 		
 		pilot.stop();
-		barcode.interrupt();
 		try {
-			barcode.join();
+			barcode.stop();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -62,6 +62,7 @@ public class BarcodeDedector extends Thread{
 		lastTime = System.currentTimeMillis();
 	}
 	
+	@Deprecated
 	public boolean barcodeFound(){
 		return lines >= numberBarcodeLines && testLine;
 	}
@@ -91,6 +92,16 @@ public class BarcodeDedector extends Thread{
 				Thread.yield();
 			}
 		} catch (InterruptedException e){ }
+	}
+
+	@Override
+	public void init() {
+		//nothing to do
+	}
+
+	@Override
+	public boolean isDone() {
+		return barcodeFound();
 	}
 
 }

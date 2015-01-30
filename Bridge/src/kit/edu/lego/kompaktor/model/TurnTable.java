@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import javax.bluetooth.RemoteDevice;
 
+
 //import lejos.nxt.Motor;
 import lejos.nxt.comm.BTConnection;
 import lejos.nxt.comm.Bluetooth;
@@ -32,7 +33,56 @@ public class TurnTable {
 	private DataOutputStream dataOutputStream;
 	private DataInputStream dataInputStream;
 
-	private void use() {
+	public boolean connect() {
+		String deviceName = "TurnTable";
+		RemoteDevice device = lookupDevice(deviceName);
+		BTConnection connection = Bluetooth.connect(device);
+
+		dataOutputStream = connection.openDataOutputStream();
+		dataInputStream = connection.openDataInputStream();
+
+		return true;
+	}
+	
+	public boolean waitHello() {
+		try {
+			TurnTableCommand command = receiveCommand();
+			assertCommand(command, TurnTableCommand.HELLO);
+		} catch (IOException e) {
+			return false;
+		}
+		return true;
+	}
+	
+	public boolean turn() {
+		try {
+			sendCommand(TurnTableCommand.TURN);
+		} catch (IOException e) {
+			return false;
+		}
+		return true;
+	}
+	
+	public boolean waitDone() {
+		try {
+			TurnTableCommand command = receiveCommand();
+			assertCommand(command, TurnTableCommand.DONE);
+		} catch (IOException e) {
+			return false;
+		}
+		return true;
+	}
+	
+	public boolean sendCYA() {
+		try {
+			sendCommand(TurnTableCommand.CYA);
+		} catch (IOException e) {
+			return false;
+		}
+		return true;
+	}
+	
+	public void use() {
     
 		String deviceName = "TurnTable";
 		RemoteDevice device = lookupDevice(deviceName);
@@ -55,6 +105,7 @@ public class TurnTable {
 
 			sendCommand(TurnTableCommand.CYA);
 
+			
 		} catch (IOException e) {
 			System.out.println("IOException");
 		} finally {
@@ -63,15 +114,15 @@ public class TurnTable {
 			}
 		}
 
-		try {
-			Thread.sleep(10000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			Thread.sleep(10000);
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
 
-	private RemoteDevice lookupDevice(String deviceName) {
+	public RemoteDevice lookupDevice(String deviceName) {
 		RemoteDevice device = Bluetooth.getKnownDevice(deviceName);
 		if (device == null) {
 			log("unknown device" + deviceName);
@@ -89,7 +140,7 @@ public class TurnTable {
 		}
 	}
 
-	private TurnTableCommand receiveCommand() throws IOException {
+	public TurnTableCommand receiveCommand() throws IOException {
 		int commandOrdinal = dataInputStream.readInt();
 		TurnTableCommand command = TurnTableCommand
 				.getByOrdinal(commandOrdinal);

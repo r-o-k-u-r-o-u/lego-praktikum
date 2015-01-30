@@ -1,5 +1,10 @@
 package kit.edu.lego.kompaktor.behavior;
+import java.io.IOException;
+
+import javax.bluetooth.RemoteDevice;
+
 import kit.edu.lego.kompaktor.model.LightSwitcher;
+import kit.edu.lego.kompaktor.model.TurnTable;
 //import kit.edu.lego.kompaktor.model.LightSwitcher.RotantionDirection;
 import lejos.nxt.LightSensor;
 import lejos.nxt.Motor;
@@ -7,6 +12,8 @@ import lejos.nxt.SensorPort;
 import lejos.nxt.Sound;
 //import lejos.nxt.Sound;
 import lejos.nxt.TouchSensor;
+import lejos.nxt.comm.BTConnection;
+import lejos.nxt.comm.Bluetooth;
 import lejos.robotics.navigation.DifferentialPilot;
 
 
@@ -30,6 +37,12 @@ public class TurntableRunner extends Thread{
 		while(!touchright.isPressed() && !touchleft.isPressed());
 		LightSwitcher.initAngles();
 		
+		TurnTable turnTable = new TurnTable();
+		
+		turnTable.connect();
+		
+		turnTable.waitHello();
+		
 		LineRunner line = new LineRunner(ligthSensor, pilot);
 		line.start();
 		
@@ -50,12 +63,27 @@ public class TurntableRunner extends Thread{
 		
 		while(!touchright.isPressed() && !touchleft.isPressed());
 		
-		// when on turntable
+		pilot.stop();
 		
-		Sound.beep();
+		// when on turntable
+		turnTable.turn();
+		turnTable.waitDone();
+		
 		pilot.travel(15);
 		LineRunner line2 = new LineRunner(ligthSensor, pilot);
 		line2.start();
+		
+		pilot.travel(20);
+		
+		long time1 = System.currentTimeMillis();
+		
+		while (System.currentTimeMillis() - time1 < 4000) {
+			if (line2.getSwitchCounter() >= 3) {
+				pilot.travel(5);
+			}
+		}
+		
+		turnTable.sendCYA();
 		
 		//end
 		while(!touchright.isPressed() && !touchleft.isPressed());

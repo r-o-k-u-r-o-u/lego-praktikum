@@ -1,6 +1,7 @@
 package kit.edu.lego.kompaktor.behavior;
 import kit.edu.lego.kompaktor.model.LightSwitcher;
 import kit.edu.lego.kompaktor.model.LightSwitcher.RotantionDirection;
+import kit.edu.lego.kompaktor.threading.ParcoursRunner;
 import lejos.nxt.LightSensor;
 import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
@@ -8,7 +9,7 @@ import lejos.nxt.TouchSensor;
 import lejos.robotics.navigation.DifferentialPilot;
 
 
-public class BridgeRun extends Thread{
+public class BridgeRun extends ParcoursRunner{
 	
 	final static int angleRotateBridge = 20;
 	final static int travelSpeedBridge = 10;
@@ -25,11 +26,11 @@ public class BridgeRun extends Thread{
 		LightSwitcher.initAngles();
 		
 		BridgeRun bridge = new BridgeRun(ligthSensor, pilot);
+		bridge.init();
 		bridge.start();
 		while(!touchright.isPressed() && !touchleft.isPressed());
-		bridge.interrupt();
 		try {
-			bridge.join();
+			bridge.stop();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -58,7 +59,6 @@ public class BridgeRun extends Thread{
 	
 	public void run(){
 		try{
-			pilot.setTravelSpeed(travelSpeedBridge);
 			while(true){
 				switchThread = new LightSwitcher();
 				switchThread.start();
@@ -99,6 +99,17 @@ public class BridgeRun extends Thread{
 			if(!switchThread.isInterrupted())
 				switchThread.interrupt();
 		}
+	}
+
+	@Override
+	public void init() {
+		pilot.setTravelSpeed(travelSpeedBridge);
+	}
+
+	@Override
+	public boolean isDone() {
+		// TODO wie soll das Ende der Brücke erkannt werden?
+		return false;
 	}
 
 }
