@@ -24,6 +24,7 @@ public class TurnTableRunner extends ParcoursRunner {
 		LightSensor ligthSensor = new LightSensor(SensorPort.S1, true);
 		DifferentialPilot pilot = new DifferentialPilot(3, 17, Motor.C, Motor.B, true);
 		
+		
 		while(!touchRight.isPressed() && !touchLeft.isPressed());
 		LightSwitcher.initAngles();
 		
