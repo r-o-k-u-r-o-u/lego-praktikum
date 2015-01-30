@@ -8,6 +8,7 @@ public class BridgeRun extends ParcoursRunner {
 	
 	final static int angleRotateBridge = 20;
 	final static int travelSpeedBridge = 10;
+	static int thresholdWood = 30;
 	
 	public static void main(String[] args) {
 		//wait until it is pressed
@@ -52,7 +53,7 @@ public class BridgeRun extends ParcoursRunner {
 				switchThread.start();
 				pilot.stop();
 				pilot.forward();
-				while(lightSensor.readValue() > 30){
+				while(lightSensor.readValue() > thresholdWood){
 					if(Thread.interrupted())
 						throw new InterruptedException();
 					Thread.yield();	
@@ -62,7 +63,7 @@ public class BridgeRun extends ParcoursRunner {
 				switchThread.join();
 				
 				
-				while(lightSensor.readValue() <= 30) {
+				while(lightSensor.readValue() <= thresholdWood) {
 					if(Thread.interrupted())
 						throw new InterruptedException();
 					double value = LightSwitcher.getRegulatedCurrentAngleDouble();
