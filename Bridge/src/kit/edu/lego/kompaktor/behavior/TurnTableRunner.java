@@ -98,12 +98,19 @@ public class TurnTableRunner extends ParcoursRunner {
 			TurnTable turnTable = new TurnTable();
 
 			// connect to turntable
-			turnTable.connect();
+			while (!turnTable.connect()) {
+				if (Thread.interrupted())
+					throw new InterruptedException();
+				
+				Thread.sleep(500);
+			}
 			
 			// wait until its my turn
 			while (!turnTable.waitHello()) {
 				if (Thread.interrupted())
 					throw new InterruptedException();
+				
+				Thread.sleep(200);
 			}
 			
 
@@ -114,6 +121,8 @@ public class TurnTableRunner extends ParcoursRunner {
 			while (!line.isDone()) {
 				if (Thread.interrupted())
 					throw new InterruptedException();
+				
+				Thread.sleep(10);
 			}
 
 			line.stop();
@@ -130,13 +139,20 @@ public class TurnTableRunner extends ParcoursRunner {
 
 			pilot.stop();
 
+			while (!turnTable.turn()) {
+				if (Thread.interrupted())
+					throw new InterruptedException();
+				
+				Thread.sleep(200);
+			}
 			
-			turnTable.turn();
 			
 			// when on turntable wait until done
 			while (!turnTable.waitDone()) {
 				if (Thread.interrupted())
 					throw new InterruptedException();
+				
+				Thread.sleep(200);
 			}
 			
 
@@ -169,10 +185,7 @@ public class TurnTableRunner extends ParcoursRunner {
 
 	@Override
 	public void init() {
-		LightSwitcher.initAngles();		
 	}
-
-
 
 	@Override
 	public boolean isDone() {
