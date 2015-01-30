@@ -58,25 +58,26 @@ public class Labyrinth extends ParcoursRunner {
 			public void run() {
 
 				while (true) {
-			
-					if(sensorRight.isPressed()) {
-						rightImpact = true; 
+
+					if (sensorRight.isPressed()) {
+						rightImpact = true;
 						event = true;
-						for(int i = 0; i < 50; i++) {				
-							if(sensorLeft.isPressed()) {
+						for (int i = 0; i < 50; i++) {
+							if (sensorLeft.isPressed()) {
 								impact = true;
 								rightImpact = false;
 							}
 						}
-					} else if(sensorLeft.isPressed()) {
+					} else if (sensorLeft.isPressed()) {
 						leftImpact = true;
 						event = true;
-						if(sensorRight.isPressed()) {
-							impact = true;
-							leftImpact = false;
+						for (int i = 0; i < 50; i++) {
+							if (sensorRight.isPressed()) {
+								impact = true;
+								leftImpact = false;
+							}
 						}
 					}
-				
 
 				}
 			}
@@ -158,9 +159,10 @@ public class Labyrinth extends ParcoursRunner {
 	}
 
 	private synchronized void resolveCollision(int leftAngle, int rightAngle) {
-		
-		while(!impact());
-		
+
+		while (!impact())
+			;
+
 		if (impact) {
 			pilot.stop();
 			pilot.travel(-7);
