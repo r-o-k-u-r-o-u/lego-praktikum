@@ -9,10 +9,10 @@ import lejos.robotics.RegulatedMotor;
 import lejos.robotics.navigation.DifferentialPilot;
 import lejos.util.PilotProps;
 
-public class Labyrinth extends ParcoursRunner {
+public class LabyrinthRunner extends ParcoursRunner {
 
 	private volatile boolean impact = false, leftImpact = false,
-			rightImpact = false, event = false, done = false;
+			rightImpact = false, event = false;
 
 	private volatile int d, pd;
 
@@ -20,17 +20,16 @@ public class Labyrinth extends ParcoursRunner {
 
 	private volatile DifferentialPilot pilot;
 	private TouchSensor sensorLeft, sensorRight;
-	private Object lock;
 
 	public static void main(String[] args) {
 
-		Labyrinth l = new Labyrinth();
+		LabyrinthRunner l = new LabyrinthRunner();
 		l.init();
 		l.run();
 
 	}
 
-	public Labyrinth() {
+	public LabyrinthRunner() {
 
 		PilotProps pp = new PilotProps();
 		sensorLeft = new TouchSensor(SensorPort.S3);
@@ -49,8 +48,6 @@ public class Labyrinth extends ParcoursRunner {
 				PilotProps.KEY_TRACKWIDTH, "17.0"));
 		pilot = new DifferentialPilot(wheelDiameter, trackWidth, leftMotor,
 				rightMotor, reverse);
-
-		lock = new Object();
 
 		// Detect when the robot hit a wall
 		Thread collisionControl = new Thread(new Runnable() {
@@ -131,9 +128,11 @@ public class Labyrinth extends ParcoursRunner {
 			} else if (d > 35) {
 
 				Sound.beep();
-				pilot.travel(5);
+				pilot.travel(8);
+				if (d < 35)
+					continue;
 				pilot.rotate(-90);
-				while (d > 40) {
+				while (d > 35) {
 					pilot.forward();
 					if (impact()) {
 						resolveCollision(30, 50);
@@ -153,7 +152,7 @@ public class Labyrinth extends ParcoursRunner {
 
 				}
 			} else {
-				drive();
+				drive(8);
 			}
 		}
 	}
@@ -187,17 +186,18 @@ public class Labyrinth extends ParcoursRunner {
 		event = false;
 	}
 
-	private synchronized void drive() {
+	synchronized void drive(int distanceToWall) {
 
-		if (d < 12 && d > 8) { // If not too close or too
-								// far to the // //
-								// wall, move // forward
+		if (d < distanceToWall + 4 && d > distanceToWall) { // If not too close
+															// or too
+			// far to the // //
+			// wall, move // forward
 
 			double diff = d - pd;
 			pilot.steer(-diff / (double) d * STEER_POWER);
 
-		} else if (d <= 35 && d >= 12) { // If a bit far move
-											// // to the wall
+		} else if (d <= 35 && d >= distanceToWall + 4) { // If a bit far move
+			// // to the wall
 
 			double diff = d - pd;
 			while (Math.abs(d - pd) > 0 && !impact()) {
@@ -220,11 +220,29 @@ public class Labyrinth extends ParcoursRunner {
 
 			}
 
-		} else if (d <= 8) {
+		} else if (d <= distanceToWall) {
 
 			pilot.steer(4);
 		}
 
+	}
+
+	void drive(int wallDistance, int driveDistance) {
+
+		while (pilot.getMovementIncrement() < driveDistance) {
+			drive(wallDistance);
+		}
+
+	}
+
+	void straight(int distance) {
+
+		pilot.travel(distance);
+
+	}
+
+	void rotate(int angle) {
+		pilot.rotate(angle);
 	}
 
 	private boolean impact() {
@@ -241,9 +259,7 @@ public class Labyrinth extends ParcoursRunner {
 
 	@Override
 	public boolean isDone() {
-		synchronized (this) {
-			return done;
-		}
+		return false;
 	}
 
 }

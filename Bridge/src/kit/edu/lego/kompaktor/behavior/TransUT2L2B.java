@@ -33,7 +33,7 @@ public class TransUT2L2B {
 		LightSwitcher.initAngles();
 		LightSwitcher.setAngle(-90);
 		
-		BarcodeDedector bar = new BarcodeDedector();
+		BarcodeDetector bar = new BarcodeDetector();
 		bar.init();
 		bar.start();
 		
@@ -82,7 +82,7 @@ public class TransUT2L2B {
 		//detector ausrichten
 		LightSwitcher.setAngle(0);
 		//neuen Barcode scannen
-		bar = new BarcodeDedector();
+		bar = new BarcodeDetector();
 		bar.init();
 		bar.start();
 		//vorwärts fahren

@@ -5,7 +5,7 @@ import lejos.nxt.Sound;
 import lejos.nxt.TouchSensor;
 import lejos.robotics.navigation.DifferentialPilot;
 
-public class BarcodeDedector extends ParcoursRunner{
+public class BarcodeDetector extends ParcoursRunner{
 
 	final static int travelSpeedBarcode = 20;
 	final static int numberBarcodeLines = 3;
@@ -26,7 +26,7 @@ public class BarcodeDedector extends ParcoursRunner{
 		pilot.setTravelSpeed(travelSpeedBarcode);
 		pilot.forward();
 		
-		BarcodeDedector barcode = new BarcodeDedector();
+		BarcodeDetector barcode = new BarcodeDetector();
 		barcode.start();
 		
 		while(!barcode.isDone());
