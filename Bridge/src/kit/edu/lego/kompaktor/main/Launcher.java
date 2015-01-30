@@ -1,8 +1,8 @@
 package kit.edu.lego.kompaktor.main;
 
 import kit.edu.lego.kompaktor.behavior.LineRunner;
+import kit.edu.lego.kompaktor.behavior.ParcoursRunner;
 import kit.edu.lego.kompaktor.model.LightSwitcher;
-import kit.edu.lego.kompaktor.threading.ParcoursRunner;
 import lejos.nxt.Button;
 import lejos.nxt.LCD;
 import lejos.nxt.LightSensor;

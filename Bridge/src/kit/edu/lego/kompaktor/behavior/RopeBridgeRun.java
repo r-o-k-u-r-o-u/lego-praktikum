@@ -1,7 +1,6 @@
 package kit.edu.lego.kompaktor.behavior;
 import kit.edu.lego.kompaktor.model.LightSwitcher;
 import kit.edu.lego.kompaktor.model.LightSwitcher.RotantionDirection;
-import kit.edu.lego.kompaktor.threading.ParcoursRunner;
 import lejos.nxt.LightSensor;
 import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
@@ -26,7 +25,11 @@ public class RopeBridgeRun extends ParcoursRunner{
 		ropeBridge.init();
 		ropeBridge.start();
 		while(!ropeBridge.isDone());
-		ropeBridge.stop();
+		try {
+			ropeBridge.stop();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		
 		//end
 		while(!touchright.isPressed() && !touchleft.isPressed());
@@ -35,9 +38,9 @@ public class RopeBridgeRun extends ParcoursRunner{
 
 	private LightSensor ligthSensor;
 	private DifferentialPilot pilot;
-	private LineRunner before;
-	private BridgeRun bridge;
-	private LineRunner line;
+	private LineRunner before = null;
+	private BridgeRun bridge = null;
+	private LineRunner line = null;
 	
 	public RopeBridgeRun(LightSensor ligthSensor, DifferentialPilot pilot) {
 		this.ligthSensor = ligthSensor;
@@ -49,21 +52,22 @@ public class RopeBridgeRun extends ParcoursRunner{
 		try{
 			
 			before = new LineRunner(ligthSensor, pilot);
+			before.init();
 			before.start();
 			
 			//stoppen wenn zu oft keine Linie gefunden
-			while(before.getSwitchCounter() < 4){
+			while(!before.isDone()){
 				if(Thread.interrupted())
 					throw new InterruptedException();
 			}
 			
-			before.interrupt();
-			before.join();
+			before.stop();
 			
 			//ein Stück vorfahren damit auf Brücke
 			pilot.travel(28);
 			
 			bridge = new BridgeRun(ligthSensor, pilot);
+			bridge.init();
 			bridge.start();
 			
 			//Erkennen dass über 1000ms kein Holz erkannt wurde, dann ist Ende der Hängebrücke
@@ -82,8 +86,7 @@ public class RopeBridgeRun extends ParcoursRunner{
 			
 			
 	//		System.out.println("Lighth detected: " + value);
-			bridge.interrupt();
-			bridge.join();
+			bridge.stop();
 
 	
 			
@@ -133,6 +136,7 @@ public class RopeBridgeRun extends ParcoursRunner{
 			
 			line = new LineRunner(ligthSensor, pilot);
 			line.start();
+			line.join();
 			
 		} catch (InterruptedException e){
 			if(before != null && before.isAlive())
@@ -156,12 +160,12 @@ public class RopeBridgeRun extends ParcoursRunner{
 
 	@Override
 	public void init() {
-		
+		//nothing to do
 	}
 
 	@Override
 	public boolean isDone() {
-		return line != null && line.getSwitchCounter() > 3;
+		return line != null && line.isDone();
 	}
 
 }

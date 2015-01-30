@@ -11,13 +11,14 @@ import lejos.robotics.navigation.DifferentialPilot;
 
 //TODO Rückwärtsfahren wenn Linie nicht erkannt? --> nur wenn Linie nicht einfach endet
 
-public class LineRunner extends Thread{
+public class LineRunner extends ParcoursRunner{
 
 	final static int angleRotateLine = 20;
 	final static int travelSpeedLine = 20;
 	final static int travelLengthLine = 3;
 	final static int ThresholdAngleForward = 10;
 	final static int ThresholdLine = 40;
+	final static int numberSwitchFinish = 3;
 	
 	public static void main(String[] args) {
 		//wait until it is pressed
@@ -30,9 +31,10 @@ public class LineRunner extends Thread{
 		LightSwitcher.initAngles();
 		
 		LineRunner line = new LineRunner(ligthSensor, pilot);
+		line.init();
 		line.start();
 		
-		while(!touchright.isPressed() && !touchleft.isPressed());
+		while(!line.isDone());
 		line.interrupt();
 		try {
 			line.join();
@@ -62,6 +64,7 @@ public class LineRunner extends Thread{
 		this.pilot = pilot;
 	}
 	
+	@Deprecated
 	public int getSwitchCounter() {
 		if (switchThread != null)
 			return switchThread.getSwitchCounter();
@@ -77,7 +80,6 @@ public class LineRunner extends Thread{
 	
 	public void run(){
 		try{
-			pilot.setTravelSpeed(travelSpeedLine);
 			//int failure = 0; //zählt wie oft er stehen geblieben ist, aber die Linie nicht gesehen hat
 			while(true){
 				switchThread = new LightSwitcher();
@@ -143,6 +145,17 @@ public class LineRunner extends Thread{
 			if(!switchThread.isInterrupted())
 				switchThread.interrupt();
 		}
+	}
+
+	@Override
+	public void init() {
+		pilot.setTravelSpeed(travelSpeedLine);
+	}
+
+	@Override
+	public boolean isDone() {
+		// TODO Auto-generated method stub
+		return switchThread != null && switchThread.getSwitchCounter() >= numberSwitchFinish;
 	}
 	
 }

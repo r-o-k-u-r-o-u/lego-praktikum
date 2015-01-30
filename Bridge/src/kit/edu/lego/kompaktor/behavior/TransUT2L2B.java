@@ -40,23 +40,23 @@ public class TransUT2L2B {
 		LightSwitcher.setAngle(-90);
 		
 		BarcodeDedector bar = new BarcodeDedector(ligthSensor);
+		bar.init();
 		bar.start();
 		
 		pilot.setTravelSpeed(travelSpeedLine);
 		
 		UTurnRunner uturn = new UTurnRunner(touchright, touchleft, sonic, pilot);
+		uturn.init();
 		uturn.start();
 		
 		
-		while (!bar.barcodeFound()) {
+		while (!bar.isDone()) {
 			Thread.yield();
 		}
 		
-		uturn.interrupt();
-		bar.interrupt();
 		try {
-			uturn.join();
-			bar.join();
+			uturn.stop();
+			bar.stop();
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 		}
@@ -73,14 +73,14 @@ public class TransUT2L2B {
 		
 		//LineRunner starten
 		LineRunner line = new LineRunner(ligthSensor, pilot);
+		line.init();
 		line.start();
 		
-		while(line.getSwitchCounter() < 3);
+		while(!line.isDone());
 		
 		//LineRunner stoppen
-		line.interrupt();
 		try {
-			line.join();
+			line.stop();
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 		}
@@ -89,15 +89,15 @@ public class TransUT2L2B {
 		LightSwitcher.setAngle(0);
 		//neuen Barcode scannen
 		bar = new BarcodeDedector(ligthSensor);
+		bar.init();
 		bar.start();
 		//vorwärts fahren
 		pilot.forward();
 		//sobald barcode gefunden wird gestoppt
-		while(!bar.barcodeFound());
+		while(!bar.isDone());
 		pilot.stop();
-		bar.interrupt();
 		try {
-			bar.join();
+			bar.stop();
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 		}
@@ -106,14 +106,15 @@ public class TransUT2L2B {
 		LightSwitcher.setAngle(-90);
 		pilot.travel(20);
 		BridgeRun bridge = new BridgeRun(ligthSensor, pilot);
-		bridge.run();
+		bridge.init();
+		bridge.start();
 		
 		while(!touchright.isPressed() && !touchleft.isPressed()){
 			Thread.yield();
-		};
-		bridge.interrupt();
+		}
+
 		try {
-			bridge.join();
+			bridge.stop();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

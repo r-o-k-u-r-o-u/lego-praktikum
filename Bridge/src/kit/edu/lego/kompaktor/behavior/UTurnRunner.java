@@ -7,7 +7,7 @@ import lejos.nxt.TouchSensor;
 import lejos.nxt.UltrasonicSensor;
 import lejos.robotics.navigation.DifferentialPilot;
 
-public class UTurnRunner extends Thread{
+public class UTurnRunner extends ParcoursRunner{
 	
 	final static int travelSpeedUTurn = 200;
 	final static int travelLengthUTurn = 5;
@@ -25,13 +25,13 @@ public class UTurnRunner extends Thread{
 		while(!touchright.isPressed() && !touchleft.isPressed());
 		LightSwitcher.initAngles();
 		
-		LightSwitcher.setAngle(-90);
+		
 		
 		UTurnRunner uturn = new UTurnRunner(touchright, touchleft, sonic, pilot);
+		uturn.init();
 		uturn.start();
 		
-		boolean test = true;
-		while(test);
+		while(!uturn.isDone());
 
 		uturn.interrupt();
 		try {
@@ -172,6 +172,19 @@ public class UTurnRunner extends Thread{
 		} catch (InterruptedException e){
 			pilot.stop();
 		}
+	}
+
+
+	@Override
+	public void init() {
+		LightSwitcher.setAngle(-90);
+	}
+
+
+	@Override
+	public boolean isDone() {
+		//kann das Ende nicht selbst erkennen
+		return false;
 	}
 	
 }
