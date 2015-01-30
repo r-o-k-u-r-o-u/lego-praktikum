@@ -44,24 +44,30 @@ public abstract class ParcoursRunner extends Thread {
 	public static final ParcoursRunner getNewRunner(LEVEL_NAMES levelName) {
 		switch (levelName) {
 		case LINE_FOLLOW:	return new LineRunner();
-		case U_TURN:		return new UTurnRunner(TOUCH_RIGHT, TOUCH_LEFT, SONIC_SENSOR, DIFF_PILOT);
-		case BRIDGE:		return new BridgeRun(LIGHT_SENSOR, DIFF_PILOT);
+		case U_TURN:		return new UTurnRunner();
+		case BRIDGE:		return new BridgeRun();
 //		case LED_CUBE:		return new ;
 //		case ELEVATOR:		return new ;
 //		case LABYRINTH:		return new ;
 //		case ROLLS: 		return new ;
 //		case DOOR: 			return new ;
-		case ROPE_BRIDGE:	return new RopeBridgeRun(LIGHT_SENSOR, DIFF_PILOT);
-		case TURN_TABLE:	return new TurntableRunner(LIGHT_SENSOR, DIFF_PILOT);
+		case ROPE_BRIDGE:	return new RopeBridgeRun();
+		case TURN_TABLE:	return new TurnTableRunner();
 		default: return null;
 		}
 	}
 	
+	protected TouchSensor touchRight;
+	protected TouchSensor touchLeft;
 	protected LightSensor lightSensor;
+	protected UltrasonicSensor sonicSensor;
 	protected DifferentialPilot pilot;
 	
 	public ParcoursRunner() {
+		touchRight = TOUCH_RIGHT;
+		touchLeft = TOUCH_LEFT;
 		lightSensor = LIGHT_SENSOR;
+		sonicSensor = SONIC_SENSOR;
 		pilot = DIFF_PILOT;
 	}
 	

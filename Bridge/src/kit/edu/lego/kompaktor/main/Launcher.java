@@ -22,7 +22,7 @@ public class Launcher {
 		return launcher;
 	}
 	
-	private final int numMaxProgramms = ParcoursRunner.LEVEL_NAMES.length;
+	private final int numMaxProgramms = ParcoursRunner.LEVEL_NAMES.values().length;
 	
 	private ParcoursRunner currentRunner;
 	
@@ -45,7 +45,7 @@ public class Launcher {
 		while (!selected) {
 			
 			LCD.clear();
-			System.out.println("Level=\n"+ParcoursRunner.LEVEL_NAMES[curr]+"\n\nStart with ENTER.");
+			System.out.println("Level=\n"+ParcoursRunner.LEVEL_NAMES.values()[curr]+"\n\nStart with ENTER.");
 			
 			clicked = Button.waitForAnyPress();
 			
@@ -68,7 +68,7 @@ public class Launcher {
 			Sound.beep();
 			
 			LCD.clear();
-			System.out.println("Selected LEVEL = "+ParcoursRunner.LEVEL_NAMES[curr]);
+			System.out.println("Selected LEVEL = "+ParcoursRunner.LEVEL_NAMES.values()[curr]);
 			// start something else
 			
 			while(!touchright.isPressed() && !touchleft.isPressed());
@@ -85,8 +85,8 @@ public class Launcher {
 		Button.waitForAnyPress();
 	}
 	
-	public ParcoursRunner getSegmentRunnerThread(String levelName, LightSensor lightSensor, DifferentialPilot pilot) {
-		return ParcoursRunner.getNewRunner(levelName, lightSensor, pilot);
+	public ParcoursRunner getSegmentRunnerThread(ParcoursRunner.LEVEL_NAMES levelName) {
+		return ParcoursRunner.getNewRunner(levelName);
 	}
 
 }

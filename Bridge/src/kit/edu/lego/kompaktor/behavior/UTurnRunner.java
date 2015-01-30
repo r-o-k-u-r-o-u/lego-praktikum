@@ -17,17 +17,17 @@ public class UTurnRunner extends ParcoursRunner{
 
 	public static void main(String[] args) {
 		//wait until it is pressed
-		TouchSensor touchright = new TouchSensor(SensorPort.S3);
-		TouchSensor touchleft = new TouchSensor(SensorPort.S2);
+		TouchSensor touchRight = new TouchSensor(SensorPort.S3);
+		TouchSensor touchLeft = new TouchSensor(SensorPort.S2);
 		DifferentialPilot pilot = new DifferentialPilot(3, 17, Motor.C, Motor.B, false);
 		UltrasonicSensor sonic = new UltrasonicSensor(SensorPort.S4);
 		
-		while(!touchright.isPressed() && !touchleft.isPressed());
+		while(!touchRight.isPressed() && !touchLeft.isPressed());
 		LightSwitcher.initAngles();
 		
 		
 		
-		UTurnRunner uturn = new UTurnRunner(touchright, touchleft, sonic, pilot);
+		UTurnRunner uturn = new UTurnRunner(touchRight, touchLeft, sonic, pilot);
 		uturn.init();
 		uturn.start();
 		
@@ -41,20 +41,19 @@ public class UTurnRunner extends ParcoursRunner{
 		}
 		
 		//end
-		while(!touchright.isPressed() && !touchleft.isPressed());
+		while(!touchRight.isPressed() && !touchLeft.isPressed());
 
 	}
-
-	private TouchSensor touchright;
-	private TouchSensor touchleft;
-	private UltrasonicSensor sonic;
-	private DifferentialPilot pilot;
 	
-	public UTurnRunner(TouchSensor touchright, TouchSensor touchleft, UltrasonicSensor sonic, DifferentialPilot pilot) {
-		this.touchright = touchright;
-		this.touchleft = touchleft;
-		this.sonic = sonic;
+	public UTurnRunner(TouchSensor touchRight, TouchSensor touchLeft, UltrasonicSensor sonic, DifferentialPilot pilot) {
+		this.touchRight = touchRight;
+		this.touchLeft = touchLeft;
+		this.sonicSensor = sonic;
 		this.pilot = pilot;
+	}
+	
+	public UTurnRunner() {
+		
 	}
 	
 	
@@ -65,10 +64,10 @@ public class UTurnRunner extends ParcoursRunner{
 			long timeLastCorrect = System.currentTimeMillis();
 			//pilot.setTravelSpeed(travelSpeedUTurn);
 			
-			while(true){ //!touchright.isPressed() && !touchleft.isPressed()
+			while(true){ //!touchRight.isPressed() && !touchLeft.isPressed()
 				if(Thread.interrupted())
 					throw new InterruptedException();
-				int distance = sonic.getDistance();
+				int distance = sonicSensor.getDistance();
 				if(distance >= 255){ //reject errors
 					if((System.currentTimeMillis() - timeLastCorrect) < 350){
 						distance = lastDistance;
@@ -80,16 +79,16 @@ public class UTurnRunner extends ParcoursRunner{
 				double diff = distance - travelDistance;
 				
 				//teste ob Wand vorne ist
-				if (touchright.isPressed() || touchleft.isPressed()){
+				if (touchRight.isPressed() || touchLeft.isPressed()){
 					Thread.sleep(100);
 					int angle = 90;
-					if(touchright.isPressed() && touchleft.isPressed()){
+					if(touchRight.isPressed() && touchLeft.isPressed()){
 						//rechts drehen
 						angle = 90;
-					} else if(touchleft.isPressed()){
+					} else if(touchLeft.isPressed()){
 						//kleine Linksdrehung
 						angle = 100;
-					} else if(touchright.isPressed()){
+					} else if(touchRight.isPressed()){
 						//kleine Rechtsdrehung
 						angle = 30;
 					}
@@ -106,7 +105,7 @@ public class UTurnRunner extends ParcoursRunner{
 						pilot.travel(10);
 						pilot.rotate(-90);
 						//vorwärtsfahren bis Wand an der Seite sehen oder gegen Wand gefahren
-						while(sonic.getDistance() > distanceWallLost && !touchright.isPressed() && !touchleft.isPressed()){
+						while(sonicSensor.getDistance() > distanceWallLost && !touchRight.isPressed() && !touchLeft.isPressed()){
 							if(Thread.interrupted())
 								throw new InterruptedException();
 							
@@ -114,7 +113,7 @@ public class UTurnRunner extends ParcoursRunner{
 							Thread.sleep(100);
 						}
 						//nur ein stück vorwärtsfahren, wenn möglich
-						if(!touchright.isPressed() && !touchleft.isPressed())
+						if(!touchRight.isPressed() && !touchLeft.isPressed())
 							pilot.travel(5);
 						
 					} else {
