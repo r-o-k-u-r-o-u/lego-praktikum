@@ -1,6 +1,5 @@
 package kit.edu.lego.kompaktor.behavior;
 import kit.edu.lego.kompaktor.model.LightSwitcher;
-import kit.edu.lego.kompaktor.threading.ParcoursRunner;
 //import kit.edu.lego.kompaktor.model.LightSwitcher.RotantionDirection;
 import lejos.nxt.LightSensor;
 import lejos.nxt.Motor;

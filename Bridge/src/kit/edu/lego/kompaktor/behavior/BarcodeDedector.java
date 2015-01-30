@@ -1,7 +1,6 @@
 package kit.edu.lego.kompaktor.behavior;
 
 import kit.edu.lego.kompaktor.model.LightSwitcher;
-import kit.edu.lego.kompaktor.threading.ParcoursRunner;
 import lejos.nxt.LightSensor;
 import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;

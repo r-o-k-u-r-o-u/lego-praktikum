@@ -1,4 +1,4 @@
-package kit.edu.lego.kompaktor.threading;
+package kit.edu.lego.kompaktor.behavior;
 
 import lejos.nxt.LightSensor;
 import lejos.robotics.navigation.DifferentialPilot;
