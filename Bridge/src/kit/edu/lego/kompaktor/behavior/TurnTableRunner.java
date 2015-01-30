@@ -34,7 +34,7 @@ public class TurnTableRunner extends ParcoursRunner {
 		
 		turnTable.waitHello();
 		
-		LineRunner line = new LineRunner(ligthSensor, pilot);
+		LineRunner line = new LineRunner();
 		line.start();
 		
 		while (!line.isDone());
@@ -61,7 +61,7 @@ public class TurnTableRunner extends ParcoursRunner {
 		turnTable.waitDone();
 		
 		pilot.travel(15);
-		LineRunner line2 = new LineRunner(ligthSensor, pilot);
+		LineRunner line2 = new LineRunner();
 		line2.start();
 		
 		pilot.travel(20);
@@ -101,7 +101,7 @@ public class TurnTableRunner extends ParcoursRunner {
 		
 		turnTable.waitHello();
 		
-		LineRunner line = new LineRunner(lightSensor, pilot);
+		LineRunner line = new LineRunner();
 		line.start();
 		
 		while (!line.isDone());
@@ -128,7 +128,7 @@ public class TurnTableRunner extends ParcoursRunner {
 		turnTable.waitDone();
 		
 		pilot.travel(15);
-		LineRunner line2 = new LineRunner(lightSensor, pilot);
+		LineRunner line2 = new LineRunner();
 		line2.start();
 		
 		pilot.travel(20);
