@@ -41,13 +41,9 @@ public abstract class ParcoursRunner extends Thread {
 	public abstract boolean isDone();
 	//public abstract void transition(String toLevelName);
 	
-	public void stop(){
+	public void stop() throws InterruptedException{
 		this.interrupt();
-		try {
-			this.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		this.join();
 	}
 	
 }
