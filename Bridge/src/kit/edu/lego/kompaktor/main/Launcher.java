@@ -1,8 +1,7 @@
 package kit.edu.lego.kompaktor.main;
 
-import kit.edu.lego.kompaktor.behavior.LineRunner;
 import kit.edu.lego.kompaktor.behavior.ParcoursRunner;
-import kit.edu.lego.kompaktor.model.LightSwitcher;
+import kit.edu.lego.kompaktor.behavior.ParcoursRunner.LEVEL_NAMES;
 import lejos.nxt.Button;
 import lejos.nxt.LCD;
 //import lejos.nxt.LightSensor;
@@ -34,9 +33,6 @@ public class Launcher {
 
 		TouchSensor touchright = new TouchSensor(SensorPort.S3);
 		TouchSensor touchleft = new TouchSensor(SensorPort.S2);
-//		LightSensor lightSensor = new LightSensor(SensorPort.S1, true);
-//		UltrasonicSensor sonic = new UltrasonicSensor(SensorPort.S4);
-//		DifferentialPilot pilot = new DifferentialPilot(3, 17, Motor.C, Motor.B, true);	
 		
 		boolean selected = false;
 		int curr = 0;
@@ -68,18 +64,24 @@ public class Launcher {
 			Sound.beep();
 			
 			LCD.clear();
-			System.out.println("Selected LEVEL = "+ParcoursRunner.LEVEL_NAMES.values()[curr]);
+			System.out.println("Selected LEVEL = "+LEVEL_NAMES.values()[curr]);
 			// start something else
 			
 			while(!touchright.isPressed() && !touchleft.isPressed());
 			
-			if (curr == 1) {
-				LineRunner run = new LineRunner();
-				LightSwitcher.initAngles();
+			if (LEVEL_NAMES.values()[curr] == LEVEL_NAMES.TURN_TABLE) {
+				ParcoursRunner runner = ParcoursRunner.getNewRunner(LEVEL_NAMES.TURN_TABLE);
+				runner.init();
+				runner.start();
 				
-				while(!touchright.isPressed() && !touchleft.isPressed());
+				while(!runner.isDone());
 				
-				run.start();
+				try {
+					runner.stop();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				
 			}
 		}
 		Button.waitForAnyPress();
