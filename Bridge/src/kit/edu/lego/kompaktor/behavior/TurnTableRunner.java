@@ -2,7 +2,6 @@ package kit.edu.lego.kompaktor.behavior;
 
 import kit.edu.lego.kompaktor.model.LightSwitcher;
 import kit.edu.lego.kompaktor.model.TurnTable;
-import lejos.nxt.LightSensor;
 import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
 import lejos.nxt.TouchSensor;
@@ -20,62 +19,24 @@ public class TurnTableRunner extends ParcoursRunner {
 	
 	public static void main(String[] args) {
 		//wait until it is pressed
-		TouchSensor touchRight = new TouchSensor(SensorPort.S3);
-		TouchSensor touchLeft = new TouchSensor(SensorPort.S2);
+		TouchSensor touchRight = ParcoursRunner.TOUCH_RIGHT;
+		TouchSensor touchLeft = ParcoursRunner.TOUCH_LEFT;
 //		LightSensor ligthSensor = new LightSensor(SensorPort.S1, true);
-		DifferentialPilot pilot = new DifferentialPilot(3, 17, Motor.C, Motor.B, true);
+//		DifferentialPilot pilot = new DifferentialPilot(3, 17, Motor.C, Motor.B, true);
 		
 		
 		while(!touchRight.isPressed() && !touchLeft.isPressed());
 		LightSwitcher.initAngles();
 		
-		TurnTable turnTable = new TurnTable();
-		
-		turnTable.connect();
-		
-		turnTable.waitHello();
-		
-		LineRunner line = new LineRunner();
-		line.start();
-		
-		while (!line.isDone());
-		
-		line.interrupt();
-		
+		TurnTableRunner turn = new TurnTableRunner();
+		turn.init();
+		turn.start();
+		while(!turn.isDone());
 		try {
-			line.join();
+			turn.stop();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		
-		pilot.travel(10);
-		pilot.rotate(-180);
-		pilot.backward();
-		LightSwitcher.setAngle(-90);
-		
-		while(!touchRight.isPressed() && !touchLeft.isPressed());
-		
-		pilot.stop();
-		
-		// when on turntable
-		turnTable.turn();
-		turnTable.waitDone();
-		
-		pilot.travel(15);
-		LineRunner line2 = new LineRunner();
-		line2.start();
-		
-		pilot.travel(20);
-		
-		long time1 = System.currentTimeMillis();
-		
-		while (System.currentTimeMillis() - time1 < 4000) {
-			if (line2.isDone()) {
-				pilot.travel(5);
-			}
-		}
-		
-		turnTable.sendCYA();
 		
 		//end
 		while(!touchRight.isPressed() && !touchLeft.isPressed());
