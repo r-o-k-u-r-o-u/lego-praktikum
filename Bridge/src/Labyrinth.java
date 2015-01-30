@@ -1,5 +1,3 @@
-import java.lang.annotation.ElementType;
-
 import kit.edu.lego.kompaktor.model.LightSwitcher;
 import lejos.nxt.SensorPort;
 import lejos.nxt.Sound;
@@ -9,26 +7,24 @@ import lejos.robotics.RegulatedMotor;
 import lejos.robotics.Touch;
 import lejos.robotics.navigation.DifferentialPilot;
 import lejos.util.PilotProps;
-import lejos.util.TimerListener;
 
 public class Labyrinth {
 
-	private volatile static boolean impact = false, leftImpact = false,
-			rightImpact = false, timerFinished = false, event = false;
-	private static lejos.util.Timer timer = new lejos.util.Timer(0,
-			new TimerListener() {
+	private volatile boolean impact = false, leftImpact = false,
+			rightImpact = false, event = false;
 
-				@Override
-				public void timedOut() {
-					timerFinished = true;
+	private volatile int d, pd;
 
-				}
-			});
-	private volatile static int d, pd;
+	private final int STEER_POWER = 65;
 
-	private static final int TIMER_DELAY = 200, STEER_POWER = 50;
+	public void main(String[] args) {
 
-	public static void main(String[] args) {
+		Labyrinth l = new Labyrinth();
+		l.run();
+
+	}
+
+	public synchronized void run() {
 
 		PilotProps pp = new PilotProps();
 		Touch sensorLeft = new TouchSensor(SensorPort.S3);
@@ -48,8 +44,6 @@ public class Labyrinth {
 		DifferentialPilot pilot = new DifferentialPilot(wheelDiameter,
 				trackWidth, leftMotor, rightMotor, reverse);
 
-		timer.setDelay(2000);
-
 		LightSwitcher.initAngles();
 		LightSwitcher.setAngle(-90);
 
@@ -59,14 +53,16 @@ public class Labyrinth {
 			public void run() {
 
 				while (true) {
-					if (sensorLeft.isPressed() && sensorRight.isPressed()) {
-						impact = true;
-						event = true;
+					synchronized (sensorLeft) {
+						if (sensorLeft.isPressed() && sensorRight.isPressed()) {
+							impact = true;
+							event = true;
+						}
 					}
 
 					if (sensorLeft.isPressed() && !impact) {
 						event = true;
-						for (int i = 0; i < 200; i++) {
+						for (int i = 0; i < 50; i++) {
 							if (sensorRight.isPressed()) {
 								impact = true;
 							}
@@ -76,7 +72,7 @@ public class Labyrinth {
 					}
 					if (sensorRight.isPressed() && !impact) {
 						event = true;
-						for (int i = 0; i < 200; i++) {
+						for (int i = 0; i < 50; i++) {
 							if (sensorLeft.isPressed()) {
 								impact = true;
 							}
@@ -106,7 +102,7 @@ public class Labyrinth {
 					if (i == 0)
 						pd = d;
 					i++;
-					if (i == STEER_POWER) {
+					if (i == 25) {
 						i = 0;
 					}
 				}
@@ -170,7 +166,7 @@ public class Labyrinth {
 			} else if (d > 35) {
 
 				Sound.beep();
-				pilot.travel(7);
+				pilot.travel(5);
 				pilot.rotate(-90);
 				double angle = 30;
 				int impacts = 0;
@@ -187,21 +183,24 @@ public class Labyrinth {
 						event = false;
 					}
 				}
-				pilot.travel(25);
+				pilot.travel(15);
 				pilot.rotate(-90);
 
-				while (d > 10 && !impact()) {
-					pilot.steer(-25);
+				while (d > 10) {
+					if (Math.abs(d - pd) < 6) {
+						pilot.steer(-20);
+					}
+
 					if (impact()) {
-						break;
+						pilot.travel(-5);
+						pilot.rotate(20);
+						leftImpact = false;
+						impact = false;
+						rightImpact = false;
+						event = false;
 					}
 
 				}
-				leftImpact = false;
-				impact = false;
-				rightImpact = false;
-				event = false;
-
 			} else {
 				drive(pilot);
 			}
@@ -209,7 +208,7 @@ public class Labyrinth {
 
 	}
 
-	private static void drive(DifferentialPilot pilot) {
+	private synchronized void drive(DifferentialPilot pilot) {
 
 		if (d < 12 && d > 8) { // If not too close or too
 								// far to the // //
@@ -218,28 +217,38 @@ public class Labyrinth {
 			double diff = d - pd;
 			pilot.steer(-diff / (double) d * STEER_POWER);
 
-		} else if (d <= 30 && d >= 12) { // If a bit far move
+		} else if (d <= 35 && d >= 12) { // If a bit far move
 											// // to the wall
 
 			double diff = d - pd;
-			pilot.steer(-8);
+			while (Math.abs(d - pd) > 2 && !impact()) {
+				pilot.steer(-diff / (double) d * STEER_POWER);
+			}
+			if (d - pd > 0) {
+				while (Math.abs(d - pd) <= 4 && !impact() && d <= 35 && d >= 12) {
+					pilot.steer(-30);
+				}
+				if (d > 35) {
+					return;
+				}
+				while (Math.abs(d - pd) >= 0 && !impact() && d <= 35 && d >= 12) {
+					pilot.steer(30);
+				}
+			} else {
+				while (d - pd >= 0 && !impact() && d <= 35 && d >= 12) {
+					pilot.steer(-30);
+				}
+
+			}
 
 		} else if (d <= 8) {
 
-			double diff = d - pd;
 			pilot.steer(4);
-		} else if (d <= 35 && d > 30) { // If too far move
-										// toward the wall
-
-			double diff = d - pd;
-			pilot.steer(-8);
-
 		}
-		timerFinished = false;
 
 	}
 
-	private static boolean impact() {
+	private boolean impact() {
 		return impact || rightImpact || leftImpact;
 	}
 
