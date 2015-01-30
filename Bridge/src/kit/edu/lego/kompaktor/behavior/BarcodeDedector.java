@@ -1,9 +1,6 @@
 package kit.edu.lego.kompaktor.behavior;
 
 import kit.edu.lego.kompaktor.model.LightSwitcher;
-import lejos.nxt.LightSensor;
-import lejos.nxt.Motor;
-import lejos.nxt.SensorPort;
 import lejos.nxt.Sound;
 import lejos.nxt.TouchSensor;
 import lejos.robotics.navigation.DifferentialPilot;
@@ -16,10 +13,10 @@ public class BarcodeDedector extends ParcoursRunner{
 	final static int ThresholdLine = LineRunner.ThresholdLine;
 	
 	public static void main(String[] args) {
-		TouchSensor touchright = new TouchSensor(SensorPort.S3);
-		TouchSensor touchleft = new TouchSensor(SensorPort.S2);
-		LightSensor ligthSensor = new LightSensor(SensorPort.S1, true);
-		DifferentialPilot pilot = new DifferentialPilot(3, 17, Motor.C, Motor.B, true);
+		TouchSensor touchright = ParcoursRunner.TOUCH_RIGHT;
+		TouchSensor touchleft = ParcoursRunner.TOUCH_LEFT;
+//		LightSensor ligthSensor = new LightSensor(SensorPort.S1, true);
+		DifferentialPilot pilot = ParcoursRunner.DIFF_PILOT;
 		
 		while(!touchright.isPressed() && !touchleft.isPressed());
 		LightSwitcher.initAngles();
@@ -29,7 +26,7 @@ public class BarcodeDedector extends ParcoursRunner{
 		pilot.setTravelSpeed(travelSpeedBarcode);
 		pilot.forward();
 		
-		BarcodeDedector barcode = new BarcodeDedector(ligthSensor);
+		BarcodeDedector barcode = new BarcodeDedector();
 		barcode.start();
 		
 		while(!barcode.isDone());
@@ -49,17 +46,9 @@ public class BarcodeDedector extends ParcoursRunner{
 	
 	
 	
-	private LightSensor ligthSensor;
 	private int lines;
 	private boolean testLine;
 	private long lastTime;
-	
-	public BarcodeDedector(LightSensor ligthSensor){
-		this.ligthSensor = ligthSensor;
-		lines = 0;
-		testLine = true;
-		lastTime = System.currentTimeMillis();
-	}
 	
 	@Deprecated
 	public boolean barcodeFound(){
@@ -77,13 +66,13 @@ public class BarcodeDedector extends ParcoursRunner{
 					lastTime = System.currentTimeMillis();
 				}
 				if(testLine){
-					if(ligthSensor.readValue() >= ThresholdLine){
+					if(lightSensor.readValue() >= ThresholdLine){
 						lines++;
 						testLine = false;
 						lastTime = System.currentTimeMillis();
 					}
 				} else {
-					if(ligthSensor.readValue() < ThresholdLine){
+					if(lightSensor.readValue() < ThresholdLine){
 						testLine = true;
 						lastTime = System.currentTimeMillis();
 					}

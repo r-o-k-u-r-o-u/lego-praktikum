@@ -16,13 +16,15 @@ public class TurnTableRunner extends ParcoursRunner {
 	final static int travelLengthLine = 3;
 	final static int ThresholdAngleForward = 10;
 	final static int ThresholdLine = 42;
+	private boolean isDone = false;
 	
 	public static void main(String[] args) {
 		//wait until it is pressed
 		TouchSensor touchRight = new TouchSensor(SensorPort.S3);
 		TouchSensor touchLeft = new TouchSensor(SensorPort.S2);
-		LightSensor ligthSensor = new LightSensor(SensorPort.S1, true);
+//		LightSensor ligthSensor = new LightSensor(SensorPort.S1, true);
 		DifferentialPilot pilot = new DifferentialPilot(3, 17, Motor.C, Motor.B, true);
+		
 		
 		while(!touchRight.isPressed() && !touchLeft.isPressed());
 		LightSwitcher.initAngles();
@@ -33,7 +35,7 @@ public class TurnTableRunner extends ParcoursRunner {
 		
 		turnTable.waitHello();
 		
-		LineRunner line = new LineRunner(ligthSensor, pilot);
+		LineRunner line = new LineRunner();
 		line.start();
 		
 		while (!line.isDone());
@@ -60,7 +62,7 @@ public class TurnTableRunner extends ParcoursRunner {
 		turnTable.waitDone();
 		
 		pilot.travel(15);
-		LineRunner line2 = new LineRunner(ligthSensor, pilot);
+		LineRunner line2 = new LineRunner();
 		line2.start();
 		
 		pilot.travel(20);
@@ -89,77 +91,105 @@ public class TurnTableRunner extends ParcoursRunner {
 		
 	}
 	
-	public void run(){
-	
-		while(!touchRight.isPressed() && !touchLeft.isPressed());
-		LightSwitcher.initAngles();
-		
-		TurnTable turnTable = new TurnTable();
-		
-		turnTable.connect();
-		
-		turnTable.waitHello();
-		
-		LineRunner line = new LineRunner(lightSensor, pilot);
-		line.start();
-		
-		while (!line.isDone());
-		
-		line.interrupt();
-		
-		try {
-			line.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		
-		pilot.travel(10);
-		pilot.rotate(-180);
-		pilot.backward();
-		LightSwitcher.setAngle(-90);
-		
-		while(!touchRight.isPressed() && !touchLeft.isPressed());
-		
-		pilot.stop();
-		
-		// when on turntable
-		turnTable.turn();
-		turnTable.waitDone();
-		
-		pilot.travel(15);
-		LineRunner line2 = new LineRunner(lightSensor, pilot);
-		line2.start();
-		
-		pilot.travel(20);
-		
-		long time1 = System.currentTimeMillis();
-		
-		while (System.currentTimeMillis() - time1 < 4000) {
-			if (line2.isDone()) {
-				pilot.travel(5);
-			}
-		}
-		
-		turnTable.sendCYA();
-		
-		//end
-		while(!touchRight.isPressed() && !touchLeft.isPressed());
-	}
+	public void run() {
 
+		try {
+
+			TurnTable turnTable = new TurnTable();
+
+			// connect to turntable
+			while (!turnTable.connect()) {
+				if (Thread.interrupted())
+					throw new InterruptedException();
+				
+				Thread.sleep(500);
+			}
+			
+			// wait until its my turn
+			while (!turnTable.waitHello()) {
+				if (Thread.interrupted())
+					throw new InterruptedException();
+				
+				Thread.sleep(200);
+			}
+			
+
+			LineRunner line = new LineRunner();
+			line.start();
+
+			// while rotation not finished
+			while (!line.isDone()) {
+				if (Thread.interrupted())
+					throw new InterruptedException();
+				
+				Thread.sleep(10);
+			}
+
+			line.stop();
+
+			pilot.travel(10);
+			pilot.rotate(-180);
+			pilot.backward();
+			LightSwitcher.setAngle(-90);
+
+			while (!touchRight.isPressed() && !touchLeft.isPressed()) {
+				if (Thread.interrupted())
+					throw new InterruptedException();
+			}
+
+			pilot.stop();
+
+			while (!turnTable.turn()) {
+				if (Thread.interrupted())
+					throw new InterruptedException();
+				
+				Thread.sleep(200);
+			}
+			
+			
+			// when on turntable wait until done
+			while (!turnTable.waitDone()) {
+				if (Thread.interrupted())
+					throw new InterruptedException();
+				
+				Thread.sleep(200);
+			}
+			
+
+			pilot.travel(15);
+			LineRunner line2 = new LineRunner();
+			line2.start();
+
+			pilot.travel(20);
+
+			long time1 = System.currentTimeMillis();
+
+			while (System.currentTimeMillis() - time1 < 4000) {
+				if (line2.isDone()) {
+					pilot.travel(5);
+				}
+
+				if (Thread.interrupted())
+					throw new InterruptedException();
+			}
+
+			turnTable.sendCYA();
+
+			isDone = true;
+
+		} catch (InterruptedException ie) {
+			System.out.println("TurnTable runner exception.");
+		}
+	}
 
 
 	@Override
 	public void init() {
-		// TODO Auto-generated method stub
-		
 	}
-
-
 
 	@Override
 	public boolean isDone() {
-		// TODO Auto-generated method stub
-		return false;
+		return isDone;
 	}
 	
 }

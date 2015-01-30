@@ -1,11 +1,7 @@
 package kit.edu.lego.kompaktor.behavior;
 import kit.edu.lego.kompaktor.model.LightSwitcher;
 import kit.edu.lego.kompaktor.model.LightSwitcher.RotantionDirection;
-import lejos.nxt.LightSensor;
-import lejos.nxt.Motor;
-import lejos.nxt.SensorPort;
 import lejos.nxt.TouchSensor;
-import lejos.robotics.navigation.DifferentialPilot;
 
 
 public class BridgeRun extends ParcoursRunner {
@@ -15,16 +11,16 @@ public class BridgeRun extends ParcoursRunner {
 	
 	public static void main(String[] args) {
 		//wait until it is pressed
-		TouchSensor touchright = new TouchSensor(SensorPort.S3);
-		TouchSensor touchleft = new TouchSensor(SensorPort.S2);
-		LightSensor lightSensor = new LightSensor(SensorPort.S1, true);
-		DifferentialPilot pilot = new DifferentialPilot(3, 17, Motor.C, Motor.B, true);
+		TouchSensor touchright = ParcoursRunner.TOUCH_RIGHT;
+		TouchSensor touchleft = ParcoursRunner.TOUCH_LEFT;
+//		LightSensor lightSensor = new LightSensor(SensorPort.S1, true);
+//		DifferentialPilot pilot = ParcoursRunner.DIFF_PILOT;
 				
 		
 		while(!touchright.isPressed() && !touchleft.isPressed());
 		LightSwitcher.initAngles();
 		
-		BridgeRun bridge = new BridgeRun(lightSensor, pilot);
+		BridgeRun bridge = new BridgeRun();
 		bridge.init();
 		bridge.start();
 		while(!touchright.isPressed() && !touchleft.isPressed());
@@ -47,15 +43,6 @@ public class BridgeRun extends ParcoursRunner {
 	
 	public boolean isLightSwitcherActive(){
 		return switchThread.isAlive();
-	}
-	
-	public BridgeRun(LightSensor lightSensor, DifferentialPilot pilot){
-		this.lightSensor = lightSensor;
-		this.pilot = pilot;
-	}
-	
-	public BridgeRun() {
-		
 	}
 	
 	public void run(){
