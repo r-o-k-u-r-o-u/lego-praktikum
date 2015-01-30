@@ -15,7 +15,7 @@ public class TurnTableRunner extends ParcoursRunner {
 	final static int travelSpeedLine = 20;
 	final static int travelLengthLine = 3;
 	final static int ThresholdAngleForward = 10;
-	final static int ThresholdLine = 42;
+	final static int ThresholdLine = LineRunner.ThresholdLine;
 	private boolean isDone = false;
 	
 	public static void main(String[] args) {
@@ -82,14 +82,7 @@ public class TurnTableRunner extends ParcoursRunner {
 
 	}
 	
-	public TurnTableRunner(LightSensor ligthSensor, DifferentialPilot pilot) {
-		this.lightSensor = ligthSensor;
-		this.pilot = pilot;
-	}
-	
-	public TurnTableRunner() {
-		
-	}
+	private LineRunner line = null;
 	
 	public void run() {
 
@@ -114,7 +107,7 @@ public class TurnTableRunner extends ParcoursRunner {
 			}
 			
 
-			LineRunner line = new LineRunner();
+			line = new LineRunner();
 			line.start();
 
 			// while rotation not finished
@@ -157,15 +150,15 @@ public class TurnTableRunner extends ParcoursRunner {
 			
 
 			pilot.travel(15);
-			LineRunner line2 = new LineRunner();
-			line2.start();
+			line = new LineRunner();
+			line.start();
 
 			pilot.travel(20);
 
 			long time1 = System.currentTimeMillis();
 
 			while (System.currentTimeMillis() - time1 < 4000) {
-				if (line2.isDone()) {
+				if (line.isDone()) {
 					pilot.travel(5);
 				}
 
@@ -176,9 +169,18 @@ public class TurnTableRunner extends ParcoursRunner {
 			turnTable.sendCYA();
 
 			isDone = true;
+			
+			line.join();
 
 		} catch (InterruptedException ie) {
-			System.out.println("TurnTable runner exception.");
+			//System.out.println("TurnTable runner exception.");
+			if(line != null && line.isAlive())
+				try {
+					line.stop();
+				} catch (InterruptedException e) {
+					System.out.println("TurnTable runner exception.");
+				}
+			pilot.stop();
 		}
 	}
 
@@ -189,7 +191,7 @@ public class TurnTableRunner extends ParcoursRunner {
 
 	@Override
 	public boolean isDone() {
-		return isDone;
+		return isDone && line.isDone();
 	}
 	
 }
