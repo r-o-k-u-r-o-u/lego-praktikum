@@ -25,23 +25,29 @@ public class TurnTable {
 		}
 	}
 
-	public static void main(String[] args) {
-		TurnTable turnTable = new TurnTable();
-		turnTable.use();
-	}
-
 	private DataOutputStream dataOutputStream;
 	private DataInputStream dataInputStream;
 
 	public boolean connect() {
 		String deviceName = "TurnTable";
 		RemoteDevice device = lookupDevice(deviceName);
-		BTConnection connection = Bluetooth.connect(device);
-
-		dataOutputStream = connection.openDataOutputStream();
-		dataInputStream = connection.openDataInputStream();
-
-		return true;
+		
+		// check if device was found
+		if (device != null) {
+			BTConnection connection = Bluetooth.connect(device);
+			
+			// check if connection was established
+			if (connection != null) {
+				dataOutputStream = connection.openDataOutputStream();
+				dataInputStream = connection.openDataInputStream();
+				
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
 	}
 	
 	public boolean waitHello() {
@@ -82,46 +88,6 @@ public class TurnTable {
 		return true;
 	}
 	
-	public void use() {
-    
-		String deviceName = "TurnTable";
-		RemoteDevice device = lookupDevice(deviceName);
-		BTConnection connection = Bluetooth.connect(device);
-		try {
-			dataOutputStream = connection.openDataOutputStream();
-			dataInputStream = connection.openDataInputStream();
-
-			TurnTableCommand command = receiveCommand();
-			assertCommand(command, TurnTableCommand.HELLO);
-
-			// drive forward
-
-			sendCommand(TurnTableCommand.TURN);
-
-			command = receiveCommand();
-			assertCommand(command, TurnTableCommand.DONE);
-
-			// drive backward
-
-			sendCommand(TurnTableCommand.CYA);
-
-			
-		} catch (IOException e) {
-			System.out.println("IOException");
-		} finally {
-			if (connection != null) {
-				connection.close();
-			}
-		}
-
-//		try {
-//			Thread.sleep(10000);
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-	}
-
 	public RemoteDevice lookupDevice(String deviceName) {
 		RemoteDevice device = Bluetooth.getKnownDevice(deviceName);
 		if (device == null) {
@@ -140,7 +106,7 @@ public class TurnTable {
 		}
 	}
 
-	public TurnTableCommand receiveCommand() throws IOException {
+	private TurnTableCommand receiveCommand() throws IOException {
 		int commandOrdinal = dataInputStream.readInt();
 		TurnTableCommand command = TurnTableCommand
 				.getByOrdinal(commandOrdinal);
