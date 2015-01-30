@@ -1,5 +1,3 @@
-import java.lang.annotation.ElementType;
-
 import kit.edu.lego.kompaktor.model.LightSwitcher;
 import lejos.nxt.SensorPort;
 import lejos.nxt.Sound;
@@ -9,26 +7,24 @@ import lejos.robotics.RegulatedMotor;
 import lejos.robotics.Touch;
 import lejos.robotics.navigation.DifferentialPilot;
 import lejos.util.PilotProps;
-import lejos.util.TimerListener;
 
 public class Labyrinth {
 
-	private volatile static boolean impact = false, leftImpact = false,
-			rightImpact = false, timerFinished = false, event = false;
-	private static lejos.util.Timer timer = new lejos.util.Timer(0,
-			new TimerListener() {
+	private volatile boolean impact = false, leftImpact = false,
+			rightImpact = false, event = false;
 
-				@Override
-				public void timedOut() {
-					timerFinished = true;
+	private volatile int d, pd;
 
-				}
-			});
-	private volatile static int d, pd;
+	private final int STEER_POWER = 65;
 
-	private static final int STEER_POWER = 65;
+	public void main(String[] args) {
 
-	public static void main(String[] args) {
+		Labyrinth l = new Labyrinth();
+		l.run();
+
+	}
+
+	public synchronized void run() {
 
 		PilotProps pp = new PilotProps();
 		Touch sensorLeft = new TouchSensor(SensorPort.S3);
@@ -48,8 +44,6 @@ public class Labyrinth {
 		DifferentialPilot pilot = new DifferentialPilot(wheelDiameter,
 				trackWidth, leftMotor, rightMotor, reverse);
 
-		timer.setDelay(2000);
-
 		LightSwitcher.initAngles();
 		LightSwitcher.setAngle(-90);
 
@@ -59,9 +53,11 @@ public class Labyrinth {
 			public void run() {
 
 				while (true) {
-					if (sensorLeft.isPressed() && sensorRight.isPressed()) {
-						impact = true;
-						event = true;
+					synchronized (sensorLeft) {
+						if (sensorLeft.isPressed() && sensorRight.isPressed()) {
+							impact = true;
+							event = true;
+						}
 					}
 
 					if (sensorLeft.isPressed() && !impact) {
@@ -212,7 +208,7 @@ public class Labyrinth {
 
 	}
 
-	private static void drive(DifferentialPilot pilot) {
+	private synchronized void drive(DifferentialPilot pilot) {
 
 		if (d < 12 && d > 8) { // If not too close or too
 								// far to the // //
@@ -242,19 +238,17 @@ public class Labyrinth {
 				while (d - pd >= 0 && !impact() && d <= 35 && d >= 12) {
 					pilot.steer(-30);
 				}
-				
+
 			}
 
 		} else if (d <= 8) {
 
-			double diff = d - pd;
 			pilot.steer(4);
 		}
-		timerFinished = false;
 
 	}
 
-	private static boolean impact() {
+	private boolean impact() {
 		return impact || rightImpact || leftImpact;
 	}
 

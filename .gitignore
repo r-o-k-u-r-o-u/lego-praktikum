@@ -12,6 +12,8 @@ tmp/
 local.properties
 .settings/
 .loadpath
+*.nxj
+*.nxd
 
 # Eclipse Core
 .project
