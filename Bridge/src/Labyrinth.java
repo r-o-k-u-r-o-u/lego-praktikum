@@ -22,7 +22,7 @@ public class Labyrinth {
 
 				}
 			});
-	private volatile static int d , pd;
+	private volatile static int d, pd;
 
 	private static final int TIMER_DELAY = 200, STEER_POWER = 50;
 
@@ -45,8 +45,6 @@ public class Labyrinth {
 				PilotProps.KEY_TRACKWIDTH, "17.0"));
 		DifferentialPilot pilot = new DifferentialPilot(wheelDiameter,
 				trackWidth, leftMotor, rightMotor, reverse);
-
-		timer.setDelay(2000);
 
 		LightSwitcher.initAngles();
 		LightSwitcher.setAngle(-90);
@@ -79,7 +77,6 @@ public class Labyrinth {
 								impact = true;
 							}
 						}
-						Sound.beep();
 						if (!impact)
 							rightImpact = true;
 					}
@@ -104,7 +101,7 @@ public class Labyrinth {
 					if (i == 0)
 						pd = d;
 					i++;
-					if (i == STEER_POWER) {
+					if (i == 75) {
 						i = 0;
 					}
 				}
@@ -115,7 +112,7 @@ public class Labyrinth {
 		collisionControl.start();
 		distanceMeasure.start();
 		d = 100;
-		
+
 		while (d > 40) {
 
 			pilot.forward();
@@ -140,7 +137,7 @@ public class Labyrinth {
 			if (impact) {
 				pilot.stop();
 				pilot.travel(-7);
-				Sound.playTone(800, 100);
+				Sound.beep();
 				pilot.rotate(90);
 				impact = false;
 				rightImpact = false;
@@ -150,6 +147,7 @@ public class Labyrinth {
 
 				pilot.travel(-4);
 				pilot.rotate(30);
+				Sound.beep();
 				impact = false;
 				rightImpact = false;
 				leftImpact = false;
@@ -159,6 +157,7 @@ public class Labyrinth {
 
 				pilot.stop();
 				pilot.travel(-5);
+				Sound.beep();
 				pilot.rotate(50);
 				impact = false;
 				rightImpact = false;
@@ -167,17 +166,14 @@ public class Labyrinth {
 
 			} else if (d > 35) {
 
-				Sound.beep();
+				Sound.playTone(800, 2000);
 				pilot.travel(7);
 				pilot.rotate(-90);
 				double angle = 30;
-				int impacts = 0;
-				while (d > 40) {
+				while (d > 35) {
 					pilot.forward();
 					if (impact()) {
 						pilot.travel(-7);
-						if (impacts > 0)
-							angle *= 1.1;
 						pilot.rotate(angle);
 						leftImpact = false;
 						impact = false;
@@ -188,11 +184,8 @@ public class Labyrinth {
 				pilot.travel(25);
 				pilot.rotate(-90);
 
-				while (d > 10 && !impact()) {
+				while (d > 10 && !impact() || Math.abs(d - pd) > 4) {
 					pilot.steer(-25);
-					if (impact()) {
-						break;
-					}
 
 				}
 				leftImpact = false;
@@ -204,54 +197,6 @@ public class Labyrinth {
 				drive(pilot);
 			}
 		}
-
-	}
-
-	private static void wait(DifferentialPilot pilot) {
-		while (pilot.isMoving())
-			;
-
-	}
-
-	private static void drive1(DifferentialPilot pilot) {
-
-		if (d < 15 && d > 7) { // If not too close or too
-								// far to the // //
-								// wall, move // forward
-
-			pilot.forward();
-
-		} else if (d <= 30 && d >= 15) { // If a bit far move
-											// // to the wall
-
-			timer.setDelay(TIMER_DELAY);
-			timer.start();
-			while (!timerFinished && !impact() && d < 40) {
-
-				pilot.steer(-10);
-			}
-
-		} else if (d <= 7) {
-			// If a bit too close, move away from the wall
-			timer.setDelay(TIMER_DELAY);
-			timer.start();
-			while (!timerFinished && !impact() && d < 40) {
-
-				pilot.steer(10);
-			}
-		} else if (d <= 40 && d > 30) { // If too far move
-										// toward the wall
-
-			timer.setDelay(TIMER_DELAY);
-			timer.start();
-			while (!timerFinished && !impact() && d < 40) {
-
-				pilot.steer(-20);
-
-			}
-
-		}
-		timerFinished = false;
 
 	}
 
@@ -268,43 +213,20 @@ public class Labyrinth {
 											// // to the wall
 
 			/*
-			 * timer.setDelay(TIMER_DELAY); timer.start(); while (!timerFinished
-			 * && !impact() && d < 40) {
-			 * 
-			 * double diff = d - pd; pilot.steer(diff / (double) d * STEER_POWER
-			 * - 5);
-			 * 
-			 * }
+			 * double diff = d - pd; if (diff > 2 || diff < -2) {
+			 * pilot.steer(-diff / (double) d * STEER_POWER); } else {
+			 * pilot.steer(-5, 10, false); while (!impact() && d - pd != diff) {
+			 * pilot.steer(5, 10); } }
 			 */
+
+			pilot.steer(-10, 20, false);
 			double diff = d - pd;
-			pilot.steer(-8);
+			pilot.steer(-diff / (double) d * STEER_POWER);
 
 		} else if (d <= 8) {
-			// If a bit too close, move away from the wall
-			/*
-			 * timer.setDelay(TIMER_DELAY); timer.start(); while (!timerFinished
-			 * && !impact() && d < 40) {
-			 * 
-			 * double diff = d - pd; pilot.steer(diff / (double) d * STEER_POWER
-			 * + 5);
-			 * 
-			 * }
-			 */
-			double diff = d - pd;
 			pilot.steer(4);
 		} else if (d <= 35 && d > 30) { // If too far move
 										// toward the wall
-
-			/*
-			 * timer.setDelay(TIMER_DELAY); timer.start(); while (!timerFinished
-			 * && !impact() && d < 40) {
-			 * 
-			 * double diff = d - pd; pilot.steer(diff / (double) d * STEER_POWER
-			 * - 5);
-			 * 
-			 * }
-			 */
-			double diff = d - pd;
 			pilot.steer(-8);
 
 		}
