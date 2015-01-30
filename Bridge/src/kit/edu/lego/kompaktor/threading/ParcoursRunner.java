@@ -39,9 +39,17 @@ public abstract class ParcoursRunner extends Thread {
 	}
 	
 	public abstract void run();
-	public abstract void stop();
 	public abstract void init();
-	public abstract boolean ischFäddisch();
+	public abstract boolean isDone();
 	//public abstract void transition(String toLevelName);
+	
+	public void stop(){
+		this.interrupt();
+		try {
+			this.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 	
 }
