@@ -20,7 +20,6 @@ public class Labyrinth extends ParcoursRunner {
 
 	private volatile DifferentialPilot pilot;
 	private TouchSensor sensorLeft, sensorRight;
-	private Object lock;
 
 	public static void main(String[] args) {
 
@@ -50,7 +49,6 @@ public class Labyrinth extends ParcoursRunner {
 		pilot = new DifferentialPilot(wheelDiameter, trackWidth, leftMotor,
 				rightMotor, reverse);
 
-		lock = new Object();
 
 		// Detect when the robot hit a wall
 		Thread collisionControl = new Thread(new Runnable() {
@@ -131,9 +129,11 @@ public class Labyrinth extends ParcoursRunner {
 			} else if (d > 35) {
 
 				Sound.beep();
-				pilot.travel(5);
+				pilot.travel(8);
+				if(d < 35)
+					continue;
 				pilot.rotate(-90);
-				while (d > 40) {
+				while (d > 35) {
 					pilot.forward();
 					if (impact()) {
 						resolveCollision(30, 50);
@@ -241,9 +241,7 @@ public class Labyrinth extends ParcoursRunner {
 
 	@Override
 	public boolean isDone() {
-		synchronized (this) {
-			return done;
-		}
+		return false;
 	}
 
 }
