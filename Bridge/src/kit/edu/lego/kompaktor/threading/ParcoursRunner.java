@@ -1,13 +1,12 @@
 package kit.edu.lego.kompaktor.threading;
 
-import kit.edu.lego.kompaktor.behavior.*;
 import lejos.nxt.LightSensor;
 import lejos.robotics.navigation.DifferentialPilot;
 
 public abstract class ParcoursRunner extends Thread {
 	
-	public static final String LINEFOLLOW = "LineFollow";
-	public static final String UTURN = "UTurn";
+	public static final String LINE_FOLLOW = "LineFollow";
+	public static final String U_TURN = "UTurn";
 	public static final String LABYRINTH = "Labyrinth";
 	public static final String BRIDGE = "Bridge";
 	public static final String ELEVATOR = "Elevator";
@@ -15,9 +14,9 @@ public abstract class ParcoursRunner extends Thread {
 	public static final String ROPE_BRIDGE = "RopeBridge";
 	public static final String ROLLS = "Rolls";
 	
-	public static final String[] LEVELNAMES = {
-		UTURN,
-		LINEFOLLOW,
+	public static final String[] LEVEL_NAMES = {
+		U_TURN,
+		LINE_FOLLOW,
 		BRIDGE,
 		LED_CUBE,
 		ELEVATOR,
@@ -26,7 +25,7 @@ public abstract class ParcoursRunner extends Thread {
 		ROPE_BRIDGE};
 	
 	public static final String[] getLevelNames() {
-		return LEVELNAMES;
+		return LEVEL_NAMES;
 	}
 	
 	public static final ParcoursRunner getNewRunner(String levelName, LightSensor lightSensor, DifferentialPilot pilot) {
@@ -40,6 +39,7 @@ public abstract class ParcoursRunner extends Thread {
 	public abstract void run();
 	public abstract void stop();
 	public abstract void init();
+	public abstract boolean ischFäddisch();
 	//public abstract void transition(String toLevelName);
 	
 }
