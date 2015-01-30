@@ -51,7 +51,7 @@ public abstract class ParcoursRunner extends Thread {
 //		case ELEVATOR:		return new ;
 //		case LABYRINTH:		return new ;
 //		case ROLLS: 		return new ;
-//		case DOOR: 			return new ;
+		case DOOR: 			return new GateRunner();
 		case ROPE_BRIDGE:	return new RopeBridgeRun();
 		case TURN_TABLE:	return new TurnTableRunner();
 		default: return null;

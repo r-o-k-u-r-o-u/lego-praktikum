@@ -1,145 +1,105 @@
 package kit.edu.lego.kompaktor.behavior;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 
-import javax.bluetooth.RemoteDevice;
-
-import lejos.nxt.Button;
+import kit.edu.lego.kompaktor.model.Gate;
 import lejos.nxt.Sound;
-import lejos.nxt.comm.BTConnection;
-import lejos.nxt.comm.Bluetooth;
 
 public class GateRunner extends ParcoursRunner {
 
-	private RemoteDevice remoteDevice;
-	private BTConnection connection;
-	private DataInputStream inputStream;
-	private DataOutputStream outputStream;
-	private boolean success;
 	private LabyrinthRunner driver;
-	ParcoursRunner lineRunner;
+	ParcoursRunner ropeBridgeRunner;
 
 	public static void main(String[] args) {
 
 		GateRunner gr = new GateRunner();
-		gr.run();
+		
+		gr.init();
+		gr.start();
+		
+		while (!gr.isDone());
 
+		try {
+			gr.stop();
+		} catch (InterruptedException e) {
+			System.out.println("Exception occured in GateRunner.");
+		}
 	}
 
 	public GateRunner() {
 		driver = new LabyrinthRunner();
 	}
 
-	/**
-	 * Tries to connect to the gate
-	 * 
-	 * @return true if connection is establish, false otherwise
-	 */
-	public boolean connectionToGateSuccessful() {
-
-		remoteDevice = new RemoteDevice("TestName", "00165304779A", 0);
-		if (remoteDevice == null) {
-			System.out.println("Found no remote device");
-			return false;
-		}
-
-		connection = Bluetooth.connect(remoteDevice);
-		if (connection == null) {
-			System.out.println("Connection is null");
-			return false;
-		}
-
-		inputStream = connection.openDataInputStream();
-		outputStream = connection.openDataOutputStream();
-
-		return (inputStream != null && outputStream != null);
-	}
-
-	/**
-	 * Puts the thread to sleep.
-	 * 
-	 * @param millis
-	 *            how long the thread sleeps
-	 */
-	private static void sleep(int millis) {
-		try {
-			Thread.sleep(millis);
-		} catch (InterruptedException e) {
-			// ignore
-		}
-	}
-
 	@Override
 	public void run() {
 
-		driver.drive(14, 30);
-
-		Sound.beepSequenceUp();
-		System.out.println("Calling gate");
-		// Wait for connection
-		while (!this.connectionToGateSuccessful()) {
-			sleep(50);
-		}
-		System.out.println("Connected to the gate.");
-
-		// Now the gate opens & a timer of 20 seconds starts
-		// in this time the robot has to drive through & send a "I passed"
-		// signal
-		this.sleep(1000);
-		driver.straight(80);
-		driver.rotate(-160);
-		driver.straight(-20);
-
-		// Robot drives through the gate
-		System.out.println("Driving through.");
-
-		// Tell the gate that robot passed, send a "I passed" signal
 		try {
-			this.outputStream.writeBoolean(true);
-			this.outputStream.flush();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		System.out.println("Sent passing signal");
 
-		// Wait for anwswer from gate
-		try {
-			this.success = this.inputStream.readBoolean();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			Gate gate = new Gate();
 
-		if (this.success) {
-			// success, gate received the "I passed" signal
-			// gate is closed & connection is closed
-		} else {
-			// no success, connection timeouted before gate recieved anything
-			// from robot
-			// gate is closed & connection is closed -> robot has to try again
-		}
+			System.out.println("Sending passed");
+			
+			driver.drive(14, 30);
+			
+			Sound.beepSequenceUp();
+			System.out.println("Calling gate");
+			// Wait for connection
+			while (!gate.connect()) {
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			System.out.println("Connected to the gate.");
 
-		System.out.println("Recieved: " + this.success);
+			// Now the gate opens & a timer of 20 seconds starts
+			// in this time the robot has to drive through & send a "I passed"
+			// signal
+			Thread.sleep(1000);
+			driver.straight(80);
+			driver.rotate(-160);
+			driver.straight(-20);
 
-		lineRunner = new RopeBridgeRun();
-		lineRunner.start();
+			// Robot drives through the gate
+			System.out.println("Driving through.");
+
+			// Tell the gate that robot passed, send a "I passed" signal
+//			while (!gate.sendPassed()) {
+//				try {
+//					Thread.sleep(100);
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
+//				}
+//			}
 		
+			System.out.println("success="+gate.sendPassed());
+			
 
+			
+			driver.stop();
+			ropeBridgeRunner = new RopeBridgeRun();
+			ropeBridgeRunner.init();
+			ropeBridgeRunner.start();
+			
+			ropeBridgeRunner.join();
+			
+		} catch (InterruptedException ie) {
+
+			if (ropeBridgeRunner != null) {
+				ropeBridgeRunner.interrupt();
+			}
+
+		}
 	}
 
 	@Override
 	public void init() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public boolean isDone() {
 
-		return lineRunner.isDone();
+		return ropeBridgeRunner != null && ropeBridgeRunner.isDone();
 	}
 
 }

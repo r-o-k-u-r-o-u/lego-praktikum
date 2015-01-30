@@ -2,10 +2,7 @@ package kit.edu.lego.kompaktor.behavior;
 
 import kit.edu.lego.kompaktor.model.LightSwitcher;
 import kit.edu.lego.kompaktor.model.TurnTable;
-import lejos.nxt.Motor;
-import lejos.nxt.SensorPort;
 import lejos.nxt.TouchSensor;
-import lejos.robotics.navigation.DifferentialPilot;
 
 
 public class TurnTableRunner extends ParcoursRunner {
@@ -112,6 +109,7 @@ public class TurnTableRunner extends ParcoursRunner {
 
 			pilot.travel(15);
 			line = new LineRunner();
+			line.init();
 			line.start();
 
 			pilot.travel(20);

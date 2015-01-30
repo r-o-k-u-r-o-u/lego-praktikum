@@ -2,6 +2,7 @@ package kit.edu.lego.kompaktor.main;
 
 import kit.edu.lego.kompaktor.behavior.ParcoursRunner;
 import kit.edu.lego.kompaktor.behavior.ParcoursRunner.LEVEL_NAMES;
+import kit.edu.lego.kompaktor.model.LightSwitcher;
 import lejos.nxt.Button;
 import lejos.nxt.LCD;
 //import lejos.nxt.LightSensor;
@@ -23,7 +24,7 @@ public class Launcher {
 	
 	private final int numMaxProgramms = ParcoursRunner.LEVEL_NAMES.values().length;
 	
-//	private ParcoursRunner currentRunner;
+	private ParcoursRunner currentRunner;
 	
 	public static void main(String[] args) {	
 		getLauncher();	
@@ -33,6 +34,7 @@ public class Launcher {
 
 		TouchSensor touchright = new TouchSensor(SensorPort.S3);
 		TouchSensor touchleft = new TouchSensor(SensorPort.S2);
+		
 		
 		boolean selected = false;
 		int curr = 0;
@@ -62,27 +64,28 @@ public class Launcher {
 			Sound.buzz();
 		} else {
 			Sound.beep();
-			
+
+			LightSwitcher.initAngles();
+
 			LCD.clear();
-			System.out.println("Selected LEVEL = "+LEVEL_NAMES.values()[curr]);
+			System.out.println("Selected LEVEL = " + LEVEL_NAMES.values()[curr]);
 			// start something else
-			
-			while(!touchright.isPressed() && !touchleft.isPressed());
-			
-			if (LEVEL_NAMES.values()[curr] == LEVEL_NAMES.TURN_TABLE) {
-				ParcoursRunner runner = ParcoursRunner.getNewRunner(LEVEL_NAMES.TURN_TABLE);
-				runner.init();
-				runner.start();
-				
-				while(!runner.isDone());
-				
-				try {
-					runner.stop();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				
+
+			while (!touchright.isPressed() && !touchleft.isPressed());
+
+			currentRunner = ParcoursRunner.getNewRunner(LEVEL_NAMES.values()[curr]);
+
+			currentRunner.init();
+			currentRunner.start();
+
+			while (!currentRunner.isDone());
+
+			try {
+				currentRunner.stop();
+			} catch (InterruptedException e) {
+				System.out.println("Launcher error.");
 			}
+			
 		}
 		Button.waitForAnyPress();
 	}
