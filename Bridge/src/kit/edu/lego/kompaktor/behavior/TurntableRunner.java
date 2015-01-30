@@ -19,7 +19,7 @@ import lejos.robotics.navigation.DifferentialPilot;
 
 //TODO Rückwärtsfahren wenn Linie nicht erkannt? --> nur wenn Linie nicht einfach endet
 
-public class TurntableRunner extends Thread{
+public class TurntableRunner extends ParcoursRunner {
 
 	final static int angleRotateLine = 20;
 	final static int travelSpeedLine = 20;
