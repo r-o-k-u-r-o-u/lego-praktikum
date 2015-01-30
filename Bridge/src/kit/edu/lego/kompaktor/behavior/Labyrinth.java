@@ -1,3 +1,5 @@
+package kit.edu.lego.kompaktor.behavior;
+
 import kit.edu.lego.kompaktor.model.LightSwitcher;
 import lejos.nxt.SensorPort;
 import lejos.nxt.Sound;
