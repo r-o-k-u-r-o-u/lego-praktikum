@@ -20,7 +20,8 @@ public abstract class ParcoursRunner extends Thread {
 		ROLLS("Rolls"),
 		ROPE_BRIDGE("RopeBridge"),
 		TURN_TABLE("TurnTable"),
-		DOOR("door");
+		DOOR("door"),
+		SEESAW("Seesaw");
 		
 	    private final String text;
 
@@ -49,11 +50,12 @@ public abstract class ParcoursRunner extends Thread {
 		case BRIDGE:		return new BridgeRun();
 //		case LED_CUBE:		return new ;
 //		case ELEVATOR:		return new ;
-//		case LABYRINTH:		return new ;
+		case LABYRINTH:		return new LabyrinthRunner();
 //		case ROLLS: 		return new ;
 		case DOOR: 			return new GateRunner();
 		case ROPE_BRIDGE:	return new RopeBridgeRun();
 		case TURN_TABLE:	return new TurnTableRunner();
+		case SEESAW:        return new SeesawRunner();
 		default: return null;
 		}
 	}

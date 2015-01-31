@@ -5,13 +5,9 @@ import kit.edu.lego.kompaktor.behavior.ParcoursRunner.LEVEL_NAMES;
 import kit.edu.lego.kompaktor.model.LightSwitcher;
 import lejos.nxt.Button;
 import lejos.nxt.LCD;
-//import lejos.nxt.LightSensor;
-//import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
 import lejos.nxt.Sound;
 import lejos.nxt.TouchSensor;
-//import lejos.nxt.UltrasonicSensor;
-//import lejos.robotics.navigation.DifferentialPilot;
 
 public class Launcher {
 	
@@ -35,7 +31,6 @@ public class Launcher {
 		TouchSensor touchright = new TouchSensor(SensorPort.S3);
 		TouchSensor touchleft = new TouchSensor(SensorPort.S2);
 		
-		
 		boolean selected = false;
 		int curr = 0;
 		int clicked = 0;
@@ -43,12 +38,12 @@ public class Launcher {
 		while (!selected) {
 			
 			LCD.clear();
-			System.out.println("Level=\n"+ParcoursRunner.LEVEL_NAMES.values()[curr]+"\n\nStart with ENTER.");
+			System.out.println("Level=\n\n"+ParcoursRunner.LEVEL_NAMES.values()[curr]+"\n\nStart with ENTER");
 			
 			clicked = Button.waitForAnyPress();
 			
 			if (clicked == Button.ID_LEFT) {
-				curr = (curr==numMaxProgramms-1) ? 0 : curr+1;
+				curr = (curr==0) ? numMaxProgramms-1 : curr-1;
 			} else if (clicked == Button.ID_RIGHT) {
 				curr = (curr+1) % numMaxProgramms;
 			} else if (clicked == Button.ID_ENTER) {
@@ -68,7 +63,7 @@ public class Launcher {
 			LightSwitcher.initAngles();
 
 			LCD.clear();
-			System.out.println("Selected LEVEL = " + LEVEL_NAMES.values()[curr]);
+			System.out.println("Selected LEVEL =\n\n" + LEVEL_NAMES.values()[curr] + "\n\nUse BUMPER to start");
 			// start something else
 
 			while (!touchright.isPressed() && !touchleft.isPressed());

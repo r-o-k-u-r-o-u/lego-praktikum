@@ -53,6 +53,7 @@ public class Gate {
 			dataOutputStream.flush();
 			
 		} catch (IOException e) {
+			log("Could not send passed.");
 			success = false;
 			return false;
 		}
@@ -60,7 +61,7 @@ public class Gate {
 		try {
 			success = dataInputStream.readBoolean();
 		} catch (IOException e) {
-//			log("Could not read boolean");
+			log("Could not read boolean");
 			success = false;
 		}
 		

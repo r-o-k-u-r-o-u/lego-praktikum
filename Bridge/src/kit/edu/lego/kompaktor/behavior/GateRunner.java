@@ -35,8 +35,6 @@ public class GateRunner extends ParcoursRunner {
 		try {
 
 			Gate gate = new Gate();
-
-			System.out.println("Sending passed");
 			
 			driver.drive(14, 30);
 			
@@ -64,22 +62,37 @@ public class GateRunner extends ParcoursRunner {
 			System.out.println("Driving through.");
 
 			// Tell the gate that robot passed, send a "I passed" signal
-//			while (!gate.sendPassed()) {
-//				try {
-//					Thread.sleep(100);
-//				} catch (InterruptedException e) {
-//					e.printStackTrace();
-//				}
-//			}
-		
-			System.out.println("success="+gate.sendPassed());
 			
-
+			long time = System.currentTimeMillis();
+			boolean through = false;
+			while (!through) {
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				through = gate.sendPassed();
+				
+				if (System.currentTimeMillis() - time > 3000) {
+					break;
+				}
+			}
+		
+			System.out.println("success="+through);
 			
 			driver.stop();
+			
 			ropeBridgeRunner = new RopeBridgeRun();
 			ropeBridgeRunner.init();
 			ropeBridgeRunner.start();
+			
+			while (ropeBridgeRunner.isDone()) {
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
 			
 			ropeBridgeRunner.join();
 			
