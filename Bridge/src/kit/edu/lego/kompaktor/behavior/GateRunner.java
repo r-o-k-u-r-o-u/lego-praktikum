@@ -81,6 +81,7 @@ public class GateRunner extends ParcoursRunner {
 			System.out.println("success="+through);
 			
 			driver.stop();
+			driver.join();
 			
 			ropeBridgeRunner = new RopeBridgeRun();
 			ropeBridgeRunner.init();
