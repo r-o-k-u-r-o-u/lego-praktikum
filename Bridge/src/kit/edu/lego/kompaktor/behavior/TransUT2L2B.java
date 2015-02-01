@@ -1,10 +1,6 @@
 package kit.edu.lego.kompaktor.behavior;
+import kit.edu.lego.kompaktor.model.Kompaktor;
 import kit.edu.lego.kompaktor.model.LightSwitcher;
-import lejos.nxt.LightSensor;
-import lejos.nxt.Motor;
-import lejos.nxt.TouchSensor;
-import lejos.robotics.navigation.DifferentialPilot;
-
 
 /**
  * Orientiert sich immer rechts
@@ -23,12 +19,12 @@ public class TransUT2L2B {
 	
 	public static void main(String[] args) {
 		//wait until it is pressed
-		TouchSensor touchright = ParcoursRunner.TOUCH_RIGHT;
-		TouchSensor touchleft = ParcoursRunner.TOUCH_LEFT;
-		LightSensor ligthSensor = ParcoursRunner.LIGHT_SENSOR;
-		DifferentialPilot pilot = ParcoursRunner.DIFF_PILOT_REVERSE;
+//		TouchSensor touchright = ParcoursRunner.TOUCH_RIGHT;
+//		TouchSensor touchleft = ParcoursRunner.TOUCH_LEFT;
+//		LightSensor ligthSensor = ParcoursRunner.LIGHT_SENSOR;
+//		DifferentialPilot pilot = ParcoursRunner.DIFF_PILOT_REVERSE;
 			
-		while(!touchright.isPressed() && !touchleft.isPressed());
+		while(!Kompaktor.isTouched());
 		// Stelle sicher dass der Lichtsensor nicht im Weg ist.
 		LightSwitcher.initAngles();
 		LightSwitcher.setAngle(-90);
@@ -37,7 +33,7 @@ public class TransUT2L2B {
 		bar.init();
 		bar.start();
 		
-		pilot.setTravelSpeed(travelSpeedLine);
+		Kompaktor.DIFF_PILOT.setTravelSpeed(travelSpeedLine);
 		
 		UTurnRunner uturn = new UTurnRunner();
 		uturn.init();
@@ -56,14 +52,14 @@ public class TransUT2L2B {
 		}
 		
 		//drehen
-		pilot.rotate(180);
+		Kompaktor.DIFF_PILOT.rotate(180);
 		//Sensor ausrichten
 		LightSwitcher.setAngle(0);
 		//vorwärts fahren bis Linie erkannt
-		pilot = new DifferentialPilot(3, 17, Motor.C, Motor.B, true);
-		pilot.forward();
-		while(ligthSensor.readValue() < LineRunner.ThresholdLine);
-		pilot.stop();
+		//Kompaktor.DIFF_PILOT = new DifferentialPilot(3, 17, Motor.C, Motor.B, true);
+		Kompaktor.DIFF_PILOT_REVERSE.forward();
+		while(Kompaktor.LIGHT_SENSOR.readValue() < LineRunner.ThresholdLine);
+		Kompaktor.DIFF_PILOT_REVERSE.stop();
 		
 		//LineRunner starten
 		LineRunner line = new LineRunner();
@@ -86,10 +82,10 @@ public class TransUT2L2B {
 		bar.init();
 		bar.start();
 		//vorwärts fahren
-		pilot.forward();
+		Kompaktor.DIFF_PILOT_REVERSE.forward();
 		//sobald barcode gefunden wird gestoppt
 		while(!bar.isDone());
-		pilot.stop();
+		Kompaktor.DIFF_PILOT_REVERSE.stop();
 		try {
 			bar.stop();
 		} catch (InterruptedException e1) {
@@ -98,12 +94,12 @@ public class TransUT2L2B {
 		
 		//etwas vorfahren (auf die Brücke
 		LightSwitcher.setAngle(-90);
-		pilot.travel(20);
+		Kompaktor.DIFF_PILOT_REVERSE.travel(20);
 		BridgeRun bridge = new BridgeRun();
 		bridge.init();
 		bridge.start();
 		
-		while(!touchright.isPressed() && !touchleft.isPressed()){
+		while(!Kompaktor.isTouched()){
 			Thread.yield();
 		}
 
@@ -114,7 +110,7 @@ public class TransUT2L2B {
 		}
 		
 		//end
-		while(!touchright.isPressed() && !touchleft.isPressed());
+		while(!Kompaktor.isTouched());
 	}
 
 }

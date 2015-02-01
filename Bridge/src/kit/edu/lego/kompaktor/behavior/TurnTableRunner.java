@@ -1,9 +1,7 @@
 package kit.edu.lego.kompaktor.behavior;
 
-import kit.edu.lego.kompaktor.model.LightSwitcher;
+import kit.edu.lego.kompaktor.model.Kompaktor;
 import kit.edu.lego.kompaktor.model.TurnTable;
-import lejos.nxt.TouchSensor;
-
 
 public class TurnTableRunner extends ParcoursRunner {
 
@@ -16,27 +14,28 @@ public class TurnTableRunner extends ParcoursRunner {
 	
 	public static void main(String[] args) {
 		//wait until it is pressed
-		TouchSensor touchRight = ParcoursRunner.TOUCH_RIGHT;
-		TouchSensor touchLeft = ParcoursRunner.TOUCH_LEFT;
+//		TouchSensor touchRight = ParcoursRunner.TOUCH_RIGHT;
+//		TouchSensor touchLeft = ParcoursRunner.TOUCH_LEFT;
 //		LightSensor ligthSensor = new LightSensor(SensorPort.S1, true);
 //		DifferentialPilot pilot = new DifferentialPilot(3, 17, Motor.C, Motor.B, true);
 		
+		while(!Kompaktor.isTouched());
+//		LightSwitcher.initAngles();
 		
-		while(!touchRight.isPressed() && !touchLeft.isPressed());
-		LightSwitcher.initAngles();
+		Kompaktor.startLevel(LEVEL_NAMES.TURN_TABLE);
 		
-		TurnTableRunner turn = new TurnTableRunner();
-		turn.init();
-		turn.start();
-		while(!turn.isDone());
-		try {
-			turn.stop();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+//		TurnTableRunner turn = new TurnTableRunner();
+//		turn.init();
+//		turn.start();
+//		while(!turn.isDone());
+//		try {
+//			turn.stop();
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
 		
 		//end
-		while(!touchRight.isPressed() && !touchLeft.isPressed());
+		while(!Kompaktor.isTouched());
 
 	}
 	
@@ -78,17 +77,18 @@ public class TurnTableRunner extends ParcoursRunner {
 
 			line.stop();
 
-			pilot.travel(10);
-			pilot.rotate(-180);
-			pilot.backward();
-			LightSwitcher.setAngle(-90);
-
-			while (!touchRight.isPressed() && !touchLeft.isPressed()) {
+			Kompaktor.DIFF_PILOT.travel(10);
+			Kompaktor.DIFF_PILOT.rotate(-180);
+			Kompaktor.DIFF_PILOT.backward();
+//			LightSwitcher.setAngle(-90);
+			Kompaktor.parkArm();
+			
+			while (!Kompaktor.isTouched()) {
 				if (Thread.interrupted())
 					throw new InterruptedException();
 			}
 
-			pilot.stop();
+			Kompaktor.DIFF_PILOT.stop();
 
 			while (!turnTable.turn()) {
 				if (Thread.interrupted())
@@ -107,18 +107,18 @@ public class TurnTableRunner extends ParcoursRunner {
 			}
 			
 
-			pilot.travel(15);
+			Kompaktor.DIFF_PILOT.travel(15);
 			line = new LineRunner();
 			line.init();
 			line.start();
 
-			pilot.travel(20);
+			Kompaktor.DIFF_PILOT.travel(20);
 
 			long time1 = System.currentTimeMillis();
 
 			while (System.currentTimeMillis() - time1 < 4000) {
 				if (line.isDone()) {
-					pilot.travel(5);
+					Kompaktor.DIFF_PILOT.travel(5);
 				}
 
 				if (Thread.interrupted())
@@ -139,7 +139,7 @@ public class TurnTableRunner extends ParcoursRunner {
 				} catch (InterruptedException e) {
 					System.out.println("TurnTable runner exception.");
 				}
-			pilot.stop();
+			Kompaktor.DIFF_PILOT.stop();
 		}
 	}
 

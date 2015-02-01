@@ -1,6 +1,6 @@
 package kit.edu.lego.kompaktor.behavior;
+import kit.edu.lego.kompaktor.model.Kompaktor;
 import kit.edu.lego.kompaktor.model.LightSwitcher;
-import lejos.nxt.TouchSensor;
 
 
 public class LineRunner extends ParcoursRunner {
@@ -14,33 +14,35 @@ public class LineRunner extends ParcoursRunner {
 	
 	public static void main(String[] args) {
 		//wait until it is pressed
-		TouchSensor touchright = ParcoursRunner.TOUCH_RIGHT;
-		TouchSensor touchleft = ParcoursRunner.TOUCH_LEFT;
+//		TouchSensor touchright = ParcoursRunner.TOUCH_RIGHT;
+//		TouchSensor touchleft = ParcoursRunner.TOUCH_LEFT;
 //		LightSensor ligthSensor = new LightSensor(SensorPort.S1, true);
 //		DifferentialPilot pilot = new DifferentialPilot(3, 17, Motor.C, Motor.B, true);
 		
-		while(!touchright.isPressed() && !touchleft.isPressed());
-		LightSwitcher.initAngles();
+		while(!Kompaktor.isTouched());
+//		LightSwitcher.initAngles();
 		
-		LineRunner line = new LineRunner();
-		line.init();
-		line.start();
+		Kompaktor.startLevel(LEVEL_NAMES.LINE_FOLLOW);
 		
-		while(!line.isDone());
-		try {
-			line.stop();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+//		LineRunner line = new LineRunner();
+//		line.init();
+//		line.start();
+//		
+//		while(!line.isDone());
+//		try {
+//			line.stop();
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
 		
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			Thread.sleep(1000);
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
 		
 		//end
-		while(!touchright.isPressed() && !touchleft.isPressed());
+		while(!Kompaktor.isTouched());
 
 	}
 
@@ -73,7 +75,7 @@ public class LineRunner extends ParcoursRunner {
 				switchThread.startSweep();
 				
 				
-				while(lightSensor.readValue() < ThresholdLine){
+				while(Kompaktor.LIGHT_SENSOR.readValue() < ThresholdLine){
 					if(Thread.interrupted())
 						throw new InterruptedException();
 					Thread.yield();	
@@ -112,17 +114,17 @@ public class LineRunner extends ParcoursRunner {
 					if(Thread.interrupted())
 						throw new InterruptedException();
 					if(straight){
-						pilot.travel(travelLengthLine, true);
+						Kompaktor.DIFF_PILOT.travel(travelLengthLine, true);
 					} else {
 						//pilot.arcForward(-converted / 4.0);
-						pilot.travelArc(-converted / 2.5, travelLengthLine, true);
+						Kompaktor.DIFF_PILOT.travelArc(-converted / 2.5, travelLengthLine, true);
 						//pilot.rotate((LightSwitcher.getRegulatedCurrentAngleDouble() < 0) ? -angleRotateBridge : angleRotateBridge);
 					}
 					Thread.yield();
-				} while(lightSensor.readValue() >= ThresholdLine);
+				} while(Kompaktor.LIGHT_SENSOR.readValue() >= ThresholdLine);
 			} 
 		} catch (InterruptedException e){
-			pilot.stop();
+			Kompaktor.DIFF_PILOT.stop();
 			if(!switchThread.isInterrupted())
 				switchThread.interrupt();
 		}
@@ -130,7 +132,7 @@ public class LineRunner extends ParcoursRunner {
 
 	@Override
 	public void init() {
-		pilot.setTravelSpeed(travelSpeedLine);
+		Kompaktor.DIFF_PILOT.setTravelSpeed(travelSpeedLine);
 	}
 
 	@Override

@@ -11,7 +11,7 @@ import lejos.nxt.NXTRegulatedMotor;
  * @author Florian
  *
  */
-public class LightSwitcher extends Thread{
+public class LightSwitcher extends Thread {
 	
 	final static int rotationAngle = 200;
 	final static int rotationSpeedFull = 400;

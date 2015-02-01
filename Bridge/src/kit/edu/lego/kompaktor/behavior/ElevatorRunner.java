@@ -1,9 +1,8 @@
 package kit.edu.lego.kompaktor.behavior;
+import kit.edu.lego.kompaktor.model.Kompaktor;
 import kit.edu.lego.kompaktor.model.LightSwitcher;
 import kit.edu.lego.kompaktor.model.LightSwitcher.RotantionDirection;
 import lejos.nxt.Sound;
-import lejos.nxt.TouchSensor;
-import lejos.robotics.Color;
 
 
 public class ElevatorRunner extends ParcoursRunner {
@@ -14,19 +13,18 @@ public class ElevatorRunner extends ParcoursRunner {
 	
 	public static void main(String[] args) {
 		//wait until it is pressed
-		TouchSensor touchright = ParcoursRunner.TOUCH_RIGHT;
-		TouchSensor touchleft = ParcoursRunner.TOUCH_LEFT;
+//		TouchSensor touchright = ParcoursRunner.TOUCH_RIGHT;
+//		TouchSensor touchleft = ParcoursRunner.TOUCH_LEFT;
 //		LightSensor lightSensor = new LightSensor(SensorPort.S1, true);
 //		DifferentialPilot pilot = ParcoursRunner.DIFF_PILOT;
 				
+		while(!Kompaktor.isTouched());
+//		LightSwitcher.initAngles();
 		
-		while(!touchright.isPressed() && !touchleft.isPressed());
-		LightSwitcher.initAngles();
+		ParcoursRunner bridge = Kompaktor.startLevel(LEVEL_NAMES.ELEVATOR, true);
 		
-		BridgeRun bridge = new BridgeRun();
-		bridge.init();
-		bridge.start();
-		while(!touchright.isPressed() && !touchleft.isPressed());
+		while(!Kompaktor.isTouched());
+		
 		try {
 			bridge.stop();
 		} catch (InterruptedException e) {
@@ -34,7 +32,7 @@ public class ElevatorRunner extends ParcoursRunner {
 		}
 
 		//end
-		while(!touchright.isPressed() && !touchleft.isPressed());
+		while(!Kompaktor.isTouched());
 	}
 	
 	private LightSwitcher switchThread;
@@ -53,20 +51,20 @@ public class ElevatorRunner extends ParcoursRunner {
 			while(true){
 				switchThread = new LightSwitcher();
 				switchThread.start();
-				pilot.stop();
-				pilot.forward();
-				while(lightSensor.readValue() > thresholdWood){
+				Kompaktor.DIFF_PILOT.stop();
+				Kompaktor.DIFF_PILOT.forward();
+				while(Kompaktor.LIGHT_SENSOR.readValue() > thresholdWood){
 					if(Thread.interrupted())
 						throw new InterruptedException();
 					Thread.yield();	
 				}
 				switchThread.interrupt();
-				pilot.stop();
+				Kompaktor.DIFF_PILOT.stop();
 				switchThread.join();
 				
 				boolean ledFound = false;
 				
-				while(lightSensor.readValue() <= thresholdWood) {
+				while(Kompaktor.LIGHT_SENSOR.readValue() <= thresholdWood) {
 					if(Thread.interrupted())
 						throw new InterruptedException();
 					double value = LightSwitcher.getRegulatedCurrentAngleDouble();
@@ -82,16 +80,16 @@ public class ElevatorRunner extends ParcoursRunner {
 					if(value < 0)
 						converted *= -1;
 					//System.out.println("value: " + value + "conv: " + converted);
-					pilot.arcForward(converted / 10.0);
+					Kompaktor.DIFF_PILOT.arcForward(converted / 10.0);
 					//pilot.rotate((LightSwitcher.getRegulatedCurrentAngleDouble() < 0) ? -angleRotateBridge : angleRotateBridge);
 					
-					if (lightSensor.readValue() >= 40) {
+					if (Kompaktor.LIGHT_SENSOR.readValue() >= 40) {
 						Sound.beep();
 						ledFound = true;
 						break;
 					}
 					
-					if (ledFound && lightSensor.readValue() >= thresholdWood && lightSensor.readValue() < 40) {
+					if (ledFound && Kompaktor.LIGHT_SENSOR.readValue() >= thresholdWood && Kompaktor.LIGHT_SENSOR.readValue() < 40) {
 						break;
 					}
 				}
@@ -102,7 +100,7 @@ public class ElevatorRunner extends ParcoursRunner {
 				
 			}
 		} catch (InterruptedException e){
-			pilot.stop();
+			Kompaktor.DIFF_PILOT.stop();
 			if(!switchThread.isInterrupted())
 				switchThread.interrupt();
 		}
@@ -110,7 +108,7 @@ public class ElevatorRunner extends ParcoursRunner {
 
 	@Override
 	public void init() {
-		pilot.setTravelSpeed(travelSpeedBridge);
+		Kompaktor.DIFF_PILOT.setTravelSpeed(travelSpeedBridge);
 	}
 
 	@Override

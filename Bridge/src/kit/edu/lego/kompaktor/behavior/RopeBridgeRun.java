@@ -1,21 +1,18 @@
 package kit.edu.lego.kompaktor.behavior;
-import kit.edu.lego.kompaktor.model.LightSwitcher;
+import kit.edu.lego.kompaktor.model.Kompaktor;
 import kit.edu.lego.kompaktor.model.LightSwitcher.RotantionDirection;
-import lejos.nxt.TouchSensor;
-
 
 public class RopeBridgeRun extends ParcoursRunner{
 
 	public static void main(String[] args) {
 		//wait until it is pressed
-		TouchSensor touchright = ParcoursRunner.TOUCH_RIGHT;
-		TouchSensor touchleft = ParcoursRunner.TOUCH_LEFT;
+//		TouchSensor touchright = ParcoursRunner.TOUCH_RIGHT;
+//		TouchSensor touchleft = ParcoursRunner.TOUCH_LEFT;
 //		LightSensor lightSensor = new LightSensor(SensorPort.S1, true);
 //		DifferentialPilot pilot = new DifferentialPilot(3, 17, Motor.C, Motor.B, true);
 				
-		
-		while(!touchright.isPressed() && !touchleft.isPressed());
-		LightSwitcher.initAngles();
+		while(!Kompaktor.isTouched());
+//		LightSwitcher.initAngles();
 		
 		RopeBridgeRun ropeBridge = new RopeBridgeRun();
 		ropeBridge.init();
@@ -28,7 +25,7 @@ public class RopeBridgeRun extends ParcoursRunner{
 		}
 		
 		//end
-		while(!touchright.isPressed() && !touchleft.isPressed());
+		while(!Kompaktor.isTouched());
 
 	}
 
@@ -53,7 +50,7 @@ public class RopeBridgeRun extends ParcoursRunner{
 			before.stop();
 			
 			//ein Stück vorfahren damit auf Brücke
-			pilot.travel(28);
+			Kompaktor.DIFF_PILOT.travel(28);
 			
 			bridge = new BridgeRun();
 			bridge.init();
@@ -66,7 +63,7 @@ public class RopeBridgeRun extends ParcoursRunner{
 			while(!find){
 				if(Thread.interrupted())
 					throw new InterruptedException();
-				value = lightSensor.readValue();
+				value = Kompaktor.LIGHT_SENSOR.readValue();
 				if(value < 40 && value > 30){
 					lastMillis = System.currentTimeMillis();
 				}
@@ -81,47 +78,49 @@ public class RopeBridgeRun extends ParcoursRunner{
 			
 			//drehen damit an linke seite schaut
 			//pilot.rotate(bridge.getLastHole() == RotantionDirection.Left ? 50 : -50);
-			LightSwitcher.setAngle(0);
-			double rotSpeedDefalut = pilot.getRotateSpeed();
-			pilot.setRotateSpeed(30);
-			if(bridge.getLastHole() == RotantionDirection.Left)
-				pilot.rotateRight();
-			else 
-				pilot.rotateLeft();
-			//bis Holz erkennt
-			int valueWood = lightSensor.readValue();
+//			LightSwitcher.setAngle(0);
+			Kompaktor.stretchArm();
 			
-			double speed = pilot.getRotateSpeed();
+			double rotSpeedDefalut = Kompaktor.DIFF_PILOT.getRotateSpeed();
+			Kompaktor.DIFF_PILOT.setRotateSpeed(30);
+			if(bridge.getLastHole() == RotantionDirection.Left)
+				Kompaktor.DIFF_PILOT.rotateRight();
+			else 
+				Kompaktor.DIFF_PILOT.rotateLeft();
+			//bis Holz erkennt
+			int valueWood = Kompaktor.LIGHT_SENSOR.readValue();
+			
+			double speed = Kompaktor.DIFF_PILOT.getRotateSpeed();
 			int timeFor70Deg_ms = (int) (70 * 1000 / speed);
 			
 			long begin = System.currentTimeMillis();
 			while(valueWood < 30 && (System.currentTimeMillis() - begin) < timeFor70Deg_ms){
 				if(Thread.interrupted())
 					throw new InterruptedException();
-				valueWood = lightSensor.readValue();
+				valueWood = Kompaktor.LIGHT_SENSOR.readValue();
 			}
-			pilot.stop();
+			Kompaktor.DIFF_PILOT.stop();
 			//30 Grad zurück drehen
-			pilot.setRotateSpeed(rotSpeedDefalut);
+			Kompaktor.DIFF_PILOT.setRotateSpeed(rotSpeedDefalut);
 			if(bridge.getLastHole() == RotantionDirection.Left)
-				pilot.rotate(30);
+				Kompaktor.DIFF_PILOT.rotate(30);
 			else
-				pilot.rotate(-30);
+				Kompaktor.DIFF_PILOT.rotate(-30);
 			//suchen nach der linie
-			pilot.setRotateSpeed(15);
+			Kompaktor.DIFF_PILOT.setRotateSpeed(15);
 			if(bridge.getLastHole() == RotantionDirection.Left)
-				pilot.rotateLeft();
+				Kompaktor.DIFF_PILOT.rotateLeft();
 			else
-				pilot.rotateRight();
-			while(lightSensor.readValue() < 35){
+				Kompaktor.DIFF_PILOT.rotateRight();
+			while(Kompaktor.LIGHT_SENSOR.readValue() < 35){
 				if(Thread.interrupted())
 					throw new InterruptedException();
 			}
-			pilot.stop();
+			Kompaktor.DIFF_PILOT.stop();
 			//noch ein wenig nach vorn, damit von der Hängebrücke herunter
-			pilot.travel(20);
+			Kompaktor.DIFF_PILOT.travel(20);
 			//Ausgang wiederherstellen
-			pilot.setRotateSpeed(rotSpeedDefalut);
+			Kompaktor.DIFF_PILOT.setRotateSpeed(rotSpeedDefalut);
 			
 			line = new LineRunner();
 			line.start();
@@ -134,7 +133,7 @@ public class RopeBridgeRun extends ParcoursRunner{
 				bridge.interrupt();
 			if(line != null && line.isAlive())
 				line.interrupt();
-			pilot.stop();
+			Kompaktor.DIFF_PILOT.stop();
 			try{
 				if(before != null)
 					before.join();

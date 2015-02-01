@@ -1,8 +1,7 @@
 package kit.edu.lego.kompaktor.behavior;
+import kit.edu.lego.kompaktor.model.Kompaktor;
 import kit.edu.lego.kompaktor.model.LightSwitcher;
 import kit.edu.lego.kompaktor.model.LightSwitcher.RotantionDirection;
-import lejos.nxt.TouchSensor;
-
 
 public class BridgeRun extends ParcoursRunner {
 	
@@ -11,20 +10,19 @@ public class BridgeRun extends ParcoursRunner {
 	static int thresholdWood = 30;
 	
 	public static void main(String[] args) {
+		
 		//wait until it is pressed
-		TouchSensor touchright = ParcoursRunner.TOUCH_RIGHT;
-		TouchSensor touchleft = ParcoursRunner.TOUCH_LEFT;
+//		TouchSensor touchright = ParcoursRunner.TOUCH_RIGHT;
+//		TouchSensor touchleft = ParcoursRunner.TOUCH_LEFT;
 //		LightSensor lightSensor = new LightSensor(SensorPort.S1, true);
 //		DifferentialPilot pilot = ParcoursRunner.DIFF_PILOT;
 				
+		while(!Kompaktor.isTouched());
 		
-		while(!touchright.isPressed() && !touchleft.isPressed());
-		LightSwitcher.initAngles();
+		ParcoursRunner bridge = Kompaktor.startLevel(LEVEL_NAMES.BRIDGE, true);
 		
-		BridgeRun bridge = new BridgeRun();
-		bridge.init();
-		bridge.start();
-		while(!touchright.isPressed() && !touchleft.isPressed());
+		while(!Kompaktor.isTouched());
+		
 		try {
 			bridge.stop();
 		} catch (InterruptedException e) {
@@ -32,7 +30,7 @@ public class BridgeRun extends ParcoursRunner {
 		}
 
 		//end
-		while(!touchright.isPressed() && !touchleft.isPressed());
+		while(!Kompaktor.isTouched());
 	}
 	
 	private LightSwitcher switchThread;
@@ -51,19 +49,19 @@ public class BridgeRun extends ParcoursRunner {
 			while(true){
 				switchThread = new LightSwitcher();
 				switchThread.start();
-				pilot.stop();
-				pilot.forward();
-				while(lightSensor.readValue() > thresholdWood){
+				Kompaktor.DIFF_PILOT.stop();
+				Kompaktor.DIFF_PILOT.forward();
+				while(Kompaktor.LIGHT_SENSOR.readValue() > thresholdWood){
 					if(Thread.interrupted())
 						throw new InterruptedException();
 					Thread.yield();	
 				}
 				switchThread.interrupt();
-				pilot.stop();
+				Kompaktor.DIFF_PILOT.stop();
 				switchThread.join();
 				
 				
-				while(lightSensor.readValue() <= thresholdWood) {
+				while(Kompaktor.LIGHT_SENSOR.readValue() <= thresholdWood) {
 					if(Thread.interrupted())
 						throw new InterruptedException();
 					double value = LightSwitcher.getRegulatedCurrentAngleDouble();
@@ -79,12 +77,12 @@ public class BridgeRun extends ParcoursRunner {
 					if(value < 0)
 						converted *= -1;
 					//System.out.println("value: " + value + "conv: " + converted);
-					pilot.arcForward(converted / 10.0);
+					Kompaktor.DIFF_PILOT.arcForward(converted / 10.0);
 					//pilot.rotate((LightSwitcher.getRegulatedCurrentAngleDouble() < 0) ? -angleRotateBridge : angleRotateBridge);
 				}
 			}
 		} catch (InterruptedException e){
-			pilot.stop();
+			Kompaktor.DIFF_PILOT.stop();
 			if(!switchThread.isInterrupted())
 				switchThread.interrupt();
 		}
@@ -92,7 +90,7 @@ public class BridgeRun extends ParcoursRunner {
 
 	@Override
 	public void init() {
-		pilot.setTravelSpeed(travelSpeedBridge);
+		Kompaktor.DIFF_PILOT.setTravelSpeed(travelSpeedBridge);
 	}
 
 	@Override

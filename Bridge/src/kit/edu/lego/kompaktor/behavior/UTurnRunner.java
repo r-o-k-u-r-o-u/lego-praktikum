@@ -1,8 +1,7 @@
 package kit.edu.lego.kompaktor.behavior;
 
+import kit.edu.lego.kompaktor.model.Kompaktor;
 import kit.edu.lego.kompaktor.model.LightSwitcher;
-import lejos.nxt.TouchSensor;
-
 
 public class UTurnRunner extends ParcoursRunner{
 	
@@ -14,29 +13,29 @@ public class UTurnRunner extends ParcoursRunner{
 
 	public static void main(String[] args) {
 		//wait until it is pressed
-		TouchSensor touchRight = ParcoursRunner.TOUCH_RIGHT;
-		TouchSensor touchLeft = ParcoursRunner.TOUCH_LEFT;
+//		TouchSensor touchRight = ParcoursRunner.TOUCH_RIGHT;
+//		TouchSensor touchLeft = ParcoursRunner.TOUCH_LEFT;
 		
-		while(!touchRight.isPressed() && !touchLeft.isPressed());
-		LightSwitcher.initAngles();
+		while(!Kompaktor.isTouched());
+//		LightSwitcher.initAngles();
 		
+		Kompaktor.startLevel(LEVEL_NAMES.U_TURN);
 		
-		
-		UTurnRunner uturn = new UTurnRunner();
-		uturn.init();
-		uturn.start();
-		
-		while(!uturn.isDone());
-
-		uturn.interrupt();
-		try {
-			uturn.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+//		UTurnRunner uturn = new UTurnRunner();
+//		uturn.init();
+//		uturn.start();
+//		
+//		while(!uturn.isDone());
+//
+//		uturn.interrupt();
+//		try {
+//			uturn.join();
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
 		
 		//end
-		while(!touchRight.isPressed() && !touchLeft.isPressed());
+		while(!Kompaktor.isTouched());
 
 	}
 	
@@ -51,7 +50,7 @@ public class UTurnRunner extends ParcoursRunner{
 			while(true){ //!touchRight.isPressed() && !touchLeft.isPressed()
 				if(Thread.interrupted())
 					throw new InterruptedException();
-				int distance = sonicSensor.getDistance();
+				int distance = Kompaktor.SONIC_SENSOR.getDistance();
 				if(distance >= 255){ //reject errors
 					if((System.currentTimeMillis() - timeLastCorrect) < 350){
 						distance = lastDistance;
@@ -63,47 +62,47 @@ public class UTurnRunner extends ParcoursRunner{
 				double diff = distance - travelDistance;
 				
 				//teste ob Wand vorne ist
-				if (touchRight.isPressed() || touchLeft.isPressed()){
+				if (Kompaktor.isTouched()){
 					Thread.sleep(100);
 					int angle = 90;
-					if(touchRight.isPressed() && touchLeft.isPressed()){
+					if(Kompaktor.isTouchedBoth()){
 						//rechts drehen
 						angle = 90;
-					} else if(touchLeft.isPressed()){
+					} else if(Kompaktor.isTouchedLeft()){
 						//kleine Linksdrehung
 						angle = 100;
-					} else if(touchRight.isPressed()){
+					} else if(Kompaktor.isTouchedRight()){
 						//kleine Rechtsdrehung
 						angle = 30;
 					}
 					
 					//etwas zurück
-					pilot_reverse.travel(-10);
+					Kompaktor.DIFF_PILOT_REVERSE.travel(-10);
 					//drehen
-					pilot_reverse.rotate(angle);
+					Kompaktor.DIFF_PILOT_REVERSE.rotate(angle);
 					
 				} else { //freie fahrt
 				
 					if(distance >= distanceWallLost) {//wall lost
 		
-						pilot_reverse.travel(10);
-						pilot_reverse.rotate(-90);
+						Kompaktor.DIFF_PILOT_REVERSE.travel(10);
+						Kompaktor.DIFF_PILOT_REVERSE.rotate(-90);
 						//vorwärtsfahren bis Wand an der Seite sehen oder gegen Wand gefahren
-						while(sonicSensor.getDistance() > distanceWallLost && !touchRight.isPressed() && !touchLeft.isPressed()){
+						while(Kompaktor.SONIC_SENSOR.getDistance() > distanceWallLost && Kompaktor.isNotTouched()){
 							if(Thread.interrupted())
 								throw new InterruptedException();
 							
-							pilot_reverse.travel(travelLengthUTurn, true);
+							Kompaktor.DIFF_PILOT_REVERSE.travel(travelLengthUTurn, true);
 							Thread.sleep(100);
 						}
 						//nur ein stück vorwärtsfahren, wenn möglich
-						if(!touchRight.isPressed() && !touchLeft.isPressed())
-							pilot_reverse.travel(5);
+						if(Kompaktor.isNotTouched())
+							Kompaktor.DIFF_PILOT_REVERSE.travel(5);
 						
 					} else {
 						//normales Wand folgen
 						if(Math.abs(diff) < ThresholdDistanceForward){
-							pilot_reverse.travel(travelLengthUTurn, true);
+							Kompaktor.DIFF_PILOT_REVERSE.travel(travelLengthUTurn, true);
 						} else {
 							double value = Math.abs(diff);
 							if(value > 200){
@@ -121,11 +120,11 @@ public class UTurnRunner extends ParcoursRunner{
 								//zurück zur Wand
 								if(lastDiff > diff + 1){ //sich immer weiter annähert (diff > 10 ? + 1 : - 1)
 									//nur geradeaus fahren
-									pilot_reverse.travel(travelLengthUTurn, true);
+									Kompaktor.DIFF_PILOT_REVERSE.travel(travelLengthUTurn, true);
 								} else { //roboter entfernt sich shon
 									//starke veränderung
 									//double value = -500 / diff;
-									pilot_reverse.travelArc(value, travelLengthUTurn, true);
+									Kompaktor.DIFF_PILOT_REVERSE.travelArc(value, travelLengthUTurn, true);
 									//Sound.beep();
 								}
 							} else {
@@ -134,11 +133,11 @@ public class UTurnRunner extends ParcoursRunner{
 									//starke veränderung
 									//double value = -300 / diff;
 									value /= 2;
-									pilot_reverse.travelArc(value, travelLengthUTurn, true);
+									Kompaktor.DIFF_PILOT_REVERSE.travelArc(value, travelLengthUTurn, true);
 									//Sound.buzz();
 								} else { //roboter entfernt sich shon
 									//nur geradeaus fahren
-									pilot_reverse.travel(travelLengthUTurn, true);
+									Kompaktor.DIFF_PILOT_REVERSE.travel(travelLengthUTurn, true);
 								}
 							}
 						}
@@ -153,7 +152,7 @@ public class UTurnRunner extends ParcoursRunner{
 
 			}
 		} catch (InterruptedException e){
-			pilot_reverse.stop();
+			Kompaktor.DIFF_PILOT_REVERSE.stop();
 		}
 	}
 

@@ -1,9 +1,7 @@
 package kit.edu.lego.kompaktor.behavior;
 
-import kit.edu.lego.kompaktor.model.LightSwitcher;
+import kit.edu.lego.kompaktor.model.Kompaktor;
 import lejos.nxt.Sound;
-import lejos.nxt.TouchSensor;
-import lejos.robotics.navigation.DifferentialPilot;
 
 public class BarcodeDetector extends ParcoursRunner{
 
@@ -13,37 +11,40 @@ public class BarcodeDetector extends ParcoursRunner{
 	final static int ThresholdLine = LineRunner.ThresholdLine;
 	
 	public static void main(String[] args) {
-		TouchSensor touchright = ParcoursRunner.TOUCH_RIGHT;
-		TouchSensor touchleft = ParcoursRunner.TOUCH_LEFT;
-//		LightSensor ligthSensor = new LightSensor(SensorPort.S1, true);
-		DifferentialPilot pilot = ParcoursRunner.DIFF_PILOT;
 		
-		while(!touchright.isPressed() && !touchleft.isPressed());
-		LightSwitcher.initAngles();
+//		TouchSensor touchright = ParcoursRunner.TOUCH_RIGHT;
+//		TouchSensor touchleft = ParcoursRunner.TOUCH_LEFT;
+//		LightSensor ligthSensor = new LightSensor(SensorPort.S1, true);
+//		DifferentialPilot pilot = ParcoursRunner.DIFF_PILOT;
+		
+//		while(!touchright.isPressed() && !touchleft.isPressed());
+		while (!Kompaktor.isTouched());
+//		LightSwitcher.initAngles();
 		//Sensor an die Seite
-		LightSwitcher.setAngle(-90);
+//		LightSwitcher.setAngle(-90);
+		Kompaktor.parkArm();
+		
 		//vorwärtsfahren
-		pilot.setTravelSpeed(travelSpeedBarcode);
-		pilot.forward();
+		Kompaktor.DIFF_PILOT.setTravelSpeed(travelSpeedBarcode);
+		Kompaktor.DIFF_PILOT.forward();
 		
 		BarcodeDetector barcode = new BarcodeDetector();
 		barcode.start();
 		
 		while(!barcode.isDone());
 		
-		pilot.stop();
+		Kompaktor.DIFF_PILOT.stop();
 		try {
 			barcode.stop();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 		
-		while(!touchright.isPressed() && !touchleft.isPressed()){
+		while(!Kompaktor.isTouched()){
 			Sound.beep();
 		}
 
 	}
-	
 	
 	
 	private int lines;
@@ -66,13 +67,13 @@ public class BarcodeDetector extends ParcoursRunner{
 					lastTime = System.currentTimeMillis();
 				}
 				if(testLine){
-					if(lightSensor.readValue() >= ThresholdLine){
+					if(Kompaktor.LIGHT_SENSOR.readValue() >= ThresholdLine){
 						lines++;
 						testLine = false;
 						lastTime = System.currentTimeMillis();
 					}
 				} else {
-					if(lightSensor.readValue() < ThresholdLine){
+					if(Kompaktor.LIGHT_SENSOR.readValue() < ThresholdLine){
 						testLine = true;
 						lastTime = System.currentTimeMillis();
 					}

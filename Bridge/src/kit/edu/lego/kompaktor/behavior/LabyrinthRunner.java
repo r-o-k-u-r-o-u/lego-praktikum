@@ -1,6 +1,6 @@
 package kit.edu.lego.kompaktor.behavior;
 
-import kit.edu.lego.kompaktor.model.LightSwitcher;
+import kit.edu.lego.kompaktor.model.Kompaktor;
 import lejos.nxt.SensorPort;
 import lejos.nxt.Sound;
 import lejos.nxt.TouchSensor;
@@ -253,8 +253,10 @@ public class LabyrinthRunner extends ParcoursRunner {
 	@Override
 	public void init() {
 
-		LightSwitcher.initAngles();
-		LightSwitcher.setAngle(-90);
+		Kompaktor.parkArm();
+		
+//		LightSwitcher.initAngles();
+//		LightSwitcher.setAngle(-90);
 
 	}
 

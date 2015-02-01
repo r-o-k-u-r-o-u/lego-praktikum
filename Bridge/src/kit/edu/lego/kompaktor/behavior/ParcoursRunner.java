@@ -1,11 +1,5 @@
 package kit.edu.lego.kompaktor.behavior;
 
-import lejos.nxt.LightSensor;
-import lejos.nxt.Motor;
-import lejos.nxt.SensorPort;
-import lejos.nxt.TouchSensor;
-import lejos.nxt.UltrasonicSensor;
-import lejos.robotics.navigation.DifferentialPilot;
 
 public abstract class ParcoursRunner extends Thread {
 	
@@ -36,12 +30,7 @@ public abstract class ParcoursRunner extends Thread {
 	    
 	}
 	
-	public static final TouchSensor TOUCH_RIGHT = new TouchSensor(SensorPort.S3);
-	public static final TouchSensor TOUCH_LEFT = new TouchSensor(SensorPort.S2);
-	public static final LightSensor LIGHT_SENSOR = new LightSensor(SensorPort.S1, true);
-	public static final UltrasonicSensor SONIC_SENSOR = new UltrasonicSensor(SensorPort.S4);
-	public static final DifferentialPilot DIFF_PILOT = new DifferentialPilot(3, 17, Motor.C, Motor.B, true);
-	public static final DifferentialPilot DIFF_PILOT_REVERSE = new DifferentialPilot(3, 17, Motor.C, Motor.B, false);	
+	
 
 	public static final ParcoursRunner getNewRunner(LEVEL_NAMES levelName) {
 		switch (levelName) {
@@ -60,20 +49,20 @@ public abstract class ParcoursRunner extends Thread {
 		}
 	}
 	
-	protected TouchSensor touchRight;
-	protected TouchSensor touchLeft;
-	protected LightSensor lightSensor;
-	protected UltrasonicSensor sonicSensor;
-	protected DifferentialPilot pilot;
-	protected DifferentialPilot pilot_reverse;
+//	protected TouchSensor touchRight;
+//	protected TouchSensor touchLeft;
+//	protected LightSensor lightSensor;
+//	protected UltrasonicSensor sonicSensor;
+//	protected DifferentialPilot pilot;
+//	protected DifferentialPilot pilot_reverse;
 	
 	public ParcoursRunner() {
-		touchRight = TOUCH_RIGHT;
-		touchLeft = TOUCH_LEFT;
-		lightSensor = LIGHT_SENSOR;
-		sonicSensor = SONIC_SENSOR;
-		pilot = DIFF_PILOT;
-		pilot_reverse = DIFF_PILOT_REVERSE;
+//		touchRight = TOUCH_RIGHT;
+//		touchLeft = TOUCH_LEFT;
+//		lightSensor = LIGHT_SENSOR;
+//		sonicSensor = SONIC_SENSOR;
+//		pilot = DIFF_PILOT;
+//		pilot_reverse = DIFF_PILOT_REVERSE;
 	}
 	
 	public abstract void run();

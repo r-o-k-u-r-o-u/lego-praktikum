@@ -2,12 +2,10 @@ package kit.edu.lego.kompaktor.main;
 
 import kit.edu.lego.kompaktor.behavior.ParcoursRunner;
 import kit.edu.lego.kompaktor.behavior.ParcoursRunner.LEVEL_NAMES;
-import kit.edu.lego.kompaktor.model.LightSwitcher;
+import kit.edu.lego.kompaktor.model.Kompaktor;
 import lejos.nxt.Button;
 import lejos.nxt.LCD;
-import lejos.nxt.SensorPort;
 import lejos.nxt.Sound;
-import lejos.nxt.TouchSensor;
 
 public class Launcher {
 	
@@ -20,17 +18,12 @@ public class Launcher {
 	
 	private final int numMaxProgramms = ParcoursRunner.LEVEL_NAMES.values().length;
 	
-	private ParcoursRunner currentRunner;
-	
 	public static void main(String[] args) {	
 		getLauncher();	
 	}
 	
 	private Launcher() {
 
-		TouchSensor touchright = new TouchSensor(SensorPort.S3);
-		TouchSensor touchleft = new TouchSensor(SensorPort.S2);
-		
 		boolean selected = false;
 		int curr = 0;
 		int clicked = 0;
@@ -60,29 +53,18 @@ public class Launcher {
 		} else {
 			Sound.beep();
 
-			LightSwitcher.initAngles();
+			// Hier initialisieren sonst muss der LightSwitcher initialisiert werden
+			// obwohl er möglicherweise gar nicht gebraucht wird.
 
-			LCD.clear();
-			System.out.println("Selected LEVEL =\n\n" + LEVEL_NAMES.values()[curr] + "\n\nUse BUMPER to start");
-			// start something else
+			Kompaktor.showText("Selected LEVEL =\n\n" + LEVEL_NAMES.values()[curr] + "\n\nUse BUMPER to start");
 
-			while (!touchright.isPressed() && !touchleft.isPressed());
+			Sound.beepSequenceUp();
+			while (Kompaktor.isTouched());
 
-			currentRunner = ParcoursRunner.getNewRunner(LEVEL_NAMES.values()[curr]);
-
-			currentRunner.init();
-			currentRunner.start();
-
-			while (!currentRunner.isDone());
-
-			try {
-				currentRunner.stop();
-			} catch (InterruptedException e) {
-				System.out.println("Launcher error.");
-			}
+			// assert that the level will end normally for now
+			Kompaktor.startLevel(LEVEL_NAMES.values()[curr]);
 			
 		}
-		Button.waitForAnyPress();
 	}
 	
 	public ParcoursRunner getSegmentRunnerThread(ParcoursRunner.LEVEL_NAMES levelName) {
