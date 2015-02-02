@@ -7,6 +7,8 @@ public class LightTester {
 
 		Kompaktor.setFloodlight(false);
 		
+		//ligthSensor.setFloodlight(false);
+		
 		while(true){
 			while(!Kompaktor.isTouched());
 			

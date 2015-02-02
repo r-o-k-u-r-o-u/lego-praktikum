@@ -16,18 +16,11 @@ public class LabyrinthRunner extends ParcoursRunner {
 
 	private volatile int d, pd;
 
-	private final int STEER_POWER = 65;
+	private final int STEER_POWER = 65, DISTANCE_TO_WALL = 10, OK_DEVIATION = 5,
+			MAX_DISTANCE_TO_WALL = 35, TRAVEL_AFTER_LOSING_WALL = 6;
 
 	private volatile DifferentialPilot pilot;
 	private TouchSensor sensorLeft, sensorRight;
-
-	public static void main(String[] args) {
-
-		LabyrinthRunner l = new LabyrinthRunner();
-		l.init();
-		l.run();
-
-	}
 
 	public LabyrinthRunner() {
 
@@ -45,7 +38,7 @@ public class LabyrinthRunner extends ParcoursRunner {
 		float wheelDiameter = Float.parseFloat(pp.getProperty(
 				PilotProps.KEY_WHEELDIAMETER, "3.0"));
 		float trackWidth = Float.parseFloat(pp.getProperty(
-				PilotProps.KEY_TRACKWIDTH, "17.0"));
+				PilotProps.KEY_TRACKWIDTH, "1OK_DEVIATION.0"));
 		pilot = new DifferentialPilot(wheelDiameter, trackWidth, leftMotor,
 				rightMotor, reverse);
 
@@ -109,7 +102,7 @@ public class LabyrinthRunner extends ParcoursRunner {
 
 	}
 
-	public synchronized void run() {
+	public void run() {
 
 		// Movement
 
@@ -125,21 +118,22 @@ public class LabyrinthRunner extends ParcoursRunner {
 				pilot.stop();
 				resolveCollision(30, 50);
 
-			} else if (d > 35) {
+			} else if (d > MAX_DISTANCE_TO_WALL) {
 
 				Sound.beep();
-				pilot.travel(8);
-				if (d < 35)
+				pilot.travel(TRAVEL_AFTER_LOSING_WALL);
+				if (d < MAX_DISTANCE_TO_WALL)
 					continue;
 				pilot.rotate(-90);
-				while (d > 35) {
+				while (d > MAX_DISTANCE_TO_WALL) {
 					pilot.forward();
 					if (impact()) {
 						resolveCollision(30, 50);
 					}
 				}
 				pilot.travel(20);
-				pilot.rotate(-90);
+				if (d > MAX_DISTANCE_TO_WALL)
+					pilot.rotate(-90);
 
 				while (d > 10) {
 					if (Math.abs(d - pd) < 6) {
@@ -152,19 +146,19 @@ public class LabyrinthRunner extends ParcoursRunner {
 
 				}
 			} else {
-				drive(8);
+				drive(DISTANCE_TO_WALL);
 			}
 		}
 	}
 
-	private synchronized void resolveCollision(int leftAngle, int rightAngle) {
+	private void resolveCollision(int leftAngle, int rightAngle) {
 
 		while (!impact())
 			;
 
 		if (impact) {
 			pilot.stop();
-			pilot.travel(-7);
+			pilot.travel(-OK_DEVIATION);
 			Sound.playTone(800, 100);
 			pilot.rotate(90);
 		} else if (leftImpact) {
@@ -188,7 +182,7 @@ public class LabyrinthRunner extends ParcoursRunner {
 
 	synchronized void drive(int distanceToWall) {
 
-		if (d < distanceToWall + 4 && d > distanceToWall) { // If not too close
+		if (d < distanceToWall + OK_DEVIATION && d > distanceToWall) { // If not too close
 															// or too
 			// far to the // //
 			// wall, move // forward
@@ -196,7 +190,11 @@ public class LabyrinthRunner extends ParcoursRunner {
 			double diff = d - pd;
 			pilot.steer(-diff / (double) d * STEER_POWER);
 
-		} else if (d <= 35 && d >= distanceToWall + 4) { // If a bit far move
+		} else if (d <= MAX_DISTANCE_TO_WALL && d >= distanceToWall + OK_DEVIATION) { // If
+																			// a
+																			// bit
+																			// far
+																			// move
 			// // to the wall
 
 			double diff = d - pd;
@@ -204,17 +202,20 @@ public class LabyrinthRunner extends ParcoursRunner {
 				pilot.steer(-diff / (double) d * STEER_POWER);
 			}
 			if (d - pd > 0) {
-				while (Math.abs(d - pd) <= 3 && !impact() && d <= 35 && d >= 12) {
+				while (Math.abs(d - pd) <= 3 && !impact()
+						&& d <= MAX_DISTANCE_TO_WALL && d >= distanceToWall + OK_DEVIATION) {
 					pilot.steer(-20);
-					if (d > 35) {
+					if (d > MAX_DISTANCE_TO_WALL) {
 						return;
 					}
 				}
-				while (Math.abs(d - pd) >= 0 && !impact() && d <= 35 && d >= 12) {
+				while (Math.abs(d - pd) >= 0 && !impact()
+						&& d <= MAX_DISTANCE_TO_WALL && d >= distanceToWall + OK_DEVIATION) {
 					pilot.steer(20);
 				}
 			} else {
-				while (d - pd >= 0 && !impact() && d <= 35 && d >= 12) {
+				while (d - pd >= 0 && !impact() && d <= MAX_DISTANCE_TO_WALL
+						&& d >= distanceToWall + OK_DEVIATION) {
 					pilot.steer(-20);
 				}
 
@@ -254,9 +255,6 @@ public class LabyrinthRunner extends ParcoursRunner {
 	public void init() {
 
 		Kompaktor.parkArm();
-		
-//		LightSwitcher.initAngles();
-//		LightSwitcher.setAngle(-90);
 
 	}
 
