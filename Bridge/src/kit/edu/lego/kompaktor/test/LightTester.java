@@ -1,4 +1,5 @@
 package kit.edu.lego.kompaktor.test;
+import kit.edu.lego.kompaktor.model.Kompaktor;
 import lejos.nxt.LightSensor;
 import lejos.nxt.SensorPort;
 import lejos.nxt.TouchSensor;
@@ -11,12 +12,12 @@ public class LightTester {
 		TouchSensor touchleft = new TouchSensor(SensorPort.S2);
 		LightSensor ligthSensor = new LightSensor(SensorPort.S1, true);
 		
+		Kompaktor.setFloodlight(false);
+		
 		while(true){
 			while(!touchright.isPressed() && !touchleft.isPressed());
 			System.out.println("light: " + ligthSensor.readValue());
 		}
-		
-		
 
 	}
 

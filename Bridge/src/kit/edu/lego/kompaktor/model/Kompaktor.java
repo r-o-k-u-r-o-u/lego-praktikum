@@ -36,6 +36,11 @@ public class Kompaktor {
 	 */
 	public static void startLevel(LEVEL_NAMES level) {
 		
+		if (!armInitialized) {
+			LightSwitcher.initAngles();
+			armInitialized = true;
+		}
+		
 		ParcoursRunner currentRunner = ParcoursRunner.getNewRunner(level);
 
 		currentRunner.init();
@@ -59,7 +64,6 @@ public class Kompaktor {
 	 */
 	public static ParcoursRunner startLevel(LEVEL_NAMES level, boolean returnImmediately) {
 		
-		// TODO: maybe only when needed
 		if (!armInitialized) {
 			LightSwitcher.initAngles();
 			armInitialized = true;
@@ -121,6 +125,10 @@ public class Kompaktor {
 				System.out.println(">Kompaktor<\n>>Error stopping BarcodeDetector");
 			}
 		}
+	}
+	
+	public static void setFloodlight(boolean val) {
+		LIGHT_SENSOR.setFloodlight(val);
 	}
 	
 	public static void showText(String text) {

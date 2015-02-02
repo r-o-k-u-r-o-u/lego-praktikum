@@ -2,6 +2,7 @@ package kit.edu.lego.kompaktor.behavior;
 
 
 import kit.edu.lego.kompaktor.model.Gate;
+import kit.edu.lego.kompaktor.model.Kompaktor;
 import lejos.nxt.Sound;
 
 public class GateRunner extends ParcoursRunner {
@@ -81,7 +82,9 @@ public class GateRunner extends ParcoursRunner {
 			System.out.println("success="+through);
 			
 			driver.stop();
-			driver.join();
+			//driver.join();
+			
+			Kompaktor.showText("Starting RopeBridgeRunner");
 			
 			ropeBridgeRunner = new RopeBridgeRun();
 			ropeBridgeRunner.init();
