@@ -159,7 +159,9 @@ public class UTurnRunner extends ParcoursRunner{
 
 	@Override
 	public void init() {
-		LightSwitcher.setAngle(-90);
+		//LightSwitcher.setAngle(-90);
+		Kompaktor.parkArm();
+		Kompaktor.DIFF_PILOT_REVERSE.setTravelSpeed(Kompaktor.DIFF_PILOT_REVERSE.getMaxTravelSpeed());
 	}
 
 

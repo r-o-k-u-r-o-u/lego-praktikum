@@ -3,7 +3,9 @@ package kit.edu.lego.kompaktor.model;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+
 import javax.bluetooth.RemoteDevice;
+
 import lejos.nxt.LCD;
 import lejos.nxt.comm.BTConnection;
 import lejos.nxt.comm.Bluetooth;
@@ -15,7 +17,7 @@ import lejos.nxt.comm.Bluetooth;
  *
  */
 public class Cube {
-	private static final String LIFT_NAME = "Lift";
+	public static final String LIFT = "Lift";
 	private static final int GO_DOWN = 0;
 	private static final int IS_DOWN = 1;
 	private static final int CLOSE_CONNECTION = 2;
@@ -30,7 +32,8 @@ public class Cube {
 	 *            you know what this is for (at least i hope so)
 	 */
 	public static void main(String args[]) {
-		while (!openConnection(LIFT_NAME)) {
+		while (!openConnection(LIFT)) {
+			LCD.drawString("wait", 0, 1);
 			sleep(1000); // waiting for free connection
 		}
 		goDown();
@@ -58,6 +61,8 @@ public class Cube {
 			// Devices name
 			return false;
 		}
+		
+//		connection = Bluetooth.connect("Lift", NXTConnection.RAW, new byte[]{(byte)'1',(byte)'2',(byte)'3',(byte)'4'});
 		connection = Bluetooth.connect(btrd);
 		if (connection == null) {
 			// connection failed, try again...
@@ -125,7 +130,7 @@ public class Cube {
 	/**
 	 * this method's name should be self explaining
 	 */
-	private static void closeConnection() {
+	public static void closeConnection() {
 		if (connection != null) {
 			try {
 				writeInt(CLOSE_CONNECTION);
