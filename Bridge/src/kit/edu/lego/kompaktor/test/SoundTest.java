@@ -10,9 +10,8 @@ public class SoundTest {
 		
 		Sound.playTone(35000, 10);
 		
-		Sound.playSample(new File("lift_music.wav"), 100);7
+		Sound.playSample(new File("lift_music.wav"), 100);
 		
-		Sound.
 		while (true);
 	}
 
