@@ -7,6 +7,7 @@ import lejos.nxt.LCD;
 import lejos.nxt.LightSensor;
 import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
+import lejos.nxt.Sound;
 import lejos.nxt.TouchSensor;
 import lejos.nxt.UltrasonicSensor;
 import lejos.robotics.navigation.DifferentialPilot;
@@ -137,6 +138,48 @@ public class Kompaktor {
 	
 	public static int readDistanceValue() {
 		return SONIC_SENSOR.getDistance();
+	}
+	
+	
+	public static boolean onLED() throws InterruptedException {
+		
+		int[] val = readLightDifferenceArr();
+		
+		if (val[0] < 6) {
+			
+			if (val[2] >= 40) {
+				return true;
+			} else if (val[2] >= 25) {
+				return true;
+			} else {
+				return false;
+			}
+			
+		} else {
+			return false;
+		}
+		
+	}
+	
+	
+ public static boolean onRedLED() throws InterruptedException {
+		
+		int[] val = readLightDifferenceArr();
+		
+		if (val[0] < 6) {
+			
+			if (val[2] >= 40) {
+				return false;
+			} else if (val[2] >= 25) {
+				return true;
+			} else {
+				return false;
+			}
+			
+		} else {
+			return false;
+		}
+		
 	}
 	
 	

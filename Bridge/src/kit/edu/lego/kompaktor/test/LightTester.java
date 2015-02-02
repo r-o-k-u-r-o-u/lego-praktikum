@@ -1,43 +1,35 @@
 package kit.edu.lego.kompaktor.test;
 import kit.edu.lego.kompaktor.model.Kompaktor;
+import lejos.nxt.Sound;
 
 public class LightTester {
 
+	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 
-		Kompaktor.setFloodlight(true);
+		Kompaktor.setFloodlight(false);
 		
 		//ligthSensor.setFloodlight(false);
 		
 		while(true){
-			if(Kompaktor.isTouched()){
-				System.out.println("light: " + Kompaktor.LIGHT_SENSOR.readValue());
+			while(!Kompaktor.isTouched());
+			
+			try {
+				boolean onLED = Kompaktor.onRedLED();
+				
+				if (onLED) {
+					Sound.beepSequenceUp();
+				}
+			} catch (InterruptedException e1) {
+				System.out.println("OMFG!\nSTFU!");
+			}
+			
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
 			}
 		}
-		
-//		while(true){
-//			while(!Kompaktor.isTouched());
-//			
-//			int[] vals;
-//			try {
-//				vals = Kompaktor.readLightDifferenceArr();
-//				
-//				System.out.println("light: " + vals[0]);
-//				System.out.println("on="+vals[1] + "  off="+vals[2]);
-//				
-//			} catch (InterruptedException e1) {
-//				// TODO Auto-generated catch block
-//				e1.printStackTrace();
-//			}
-//			
-//			
-//			
-//			try {
-//				Thread.sleep(100);
-//			} catch (InterruptedException e) {
-//			}
-//		}
 
 	}
-
 }
+ 
