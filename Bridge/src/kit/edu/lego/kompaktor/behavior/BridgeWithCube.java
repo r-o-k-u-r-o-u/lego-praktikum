@@ -42,9 +42,13 @@ public class BridgeWithCube extends ParcoursRunner{
 			//Brücke faren
 			bridge = (BridgeRun)Kompaktor.startLevel(LEVEL_NAMES.BRIDGE, true);
 			//warten auf Licht
-			while(Kompaktor.LIGHT_SENSOR.readValue() < lightThreshold){
+			int[] ligths = new int[]{0, 0, 0};
+			//while(Kompaktor.LIGHT_SENSOR.readValue() < lightThreshold){
+			while(ligths[0] > 5 || ligths[1] < 32){
 				if(Thread.interrupted())
 					throw new InterruptedException();
+				ligths = Kompaktor.readLightDifferenceArr();
+				Thread.yield();
 			}
 			//Brückenfahrt stoppen
 			bridge.stop();

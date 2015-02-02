@@ -146,11 +146,11 @@ public class Kompaktor {
 		int vals[] = new int[3];
 		
 		setFloodlight(true);
+		Thread.sleep(10);
 		vals[1] = LIGHT_SENSOR.readValue();
 
-		Thread.sleep(10);
-		
 		setFloodlight(false);
+		Thread.sleep(10);
 		vals[2] = LIGHT_SENSOR.readValue();
 		
 		setFloodlight(floodOn);
@@ -166,11 +166,11 @@ public class Kompaktor {
 		boolean floodOn = LIGHT_SENSOR.isFloodlightOn();
 		
 		setFloodlight(true);
+		Thread.sleep(10);
 		int val1 = LIGHT_SENSOR.readValue();
 		
-		Thread.sleep(10);
-		
 		setFloodlight(false);
+		Thread.sleep(10);
 		int val2 = LIGHT_SENSOR.readValue();
 		
 		setFloodlight(floodOn);
