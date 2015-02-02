@@ -5,6 +5,7 @@ import kit.edu.lego.kompaktor.model.Kompaktor;
 import kit.edu.lego.kompaktor.model.LightSwitcher;
 import kit.edu.lego.kompaktor.model.LightSwitcher.RotantionDirection;
 import lejos.nxt.Sound;
+import lejos.util.PilotProps;
 
 public class BridgeWithCube extends ParcoursRunner{
 
@@ -42,26 +43,37 @@ public class BridgeWithCube extends ParcoursRunner{
 			//Brücke faren
 			bridge = (BridgeRun)Kompaktor.startLevel(LEVEL_NAMES.BRIDGE, true);
 			//warten auf Licht
-			int[] ligths = new int[]{0, 0, 0};
+//			int[] ligths = new int[]{0, 0, 0};
 			//int value = Kompaktor.LIGHT_SENSOR.readValue();
-			int counter = 0;
+//			int counter = 0;
 			//while(value < lightThreshold && counter < 5){
-			while(counter < 5){
+			while(!Kompaktor.onLED()){
 				if(Thread.interrupted())
 					throw new InterruptedException();
 //				if(value < 36 && value > 26)
 //					counter++;
 //				else
 //					counter = 0;
-				if(ligths[2] > 33)
-					counter++;
-				else
-					counter = 0;
+//				if(Kompaktor.onLED())
+//					counter++;
+//				else
+//					counter = 0;
 				
 				Thread.sleep(50);
-				ligths = Kompaktor.readLightDifferenceArr();
+//				ligths = Kompaktor.readLightDifferenceArr();
 				
 //				value = Kompaktor.LIGHT_SENSOR.readValue();
+				
+			}
+			//Brückenfahrt stoppen
+			bridge.stop();
+			//Brücke faren
+			bridge = (BridgeRun)Kompaktor.startLevel(LEVEL_NAMES.BRIDGE, true);
+			Kompaktor.DIFF_PILOT.travel(10);
+			while(!Kompaktor.onLED()){
+				if(Thread.interrupted())
+					throw new InterruptedException();
+				Thread.sleep(50);
 			}
 			//Brückenfahrt stoppen
 			bridge.stop();
@@ -72,19 +84,19 @@ public class BridgeWithCube extends ParcoursRunner{
 				Kompaktor.DIFF_PILOT.rotate(20);
 			}
 			//etwas vorwärtsfahren
-			Kompaktor.DIFF_PILOT.travel(20);
+			Kompaktor.DIFF_PILOT.travel(15);
 			//Grenzwert erhöhen für Licht
-			//BridgeRun.thresholdWood = 40;
+			BridgeRun.thresholdWood = 40;
 			//Brückenfahrt
-//			bridge = (BridgeRun)Kompaktor.startLevel(LEVEL_NAMES.BRIDGE, true);
-//			//soll nur 2 Sekunden laufen
-//			long time = System.currentTimeMillis();
-//			while(Math.abs(System.currentTimeMillis() - time) < 1000){
-//				if(Thread.interrupted())
-//					throw new InterruptedException();
-//			}
-//			//stoppen
-//			bridge.stop();
+			bridge = (BridgeRun)Kompaktor.startLevel(LEVEL_NAMES.BRIDGE, true);
+			//soll nur 2 Sekunden laufen
+			long time = System.currentTimeMillis();
+			while(Math.abs(System.currentTimeMillis() - time) < 1000){
+				if(Thread.interrupted())
+					throw new InterruptedException();
+			}
+			//stoppen
+			bridge.stop();
 			//zum Loch drehen
 			if(((BridgeRun)bridge).getLastHole() == RotantionDirection.Left){
 				Kompaktor.DIFF_PILOT.rotate(-85);

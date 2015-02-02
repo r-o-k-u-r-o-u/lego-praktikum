@@ -15,7 +15,7 @@ public class LabyrinthRunner extends ParcoursRunner {
 	private final int STEER_POWER = 70, DISTANCE_TO_WALL = 10, OK_DEVIATION = 5,
 			MAX_DISTANCE_TO_WALL = 35, TRAVEL_AFTER_LOSING_WALL = 5;
 
-	private volatile DifferentialPilot pilot;
+	private DifferentialPilot pilot; //volatile entfernt
 	private TouchSensor sensorleft, sensorRight;
 	private Thread distanceMeasure = null;
 	private Thread collisionControl = null;
@@ -28,10 +28,16 @@ public class LabyrinthRunner extends ParcoursRunner {
 		l.start();
 		
 		try {
-			l.join();
+			Thread.sleep(10000);
+			System.out.println("would interrupt");
+			l.stop();
+			System.out.println("is interrupted");
+//			l.join();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		
+		while(Kompaktor.isNotTouched());
 
 	}
 
@@ -58,8 +64,11 @@ public class LabyrinthRunner extends ParcoursRunner {
 					pilot.travel(TRAVEL_AFTER_LOSING_WALL);
 					if(Thread.interrupted())
 						throw new InterruptedException();
-					if (d < MAX_DISTANCE_TO_WALL)
+					if (d < MAX_DISTANCE_TO_WALL){
+						if(Thread.interrupted())
+							throw new InterruptedException();
 						continue;
+					}
 					pilot.rotate(-90);
 					while (d > MAX_DISTANCE_TO_WALL) {
 						if(Thread.interrupted())
@@ -70,8 +79,11 @@ public class LabyrinthRunner extends ParcoursRunner {
 						}
 					}
 					pilot.travel(20);
-					if (d < MAX_DISTANCE_TO_WALL)
+					if (d < MAX_DISTANCE_TO_WALL){
+						if(Thread.interrupted())
+							throw new InterruptedException();
 						continue;
+					}
 						
 					pilot.rotate(-90);
 	
@@ -92,15 +104,21 @@ public class LabyrinthRunner extends ParcoursRunner {
 				}
 			}
 		} catch (InterruptedException e) { 
+			//System.out.println("interrupt start");
 			collisionControl.interrupt();
+			//System.out.println("coll inter");
 			distanceMeasure.interrupt();
+			//System.out.println("dist inter");
 			pilot.stop();
 			try {
 				collisionControl.join();
+				//System.out.println("coll finish");
 				distanceMeasure.join();
+				//System.out.println("dist finish");
 			} catch (InterruptedException e1) {
 				e1.printStackTrace();
 			}
+			pilot.stop();
 		}
 	}
 
@@ -135,7 +153,8 @@ public class LabyrinthRunner extends ParcoursRunner {
 	}
 
 	synchronized void drive(int distanceToWall) throws InterruptedException {
-
+		if(Thread.interrupted())
+			throw new InterruptedException();
 		if (d < distanceToWall + OK_DEVIATION && d > distanceToWall) { // If not
 																		// too
 																		// close
@@ -160,6 +179,8 @@ public class LabyrinthRunner extends ParcoursRunner {
 				throw new InterruptedException();
 			double diff = d - pd;
 			while (Math.abs(d - pd) > 0 && !impact()) {
+				if(Thread.interrupted())
+					throw new InterruptedException();
 				pilot.steer(-diff / (double) d * STEER_POWER);
 			}
 			if (d - pd > 0) {
@@ -195,6 +216,8 @@ public class LabyrinthRunner extends ParcoursRunner {
 				throw new InterruptedException();
 			pilot.steer(10);
 		}
+		if(Thread.interrupted())
+			throw new InterruptedException();
 
 	}
 
@@ -227,7 +250,6 @@ public class LabyrinthRunner extends ParcoursRunner {
 	public void init() {
 
 		Kompaktor.parkArm();
-		
 //		PilotProps pp = new PilotProps();
 		sensorleft = Kompaktor.TOUCH_RIGHT;// new TouchSensor(SensorPort.S3);
 		sensorRight = Kompaktor.TOUCH_LEFT;//new TouchSensor(SensorPort.S2);
@@ -320,4 +342,14 @@ public class LabyrinthRunner extends ParcoursRunner {
 		return false;
 	}
 
+	@Override
+	public void stop() throws InterruptedException{
+//		int counter = 0;
+		while(this.isAlive()){
+			//System.out.println("inter " + counter++);
+			this.interrupt();
+			this.join(100);
+		}
+	}
+	
 }
