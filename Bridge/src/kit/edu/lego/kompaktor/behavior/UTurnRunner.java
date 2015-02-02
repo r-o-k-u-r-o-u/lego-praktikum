@@ -7,7 +7,7 @@ public class UTurnRunner extends ParcoursRunner{
 	
 	final static int travelSpeedUTurn = 200;
 	final static int travelLengthUTurn = 5;
-	final static int travelDistance = 20;
+	final static int travelDistance = 30;
 	final static int distanceWallLost = 70;
 	final static int ThresholdDistanceForward = 2;
 
@@ -46,6 +46,8 @@ public class UTurnRunner extends ParcoursRunner{
 			int lastDistance = 0;
 			long timeLastCorrect = System.currentTimeMillis();
 			//pilot_reverse.setTravelSpeed(travelSpeedUTurn);
+			
+			Kompaktor.DIFF_PILOT_REVERSE.setTravelSpeed(600);
 			
 			while(true){ //!touchRight.isPressed() && !touchLeft.isPressed()
 				if(Thread.interrupted())

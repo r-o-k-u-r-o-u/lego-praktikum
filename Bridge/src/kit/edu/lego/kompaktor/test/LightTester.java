@@ -12,10 +12,19 @@ public class LightTester {
 		while(true){
 			while(!Kompaktor.isTouched());
 			
-			int[] vals = Kompaktor.readLightDifferenceArr();
+			int[] vals;
+			try {
+				vals = Kompaktor.readLightDifferenceArr();
+				
+				System.out.println("light: " + vals[0]);
+				System.out.println("on="+vals[1] + "  off="+vals[2]);
+				
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			
-			System.out.println("light: " + vals[0]);
-			System.out.println("on="+vals[1] + "  off="+vals[2]);
+			
 			
 			try {
 				Thread.sleep(100);

@@ -140,19 +140,15 @@ public class Kompaktor {
 	}
 	
 	
- public static int[] readLightDifferenceArr() {
+ public synchronized static int[] readLightDifferenceArr() throws InterruptedException {
 		
 		boolean floodOn = LIGHT_SENSOR.isFloodlightOn();
 		int vals[] = new int[3];
 		
 		setFloodlight(true);
 		vals[1] = LIGHT_SENSOR.readValue();
-		try {
-			Thread.sleep(10);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+		Thread.sleep(10);
 		
 		setFloodlight(false);
 		vals[2] = LIGHT_SENSOR.readValue();
@@ -165,26 +161,19 @@ public class Kompaktor {
 		
 	}
  
-	public static int readLightDifferenceOnOff() {
+	public synchronized static int readLightDifferenceOnOff() throws InterruptedException {
 		
 		boolean floodOn = LIGHT_SENSOR.isFloodlightOn();
 		
 		setFloodlight(true);
 		int val1 = LIGHT_SENSOR.readValue();
-		try {
-			Thread.sleep(10);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
-		
+		Thread.sleep(10);
 		
 		setFloodlight(false);
 		int val2 = LIGHT_SENSOR.readValue();
 		
 		setFloodlight(floodOn);
-		
 		
 		return Math.abs(val1-val2);
 	}
