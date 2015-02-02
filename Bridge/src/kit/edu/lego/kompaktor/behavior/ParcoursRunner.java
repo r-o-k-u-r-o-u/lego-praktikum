@@ -9,6 +9,7 @@ public abstract class ParcoursRunner extends Thread {
 		U_TURN("UTurn"),
 		LABYRINTH("Labyrinth"),
 		BRIDGE("Bridge"),
+		BRIDGE_ELEVATOR("Bridge&Elevator"),
 		ELEVATOR("Elevator"),
 		LED_CUBE("LED-Cube"),
 		ROLLS("Rolls"),
@@ -37,6 +38,7 @@ public abstract class ParcoursRunner extends Thread {
 		case LINE_FOLLOW:	return new LineRunner();
 		case U_TURN:		return new UTurnRunner();
 		case BRIDGE:		return new BridgeRun();
+		case BRIDGE_ELEVATOR:return new BridgeWithCube();
 //		case LED_CUBE:		return new ;
 		case ELEVATOR:		return new ElevatorRunner();
 		case LABYRINTH:		return new LabyrinthRunner();
