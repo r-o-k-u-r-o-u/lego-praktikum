@@ -140,7 +140,7 @@ public class Kompaktor {
 	}
 	
 	
- public static int[] readLightDifferenceArr() throws InterruptedException {
+ public synchronized static int[] readLightDifferenceArr() throws InterruptedException {
 		
 		boolean floodOn = LIGHT_SENSOR.isFloodlightOn();
 		int vals[] = new int[3];
@@ -161,7 +161,7 @@ public class Kompaktor {
 		
 	}
  
-	public static int readLightDifferenceOnOff() throws InterruptedException {
+	public synchronized static int readLightDifferenceOnOff() throws InterruptedException {
 		
 		boolean floodOn = LIGHT_SENSOR.isFloodlightOn();
 		
