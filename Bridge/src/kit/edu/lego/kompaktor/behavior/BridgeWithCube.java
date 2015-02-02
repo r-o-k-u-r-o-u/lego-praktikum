@@ -42,12 +42,12 @@ public class BridgeWithCube extends ParcoursRunner{
 			//Brücke faren
 			bridge = (BridgeRun)Kompaktor.startLevel(LEVEL_NAMES.BRIDGE, true);
 			//warten auf Licht
-			int[] ligths = new int[]{0, 0, 0};
-			//while(Kompaktor.LIGHT_SENSOR.readValue() < lightThreshold){
-			while(ligths[0] > 5 || ligths[1] < 32){
+			//int[] ligths = new int[]{0, 0, 0};
+			while(Kompaktor.LIGHT_SENSOR.readValue() < lightThreshold){
+			//while(ligths[0] > 5 || ligths[1] < 26){
 				if(Thread.interrupted())
 					throw new InterruptedException();
-				ligths = Kompaktor.readLightDifferenceArr();
+				//ligths = Kompaktor.readLightDifferenceArr();
 				Thread.yield();
 			}
 			//Brückenfahrt stoppen
@@ -61,18 +61,18 @@ public class BridgeWithCube extends ParcoursRunner{
 			//etwas vorwärtsfahren
 			Kompaktor.DIFF_PILOT.travel(15);
 			//Grenzwert erhöhen für Licht
-			BridgeRun.thresholdWood = 40;
+			//BridgeRun.thresholdWood = 40;
 			//Brückenfahrt
 			bridge = (BridgeRun)Kompaktor.startLevel(LEVEL_NAMES.BRIDGE, true);
 			//soll nur 2 Sekunden laufen
 			long time = System.currentTimeMillis();
-			while(System.currentTimeMillis() - time < 2000){
+			while(Math.abs(System.currentTimeMillis() - time) < 2000){
 				if(Thread.interrupted())
 					throw new InterruptedException();
 			}
 			//stoppen
 			bridge.stop();
-			//zum Locj drehen
+			//zum Loch drehen
 			if(((BridgeRun)bridge).getLastHole() == RotantionDirection.Left){
 				Kompaktor.DIFF_PILOT.rotate(-85);
 			} else {

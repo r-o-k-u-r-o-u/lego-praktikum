@@ -51,8 +51,8 @@ public class BridgeRun extends ParcoursRunner {
 				switchThread.start();
 				Kompaktor.DIFF_PILOT.stop();
 				Kompaktor.DIFF_PILOT.forward();
-				//while(Kompaktor.LIGHT_SENSOR.readValue() > thresholdWood){
-				while(Kompaktor.readLightDifferenceArr()[1] > thresholdWood){
+				while(Kompaktor.LIGHT_SENSOR.readValue() > thresholdWood){
+				//while(Kompaktor.readLightDifferenceArr()[1] > thresholdWood){
 					if(Thread.interrupted())
 						throw new InterruptedException();
 					Thread.yield();	
@@ -62,8 +62,8 @@ public class BridgeRun extends ParcoursRunner {
 				switchThread.join();
 				
 				
-				//while(Kompaktor.LIGHT_SENSOR.readValue() <= thresholdWood) {
-				while(Kompaktor.readLightDifferenceArr()[1] <= thresholdWood) {
+				while(Kompaktor.LIGHT_SENSOR.readValue() <= thresholdWood) {
+				//while(Kompaktor.readLightDifferenceArr()[1] <= thresholdWood) {
 					if(Thread.interrupted())
 						throw new InterruptedException();
 					double value = LightSwitcher.getRegulatedCurrentAngleDouble();
