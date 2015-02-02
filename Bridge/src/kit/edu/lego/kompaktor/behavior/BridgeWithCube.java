@@ -42,13 +42,26 @@ public class BridgeWithCube extends ParcoursRunner{
 			//Brücke faren
 			bridge = (BridgeRun)Kompaktor.startLevel(LEVEL_NAMES.BRIDGE, true);
 			//warten auf Licht
-			//int[] ligths = new int[]{0, 0, 0};
-			while(Kompaktor.LIGHT_SENSOR.readValue() < lightThreshold){
-			//while(ligths[0] > 5 || ligths[1] < 26){
+			int[] ligths = new int[]{0, 0, 0};
+			//int value = Kompaktor.LIGHT_SENSOR.readValue();
+			int counter = 0;
+			//while(value < lightThreshold && counter < 5){
+			while(counter < 5){
 				if(Thread.interrupted())
 					throw new InterruptedException();
-				//ligths = Kompaktor.readLightDifferenceArr();
-				Thread.yield();
+//				if(value < 36 && value > 26)
+//					counter++;
+//				else
+//					counter = 0;
+				if(ligths[2] > 33)
+					counter++;
+				else
+					counter = 0;
+				
+				Thread.sleep(50);
+				ligths = Kompaktor.readLightDifferenceArr();
+				
+//				value = Kompaktor.LIGHT_SENSOR.readValue();
 			}
 			//Brückenfahrt stoppen
 			bridge.stop();
@@ -59,19 +72,19 @@ public class BridgeWithCube extends ParcoursRunner{
 				Kompaktor.DIFF_PILOT.rotate(20);
 			}
 			//etwas vorwärtsfahren
-			Kompaktor.DIFF_PILOT.travel(15);
+			Kompaktor.DIFF_PILOT.travel(20);
 			//Grenzwert erhöhen für Licht
 			//BridgeRun.thresholdWood = 40;
 			//Brückenfahrt
-			bridge = (BridgeRun)Kompaktor.startLevel(LEVEL_NAMES.BRIDGE, true);
-			//soll nur 2 Sekunden laufen
-			long time = System.currentTimeMillis();
-			while(Math.abs(System.currentTimeMillis() - time) < 2000){
-				if(Thread.interrupted())
-					throw new InterruptedException();
-			}
-			//stoppen
-			bridge.stop();
+//			bridge = (BridgeRun)Kompaktor.startLevel(LEVEL_NAMES.BRIDGE, true);
+//			//soll nur 2 Sekunden laufen
+//			long time = System.currentTimeMillis();
+//			while(Math.abs(System.currentTimeMillis() - time) < 1000){
+//				if(Thread.interrupted())
+//					throw new InterruptedException();
+//			}
+//			//stoppen
+//			bridge.stop();
 			//zum Loch drehen
 			if(((BridgeRun)bridge).getLastHole() == RotantionDirection.Left){
 				Kompaktor.DIFF_PILOT.rotate(-85);
