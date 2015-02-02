@@ -17,7 +17,7 @@ public class LabyrinthRunner extends ParcoursRunner {
 	private volatile int d, pd;
 
 	private final int STEER_POWER = 70, DISTANCE_TO_WALL = 10, OK_DEVIATION = 5,
-			MAX_DISTANCE_TO_WALL = 35, TRAVEL_AFTER_LOSING_WALL = 7;
+			MAX_DISTANCE_TO_WALL = 35, TRAVEL_AFTER_LOSING_WALL = 5;
 
 	private volatile DifferentialPilot pilot;
 	private TouchSensor sensorLeft, sensorRight;
@@ -124,7 +124,7 @@ public class LabyrinthRunner extends ParcoursRunner {
 
 			if (event) {
 				pilot.stop();
-				resolveCollision(40, 60);
+				resolveCollision(30, 60);
 
 			} else if (d > MAX_DISTANCE_TO_WALL) {
 
@@ -136,7 +136,7 @@ public class LabyrinthRunner extends ParcoursRunner {
 				while (d > MAX_DISTANCE_TO_WALL) {
 					pilot.forward();
 					if (impact()) {
-						resolveCollision(40, 60);
+						resolveCollision(30, 60);
 					}
 				}
 				pilot.travel(20);
@@ -148,10 +148,10 @@ public class LabyrinthRunner extends ParcoursRunner {
 				while (d > DISTANCE_TO_WALL) {
 					double diff = d - pd;
 					if (Math.abs(diff) < 4) {
-						pilot.steer(-15);
+						pilot.steer(-20);
 					}
 					if (impact()) {
-						resolveCollision(20, 40);
+						resolveCollision(30, 40);
 					}
 
 				}
@@ -163,17 +163,15 @@ public class LabyrinthRunner extends ParcoursRunner {
 
 	private void resolveCollision(int leftAngle, int rightAngle) {
 
-		while (!impact())
-			;
+		while (!impact());
 
 		if (impact) {
 			pilot.stop();
-			pilot.travel(-OK_DEVIATION);
+			pilot.travel(-3);
 			Sound.playTone(800, 100);
 			pilot.rotate(90);
 		} else if (leftImpact) {
 
-			pilot.travel(-5);
 			pilot.rotate(leftAngle);
 
 		} else if (rightImpact) {
@@ -216,7 +214,6 @@ public class LabyrinthRunner extends ParcoursRunner {
 			}
 			if (d - pd > 0) {
 				while (Math.abs(d - pd) <= 3 && !impact()
-						&& d <= MAX_DISTANCE_TO_WALL
 						&& d >= distanceToWall + OK_DEVIATION) {
 					pilot.steer(-20);
 					if (d > MAX_DISTANCE_TO_WALL) {
@@ -238,7 +235,7 @@ public class LabyrinthRunner extends ParcoursRunner {
 
 		} else if (d <= distanceToWall) {
 
-			pilot.steer(4);
+			pilot.steer(10);
 		}
 
 	}
