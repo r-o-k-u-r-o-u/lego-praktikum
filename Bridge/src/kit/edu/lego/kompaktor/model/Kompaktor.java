@@ -36,7 +36,6 @@ public class Kompaktor {
 	 */
 	public static void startLevel(LEVEL_NAMES level) {
 		
-		// TODO: maybe only when needed
 		if (!armInitialized) {
 			LightSwitcher.initAngles();
 			armInitialized = true;
@@ -65,7 +64,6 @@ public class Kompaktor {
 	 */
 	public static ParcoursRunner startLevel(LEVEL_NAMES level, boolean returnImmediately) {
 		
-		// TODO: maybe only when needed
 		if (!armInitialized) {
 			LightSwitcher.initAngles();
 			armInitialized = true;
@@ -127,6 +125,68 @@ public class Kompaktor {
 				System.out.println(">Kompaktor<\n>>Error stopping BarcodeDetector");
 			}
 		}
+	}
+	
+	public static void setFloodlight(boolean val) {
+		LIGHT_SENSOR.setFloodlight(val);
+	}
+	
+	public static int readLightValue() {
+		return LIGHT_SENSOR.readValue();
+	}
+	
+	public static int readDistanceValue() {
+		return SONIC_SENSOR.getDistance();
+	}
+	
+	
+ public static int[] readLightDifferenceArr() {
+		
+		boolean floodOn = LIGHT_SENSOR.isFloodlightOn();
+		int vals[] = new int[3];
+		
+		setFloodlight(true);
+		vals[1] = LIGHT_SENSOR.readValue();
+		try {
+			Thread.sleep(10);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		setFloodlight(false);
+		vals[2] = LIGHT_SENSOR.readValue();
+		
+		setFloodlight(floodOn);
+		
+		vals[0] = Math.abs(vals[1]-vals[2]);
+		
+		return vals;
+		
+	}
+ 
+	public static int readLightDifferenceOnOff() {
+		
+		boolean floodOn = LIGHT_SENSOR.isFloodlightOn();
+		
+		setFloodlight(true);
+		int val1 = LIGHT_SENSOR.readValue();
+		try {
+			Thread.sleep(10);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
+		setFloodlight(false);
+		int val2 = LIGHT_SENSOR.readValue();
+		
+		setFloodlight(floodOn);
+		
+		
+		return Math.abs(val1-val2);
 	}
 	
 	public static void showText(String text) {

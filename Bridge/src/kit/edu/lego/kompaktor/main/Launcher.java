@@ -53,9 +53,6 @@ public class Launcher {
 		} else {
 			Sound.beep();
 
-			// Hier initialisieren sonst muss der LightSwitcher initialisiert werden
-			// obwohl er möglicherweise gar nicht gebraucht wird.
-
 			Kompaktor.showText("Selected LEVEL =\n\n" + LEVEL_NAMES.values()[curr] + "\n\nUse BUMPER to start");
 
 			Sound.beepSequenceUp();
