@@ -56,7 +56,7 @@ public class Launcher {
 			Kompaktor.showText("Selected LEVEL =\n\n" + LEVEL_NAMES.values()[curr] + "\n\nUse BUMPER to start");
 
 			Sound.beepSequenceUp();
-			while (Kompaktor.isTouched());
+			while (!Kompaktor.isTouched());
 
 			// assert that the level will end normally for now
 			Kompaktor.startLevel(LEVEL_NAMES.values()[curr]);

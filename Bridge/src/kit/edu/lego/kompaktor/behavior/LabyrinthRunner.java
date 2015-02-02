@@ -16,11 +16,19 @@ public class LabyrinthRunner extends ParcoursRunner {
 
 	private volatile int d, pd;
 
-	private final int STEER_POWER = 65, DISTANCE_TO_WALL = 10, OK_DEVIATION = 5,
-			MAX_DISTANCE_TO_WALL = 35, TRAVEL_AFTER_LOSING_WALL = 6;
+	private final int STEER_POWER = 65, DISTANCE_TO_WALL = 8, OK_DEVIATION = 5,
+			MAX_DISTANCE_TO_WALL = 30, TRAVEL_AFTER_LOSING_WALL = 7;
 
 	private volatile DifferentialPilot pilot;
 	private TouchSensor sensorLeft, sensorRight;
+
+	public static void main(String[] args) {
+
+		LabyrinthRunner l = new LabyrinthRunner();
+		l.init();
+		l.start();
+
+	}
 
 	public LabyrinthRunner() {
 
@@ -38,7 +46,7 @@ public class LabyrinthRunner extends ParcoursRunner {
 		float wheelDiameter = Float.parseFloat(pp.getProperty(
 				PilotProps.KEY_WHEELDIAMETER, "3.0"));
 		float trackWidth = Float.parseFloat(pp.getProperty(
-				PilotProps.KEY_TRACKWIDTH, "1OK_DEVIATION.0"));
+				PilotProps.KEY_TRACKWIDTH, "15.0"));
 		pilot = new DifferentialPilot(wheelDiameter, trackWidth, leftMotor,
 				rightMotor, reverse);
 
@@ -135,9 +143,12 @@ public class LabyrinthRunner extends ParcoursRunner {
 				if (d > MAX_DISTANCE_TO_WALL)
 					pilot.rotate(-90);
 
-				while (d > 10) {
-					if (Math.abs(d - pd) < 6) {
+				while (d > DISTANCE_TO_WALL) {
+					double diff = d - pd;
+					if (Math.abs(diff) < 4) {
 						pilot.steer(-15);
+					} else {
+						pilot.steer(-diff / (double) d * STEER_POWER);
 					}
 
 					if (impact()) {
@@ -182,19 +193,22 @@ public class LabyrinthRunner extends ParcoursRunner {
 
 	synchronized void drive(int distanceToWall) {
 
-		if (d < distanceToWall + OK_DEVIATION && d > distanceToWall) { // If not too close
-															// or too
+		if (d < distanceToWall + OK_DEVIATION && d > distanceToWall) { // If not
+																		// too
+																		// close
+			// or too
 			// far to the // //
 			// wall, move // forward
 
 			double diff = d - pd;
 			pilot.steer(-diff / (double) d * STEER_POWER);
 
-		} else if (d <= MAX_DISTANCE_TO_WALL && d >= distanceToWall + OK_DEVIATION) { // If
-																			// a
-																			// bit
-																			// far
-																			// move
+		} else if (d <= MAX_DISTANCE_TO_WALL
+				&& d >= distanceToWall + OK_DEVIATION) { // If
+			// a
+			// bit
+			// far
+			// move
 			// // to the wall
 
 			double diff = d - pd;
@@ -203,14 +217,16 @@ public class LabyrinthRunner extends ParcoursRunner {
 			}
 			if (d - pd > 0) {
 				while (Math.abs(d - pd) <= 3 && !impact()
-						&& d <= MAX_DISTANCE_TO_WALL && d >= distanceToWall + OK_DEVIATION) {
+						&& d <= MAX_DISTANCE_TO_WALL
+						&& d >= distanceToWall + OK_DEVIATION) {
 					pilot.steer(-20);
 					if (d > MAX_DISTANCE_TO_WALL) {
 						return;
 					}
 				}
 				while (Math.abs(d - pd) >= 0 && !impact()
-						&& d <= MAX_DISTANCE_TO_WALL && d >= distanceToWall + OK_DEVIATION) {
+						&& d <= MAX_DISTANCE_TO_WALL
+						&& d >= distanceToWall + OK_DEVIATION) {
 					pilot.steer(20);
 				}
 			} else {
