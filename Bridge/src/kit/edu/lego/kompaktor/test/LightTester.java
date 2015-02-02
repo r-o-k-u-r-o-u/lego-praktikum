@@ -4,7 +4,6 @@ import lejos.nxt.Sound;
 
 public class LightTester {
 
-	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 
 		Kompaktor.setFloodlight(false);

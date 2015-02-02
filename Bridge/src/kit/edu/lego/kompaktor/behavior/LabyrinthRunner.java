@@ -1,13 +1,9 @@
 package kit.edu.lego.kompaktor.behavior;
 
 import kit.edu.lego.kompaktor.model.Kompaktor;
-import lejos.nxt.SensorPort;
 import lejos.nxt.Sound;
 import lejos.nxt.TouchSensor;
-import lejos.nxt.UltrasonicSensor;
-import lejos.robotics.RegulatedMotor;
 import lejos.robotics.navigation.DifferentialPilot;
-import lejos.util.PilotProps;
 
 public class LabyrinthRunner extends ParcoursRunner {
 
@@ -296,14 +292,13 @@ public class LabyrinthRunner extends ParcoursRunner {
 			@Override
 			public void run() {
 				try{
-					UltrasonicSensor sonic = Kompaktor.SONIC_SENSOR;//new UltrasonicSensor(SensorPort.S4);
 					int i = 0;
-					sonic.continuous();
-					pd = sonic.getDistance();
+					Kompaktor.SONIC_SENSOR.continuous();
+					pd = Kompaktor.readDistanceValue();
 					while (true) {
 						if(Thread.interrupted())
 							throw new InterruptedException();
-						d = sonic.getDistance();
+						d = Kompaktor.readDistanceValue();
 	
 						if (i == 0)
 							pd = d;
