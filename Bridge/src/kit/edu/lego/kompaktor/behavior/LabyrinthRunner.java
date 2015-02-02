@@ -16,7 +16,7 @@ public class LabyrinthRunner extends ParcoursRunner {
 
 	private volatile int d, pd;
 
-	private final int STEER_POWER = 65;
+	private final int STEER_POWER = 65, DISTANCE_TO_WALL = 10;
 
 	private volatile DifferentialPilot pilot;
 	private TouchSensor sensorLeft, sensorRight;
@@ -152,7 +152,7 @@ public class LabyrinthRunner extends ParcoursRunner {
 
 				}
 			} else {
-				drive(8);
+				drive(DISTANCE_TO_WALL);
 			}
 		}
 	}
@@ -188,7 +188,7 @@ public class LabyrinthRunner extends ParcoursRunner {
 
 	synchronized void drive(int distanceToWall) {
 
-		if (d < distanceToWall + 4 && d > distanceToWall) { // If not too close
+		if (d < distanceToWall + 7 && d > distanceToWall) { // If not too close
 															// or too
 			// far to the // //
 			// wall, move // forward
@@ -196,7 +196,7 @@ public class LabyrinthRunner extends ParcoursRunner {
 			double diff = d - pd;
 			pilot.steer(-diff / (double) d * STEER_POWER);
 
-		} else if (d <= 35 && d >= distanceToWall + 4) { // If a bit far move
+		} else if (d <= 35 && d >= distanceToWall + 7) { // If a bit far move
 			// // to the wall
 
 			double diff = d - pd;
@@ -254,9 +254,6 @@ public class LabyrinthRunner extends ParcoursRunner {
 	public void init() {
 
 		Kompaktor.parkArm();
-		
-//		LightSwitcher.initAngles();
-//		LightSwitcher.setAngle(-90);
 
 	}
 
