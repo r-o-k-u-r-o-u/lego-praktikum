@@ -16,7 +16,8 @@ public class LabyrinthRunner extends ParcoursRunner {
 
 	private volatile int d, pd;
 
-	private final int STEER_POWER = 65, DISTANCE_TO_WALL = 10;
+	private final int STEER_POWER = 65, DISTANCE_TO_WALL = 10,
+			MAX_DISTANCE_TO_WALL = 40;
 
 	private volatile DifferentialPilot pilot;
 	private TouchSensor sensorLeft, sensorRight;
@@ -125,21 +126,22 @@ public class LabyrinthRunner extends ParcoursRunner {
 				pilot.stop();
 				resolveCollision(30, 50);
 
-			} else if (d > 35) {
+			} else if (d > MAX_DISTANCE_TO_WALL) {
 
 				Sound.beep();
 				pilot.travel(8);
-				if (d < 35)
+				if (d < MAX_DISTANCE_TO_WALL)
 					continue;
 				pilot.rotate(-90);
-				while (d > 35) {
+				while (d > MAX_DISTANCE_TO_WALL) {
 					pilot.forward();
 					if (impact()) {
 						resolveCollision(30, 50);
 					}
 				}
 				pilot.travel(20);
-				pilot.rotate(-90);
+				if (d > MAX_DISTANCE_TO_WALL)
+					pilot.rotate(-90);
 
 				while (d > 10) {
 					if (Math.abs(d - pd) < 6) {
@@ -196,7 +198,11 @@ public class LabyrinthRunner extends ParcoursRunner {
 			double diff = d - pd;
 			pilot.steer(-diff / (double) d * STEER_POWER);
 
-		} else if (d <= 35 && d >= distanceToWall + 7) { // If a bit far move
+		} else if (d <= MAX_DISTANCE_TO_WALL && d >= distanceToWall + 7) { // If
+																			// a
+																			// bit
+																			// far
+																			// move
 			// // to the wall
 
 			double diff = d - pd;
@@ -204,17 +210,20 @@ public class LabyrinthRunner extends ParcoursRunner {
 				pilot.steer(-diff / (double) d * STEER_POWER);
 			}
 			if (d - pd > 0) {
-				while (Math.abs(d - pd) <= 3 && !impact() && d <= 35 && d >= 12) {
+				while (Math.abs(d - pd) <= 3 && !impact()
+						&& d <= MAX_DISTANCE_TO_WALL && d >= distanceToWall + 7) {
 					pilot.steer(-20);
-					if (d > 35) {
+					if (d > MAX_DISTANCE_TO_WALL) {
 						return;
 					}
 				}
-				while (Math.abs(d - pd) >= 0 && !impact() && d <= 35 && d >= 12) {
+				while (Math.abs(d - pd) >= 0 && !impact()
+						&& d <= MAX_DISTANCE_TO_WALL && d >= distanceToWall + 7) {
 					pilot.steer(20);
 				}
 			} else {
-				while (d - pd >= 0 && !impact() && d <= 35 && d >= 12) {
+				while (d - pd >= 0 && !impact() && d <= MAX_DISTANCE_TO_WALL
+						&& d >= distanceToWall + 7) {
 					pilot.steer(-20);
 				}
 
