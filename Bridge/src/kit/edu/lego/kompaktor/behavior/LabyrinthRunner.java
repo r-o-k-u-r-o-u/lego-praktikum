@@ -16,8 +16,9 @@ public class LabyrinthRunner extends ParcoursRunner {
 
 	private volatile int d, pd;
 
-	private final int STEER_POWER = 70, DISTANCE_TO_WALL = 10, OK_DEVIATION = 5,
-			MAX_DISTANCE_TO_WALL = 35, TRAVEL_AFTER_LOSING_WALL = 5;
+	private final int STEER_POWER = 70, DISTANCE_TO_WALL = 10,
+			OK_DEVIATION = 5, MAX_DISTANCE_TO_WALL = 35,
+			TRAVEL_AFTER_LOSING_WALL = 7;
 
 	private volatile DifferentialPilot pilot;
 	private TouchSensor sensorLeft, sensorRight;
@@ -50,37 +51,6 @@ public class LabyrinthRunner extends ParcoursRunner {
 		pilot = new DifferentialPilot(wheelDiameter, trackWidth, leftMotor,
 				rightMotor, reverse);
 
-		// Detect when the robot hit a wall
-		Thread collisionControl = new Thread(new Runnable() {
-			@Override
-			public void run() {
-
-				while (true) {
-
-					if (sensorRight.isPressed()) {
-						rightImpact = true;
-						event = true;
-						for (int i = 0; i < 50; i++) {
-							if (sensorLeft.isPressed()) {
-								impact = true;
-								rightImpact = false;
-							}
-						}
-					} else if (sensorLeft.isPressed()) {
-						leftImpact = true;
-						event = true;
-						for (int i = 0; i < 50; i++) {
-							if (sensorRight.isPressed()) {
-								impact = true;
-								leftImpact = false;
-							}
-						}
-					}
-
-				}
-			}
-
-		});
 
 		Thread distanceMeasure = new Thread(new Runnable() {
 
@@ -101,11 +71,31 @@ public class LabyrinthRunner extends ParcoursRunner {
 					if (i == 25) {
 						i = 0;
 					}
+
+					if (sensorRight.isPressed()) {
+						rightImpact = true;
+						event = true;
+						for (int j = 0; j < 50; j++) {
+							if (sensorLeft.isPressed()) {
+								impact = true;
+								rightImpact = false;
+							}
+						}
+					} else if (sensorLeft.isPressed()) {
+						leftImpact = true;
+						event = true;
+						for (int j = 0; j < 50; j++) {
+							if (sensorRight.isPressed()) {
+								impact = true;
+								leftImpact = false;
+							}
+						}
+					}
 				}
 
 			}
 		});
-		collisionControl.start();
+		// collisionControl.start();
 		distanceMeasure.start();
 
 	}
@@ -142,7 +132,7 @@ public class LabyrinthRunner extends ParcoursRunner {
 				pilot.travel(20);
 				if (d < MAX_DISTANCE_TO_WALL)
 					continue;
-					
+
 				pilot.rotate(-90);
 
 				while (d > DISTANCE_TO_WALL) {
@@ -163,7 +153,8 @@ public class LabyrinthRunner extends ParcoursRunner {
 
 	private void resolveCollision(int leftAngle, int rightAngle) {
 
-		while (!impact());
+		while (!impact())
+			;
 
 		if (impact) {
 			pilot.stop();
