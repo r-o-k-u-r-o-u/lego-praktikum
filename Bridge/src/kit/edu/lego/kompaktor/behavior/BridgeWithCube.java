@@ -75,7 +75,8 @@ public class BridgeWithCube extends ParcoursRunner{
 				Kompaktor.DIFF_PILOT.rotate(85);
 			}
 			//vorwärtsfahren bis am Rand
-			LightSwitcher.setAngle(0);
+			//LightSwitcher.setAngle(0);
+			Kompaktor.stretchArm();
 			Kompaktor.DIFF_PILOT.forward();
 			while(Kompaktor.LIGHT_SENSOR.readValue() > 33){
 				if(Thread.interrupted())
@@ -94,7 +95,8 @@ public class BridgeWithCube extends ParcoursRunner{
 				rigth = angle;
 				angle += 3;
 			}
-			LightSwitcher.setAngle(0);
+			//LightSwitcher.setAngle(0);
+			Kompaktor.stretchArm();
 			angle = 0;
 			while(Kompaktor.LIGHT_SENSOR.readValue() < 30){
 				if(Thread.interrupted())
@@ -115,7 +117,8 @@ public class BridgeWithCube extends ParcoursRunner{
 				Kompaktor.DIFF_PILOT.rotate(85);
 			}
 			//Sensor einfahren
-			LightSwitcher.setAngle(-90);
+			//LightSwitcher.setAngle(-90);
+			Kompaktor.parkArm();
 			//warten auf verbindung
 			while(!Cube.openConnection(Cube.LIFT)){
 				Thread.sleep(1000);
