@@ -36,6 +36,12 @@ public class Kompaktor {
 	 */
 	public static void startLevel(LEVEL_NAMES level) {
 		
+		// TODO: maybe only when needed
+		if (!armInitialized) {
+			LightSwitcher.initAngles();
+			armInitialized = true;
+		}
+		
 		ParcoursRunner currentRunner = ParcoursRunner.getNewRunner(level);
 
 		currentRunner.init();
