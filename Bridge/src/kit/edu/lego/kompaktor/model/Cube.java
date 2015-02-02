@@ -15,7 +15,7 @@ import lejos.nxt.comm.Bluetooth;
  *
  */
 public class Cube {
-	private static final String LIFT = "Lift";
+	private static final String LIFT_NAME = "Lift";
 	private static final int GO_DOWN = 0;
 	private static final int IS_DOWN = 1;
 	private static final int CLOSE_CONNECTION = 2;
@@ -30,7 +30,7 @@ public class Cube {
 	 *            you know what this is for (at least i hope so)
 	 */
 	public static void main(String args[]) {
-		while (!openConnection(LIFT)) {
+		while (!openConnection(LIFT_NAME)) {
 			sleep(1000); // waiting for free connection
 		}
 		goDown();

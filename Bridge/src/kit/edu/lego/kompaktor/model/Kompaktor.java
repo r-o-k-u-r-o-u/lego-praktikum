@@ -131,6 +131,64 @@ public class Kompaktor {
 		LIGHT_SENSOR.setFloodlight(val);
 	}
 	
+	public static int readLightValue() {
+		return LIGHT_SENSOR.readValue();
+	}
+	
+	public static int readDistanceValue() {
+		return SONIC_SENSOR.getDistance();
+	}
+	
+	
+ public static int[] readLightDifferenceArr() {
+		
+		boolean floodOn = LIGHT_SENSOR.isFloodlightOn();
+		int vals[] = new int[3];
+		
+		setFloodlight(true);
+		vals[1] = LIGHT_SENSOR.readValue();
+		try {
+			Thread.sleep(10);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		setFloodlight(false);
+		vals[2] = LIGHT_SENSOR.readValue();
+		
+		setFloodlight(floodOn);
+		
+		vals[0] = Math.abs(vals[1]-vals[2]);
+		
+		return vals;
+		
+	}
+ 
+	public static int readLightDifferenceOnOff() {
+		
+		boolean floodOn = LIGHT_SENSOR.isFloodlightOn();
+		
+		setFloodlight(true);
+		int val1 = LIGHT_SENSOR.readValue();
+		try {
+			Thread.sleep(10);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
+		setFloodlight(false);
+		int val2 = LIGHT_SENSOR.readValue();
+		
+		setFloodlight(floodOn);
+		
+		
+		return Math.abs(val1-val2);
+	}
+	
 	public static void showText(String text) {
 		LCD.clear();
 		System.out.println(text);
