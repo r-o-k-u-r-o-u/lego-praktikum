@@ -1,22 +1,24 @@
 package kit.edu.lego.kompaktor.test;
 import kit.edu.lego.kompaktor.model.Kompaktor;
-import lejos.nxt.LightSensor;
-import lejos.nxt.SensorPort;
-import lejos.nxt.TouchSensor;
-
 
 public class LightTester {
 
 	public static void main(String[] args) {
-		TouchSensor touchright = new TouchSensor(SensorPort.S3);
-		TouchSensor touchleft = new TouchSensor(SensorPort.S2);
-		LightSensor ligthSensor = new LightSensor(SensorPort.S1, true);
-		
+
 		Kompaktor.setFloodlight(false);
 		
 		while(true){
-			while(!touchright.isPressed() && !touchleft.isPressed());
-			System.out.println("light: " + ligthSensor.readValue());
+			while(!Kompaktor.isTouched());
+			
+			int[] vals = Kompaktor.readLightDifferenceArr();
+			
+			System.out.println("light: " + vals[0]);
+			System.out.println("on="+vals[1] + "  off="+vals[2]);
+			
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+			}
 		}
 
 	}
