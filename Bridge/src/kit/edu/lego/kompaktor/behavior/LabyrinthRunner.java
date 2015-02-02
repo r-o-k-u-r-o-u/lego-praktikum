@@ -16,8 +16,8 @@ public class LabyrinthRunner extends ParcoursRunner {
 
 	private volatile int d, pd;
 
-	private final int STEER_POWER = 65, DISTANCE_TO_WALL = 8, OK_DEVIATION = 5,
-			MAX_DISTANCE_TO_WALL = 30, TRAVEL_AFTER_LOSING_WALL = 7;
+	private final int STEER_POWER = 70, DISTANCE_TO_WALL = 10, OK_DEVIATION = 5,
+			MAX_DISTANCE_TO_WALL = 35, TRAVEL_AFTER_LOSING_WALL = 7;
 
 	private volatile DifferentialPilot pilot;
 	private TouchSensor sensorLeft, sensorRight;
@@ -46,7 +46,7 @@ public class LabyrinthRunner extends ParcoursRunner {
 		float wheelDiameter = Float.parseFloat(pp.getProperty(
 				PilotProps.KEY_WHEELDIAMETER, "3.0"));
 		float trackWidth = Float.parseFloat(pp.getProperty(
-				PilotProps.KEY_TRACKWIDTH, "15.0"));
+				PilotProps.KEY_TRACKWIDTH, "17.0"));
 		pilot = new DifferentialPilot(wheelDiameter, trackWidth, leftMotor,
 				rightMotor, reverse);
 
@@ -124,7 +124,7 @@ public class LabyrinthRunner extends ParcoursRunner {
 
 			if (event) {
 				pilot.stop();
-				resolveCollision(30, 50);
+				resolveCollision(40, 60);
 
 			} else if (d > MAX_DISTANCE_TO_WALL) {
 
@@ -136,21 +136,20 @@ public class LabyrinthRunner extends ParcoursRunner {
 				while (d > MAX_DISTANCE_TO_WALL) {
 					pilot.forward();
 					if (impact()) {
-						resolveCollision(30, 50);
+						resolveCollision(40, 60);
 					}
 				}
 				pilot.travel(20);
-				if (d > MAX_DISTANCE_TO_WALL)
-					pilot.rotate(-90);
+				if (d < MAX_DISTANCE_TO_WALL)
+					continue;
+					
+				pilot.rotate(-90);
 
 				while (d > DISTANCE_TO_WALL) {
 					double diff = d - pd;
 					if (Math.abs(diff) < 4) {
 						pilot.steer(-15);
-					} else {
-						pilot.steer(-diff / (double) d * STEER_POWER);
 					}
-
 					if (impact()) {
 						resolveCollision(20, 40);
 					}
