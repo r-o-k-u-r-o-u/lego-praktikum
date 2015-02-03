@@ -5,7 +5,6 @@ import kit.edu.lego.kompaktor.model.Kompaktor;
 import kit.edu.lego.kompaktor.model.LightSwitcher;
 import kit.edu.lego.kompaktor.model.LightSwitcher.RotantionDirection;
 import lejos.nxt.Sound;
-import lejos.util.PilotProps;
 
 public class BridgeWithCube extends ParcoursRunner{
 
@@ -42,6 +41,7 @@ public class BridgeWithCube extends ParcoursRunner{
 		try{
 			//Brücke faren
 			bridge = (BridgeRun)Kompaktor.startLevel(LEVEL_NAMES.BRIDGE, true);
+			bridge.setDiscoLight(true);
 			//warten auf Licht
 //			int[] ligths = new int[]{0, 0, 0};
 			//int value = Kompaktor.LIGHT_SENSOR.readValue();
@@ -68,8 +68,9 @@ public class BridgeWithCube extends ParcoursRunner{
 			//Brückenfahrt stoppen
 			bridge.stop();
 			//Brücke faren
-			bridge = (BridgeRun)Kompaktor.startLevel(LEVEL_NAMES.BRIDGE, true);
 			Kompaktor.DIFF_PILOT.travel(10);
+			bridge = (BridgeRun)Kompaktor.startLevel(LEVEL_NAMES.BRIDGE, true);
+			bridge.setDiscoLight(true);
 			while(!Kompaktor.onLED()){
 				if(Thread.interrupted())
 					throw new InterruptedException();
