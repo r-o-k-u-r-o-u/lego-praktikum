@@ -33,6 +33,8 @@ public class GateRunner extends ParcoursRunner {
 
 		int threshWood = 30;
 		
+		
+		
 		try {
 			System.out.println("Calling gate");
 			Gate.connect();
@@ -83,20 +85,20 @@ public class GateRunner extends ParcoursRunner {
 
 			// Tell the gate that robot passed, send a "I passed" signal
 			
-//			long time = System.currentTimeMillis();
-//			boolean through = false;
-//			while (!through) {
-//				try {
-//					Thread.sleep(100);
-//				} catch (InterruptedException e) {
-//					e.printStackTrace();
-//				}
-//				through = Gate.sendPassed();
-//				
-//				if (System.currentTimeMillis() - time > 3000) {
-//					break;
-//				}
-//			}
+			long time = System.currentTimeMillis();
+			boolean through = false;
+			while (!through) {
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				through = Gate.sendPassed();
+				
+				if (System.currentTimeMillis() - time > 3000) {
+					break;
+				}
+			}
 		
 //			System.out.println("success="+through);
 			
