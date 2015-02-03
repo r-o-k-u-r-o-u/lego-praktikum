@@ -21,6 +21,7 @@ public class Cube {
 	private static final int GO_DOWN = 0;
 	private static final int IS_DOWN = 1;
 	private static final int CLOSE_CONNECTION = 2;
+	private static final int IS_READY = 3;
 	private static DataInputStream dis;
 	private static DataOutputStream dos;
 	private static BTConnection connection;
@@ -84,6 +85,18 @@ public class Cube {
 	 */
 	public static void waitForConnection() throws InterruptedException {
 		connectionThread.join();
+		while (!isReady()) {
+			sleep(100);
+		}
+	}
+	
+	/**
+	 * 
+	 * @return whether the lift is ready to be entered or not
+	 */
+	private static boolean isReady() {
+		writeInt(IS_READY);
+		return readBool();
 	}
 
 	/**

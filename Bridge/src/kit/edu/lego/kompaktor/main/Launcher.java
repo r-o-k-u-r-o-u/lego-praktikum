@@ -35,15 +35,19 @@ public class Launcher {
 			
 			clicked = Button.waitForAnyPress();
 			
-			if (clicked == Button.ID_LEFT) {
-				curr = (curr==0) ? numMaxProgramms-1 : curr-1;
-			} else if (clicked == Button.ID_RIGHT) {
-				curr = (curr+1) % numMaxProgramms;
-			} else if (clicked == Button.ID_ENTER) {
-				selected = true;
-			} else if (clicked == Button.ID_ESCAPE) {
-				selected = true;
-				curr = -1;
+			switch (clicked) {
+				case Button.ID_LEFT: 
+					curr = (curr == 0) ? numMaxProgramms-1 : curr - 1; 
+					break;
+				case Button.ID_RIGHT:
+					curr = (curr + 1) % numMaxProgramms;
+					break;
+				case Button.ID_ENTER:
+					selected = true;
+					break;
+				case Button.ID_ESCAPE:
+					selected = true;
+					curr = -1;
 			}
 			clicked = 0;
 		}
@@ -61,11 +65,19 @@ public class Launcher {
 			// assert that the level will end normally for now
 			Kompaktor.startLevel(LEVEL_NAMES.values()[curr]);
 			
+			
+		}
+		
+	}
+	
+	private void runParcours() {
+		while (true) {
+			// do something
 		}
 	}
 	
-	public ParcoursRunner getSegmentRunnerThread(ParcoursRunner.LEVEL_NAMES levelName) {
-		return ParcoursRunner.getNewRunner(levelName);
-	}
+//	public ParcoursRunner getSegmentRunnerThread(ParcoursRunner.LEVEL_NAMES levelName) {
+//		return ParcoursRunner.getNewRunner(levelName);
+//	}
 
 }

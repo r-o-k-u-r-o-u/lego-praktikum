@@ -29,6 +29,7 @@ public class Kompaktor {
 	
 	private static BarcodeDetector barcodeDetector = null;
 	
+	
 	/**
 	 * Startet level und beendet es wenn es fertig ist
 	 * 

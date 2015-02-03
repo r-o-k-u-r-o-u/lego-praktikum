@@ -1,9 +1,7 @@
 package kit.edu.lego.kompaktor.behavior;
 
-
 import kit.edu.lego.kompaktor.model.Gate;
 import kit.edu.lego.kompaktor.model.Kompaktor;
-import lejos.nxt.Sound;
 
 public class GateRunner extends ParcoursRunner {
 
@@ -38,9 +36,9 @@ public class GateRunner extends ParcoursRunner {
 		try {
 			System.out.println("Calling gate");
 			Gate.connect();
-//			driver.drive(14, 30);
+
 			
-			Sound.beepSequenceUp();
+			//Sound.beepSequenceUp();
 			
 			// Wait for connection
 			Gate.waitForConnection();
@@ -53,7 +51,6 @@ public class GateRunner extends ParcoursRunner {
 				
 				if (Kompaktor.readDistanceValue() <= 10)
 				{
-					Sound.beep();
 					Kompaktor.DIFF_PILOT_REVERSE.rotate(5);
 				}
 				else {
@@ -67,7 +64,6 @@ public class GateRunner extends ParcoursRunner {
 			Kompaktor.DIFF_PILOT_REVERSE.travel(20);
 			if (Kompaktor.readDistanceValue() <= 15)
 			{
-				Sound.beep();
 				Kompaktor.DIFF_PILOT_REVERSE.rotate(5);
 			}
 			else {
@@ -79,36 +75,33 @@ public class GateRunner extends ParcoursRunner {
 			// Now the gate opens & a timer of 20 seconds starts
 			// in this time the robot has to drive through & send a "I passed"
 			// signal
-//			Thread.sleep(1000);
-//			driver.straight(80);
-//			driver.rotate(-160);
-//			driver.straight(-20);
+
+
 
 			// Robot drives through the gate
 			System.out.println("Driving through.");
 
 			// Tell the gate that robot passed, send a "I passed" signal
 			
-			long time = System.currentTimeMillis();
-			boolean through = false;
-			while (!through) {
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				through = Gate.sendPassed();
-				
-				if (System.currentTimeMillis() - time > 3000) {
-					break;
-				}
-			}
+//			long time = System.currentTimeMillis();
+//			boolean through = false;
+//			while (!through) {
+//				try {
+//					Thread.sleep(100);
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
+//				}
+//				through = Gate.sendPassed();
+//				
+//				if (System.currentTimeMillis() - time > 3000) {
+//					break;
+//				}
+//			}
 		
-			System.out.println("success="+through);
+//			System.out.println("success="+through);
 			
 			Kompaktor.DIFF_PILOT_REVERSE.stop();
 //			driver.stop();
-			//driver.join();
 			
 			Kompaktor.DIFF_PILOT.travel(10);
 			
