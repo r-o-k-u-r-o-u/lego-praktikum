@@ -67,8 +67,12 @@ public class Launcher {
 			while (!Kompaktor.isTouched());
 
 			// assert that the level will end normally for now
-			Kompaktor.startLevel(LEVEL_NAMES.values()[curr]);
-			
+			//Kompaktor.startLevel(LEVEL_NAMES.values()[curr]);
+			try {
+				runParcours(curr);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 			
 		}
 		
