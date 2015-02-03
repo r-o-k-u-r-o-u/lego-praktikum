@@ -72,44 +72,44 @@ public class BridgeWithCube extends ParcoursRunner{
 			bridge.stop();
 			//zum Loch drehen
 			if(((BridgeRun)bridge).getLastHole() == RotantionDirection.Left){
-				Kompaktor.DIFF_PILOT.rotate(-85);
+				Kompaktor.DIFF_PILOT.rotate(-85);//-85
 			} else {
-				Kompaktor.DIFF_PILOT.rotate(85);
+				Kompaktor.DIFF_PILOT.rotate(85);//85
 			}
 			//vorwärtsfahren bis am Rand
 			//LightSwitcher.setAngle(0);
 			Kompaktor.stretchArm();
 			Kompaktor.DIFF_PILOT.forward();
-			while(Kompaktor.LIGHT_SENSOR.readValue() > 30){
+			while(Kompaktor.LIGHT_SENSOR.readValue() > 40){
 				if(Thread.interrupted())
 					throw new InterruptedException();
 			}
 			Kompaktor.DIFF_PILOT.stop();
 			//noch ein kleines Stück vor
-			Kompaktor.DIFF_PILOT.travel(1.5);
+			Kompaktor.DIFF_PILOT.travel(2);
 			//messen des Winkels
 			int left = -90, rigth = 90;
 			int angle = 0;
-			while(Kompaktor.LIGHT_SENSOR.readValue() < 30 && angle < 90){
+			while(Kompaktor.LIGHT_SENSOR.readValue() < 40 && angle < 90){
 				if(Thread.interrupted())
 					throw new InterruptedException();
 				LightSwitcher.setAngle(angle);
 				rigth = angle;
-				angle += 3;
+				angle += 2;
 			}
 			//LightSwitcher.setAngle(0);
 			Kompaktor.stretchArm();
 			angle = 0;
-			while(Kompaktor.LIGHT_SENSOR.readValue() < 30 && angle > -90){
+			while(Kompaktor.LIGHT_SENSOR.readValue() < 40 && angle > -90){
 				if(Thread.interrupted())
 					throw new InterruptedException();
 				LightSwitcher.setAngle(angle);
 				left = angle;
-				angle -= 3;
+				angle -= 2;
 			}
 			int diff = rigth + left;
 			//anpassen dass genau 90°
-			Kompaktor.DIFF_PILOT.rotate(-diff/2);
+			Kompaktor.DIFF_PILOT.rotate(-diff/2.0);
 			//Stück zurück
 			Kompaktor.DIFF_PILOT.travel(-8);
 			//drehen zum Fahrstuhl
@@ -120,6 +120,16 @@ public class BridgeWithCube extends ParcoursRunner{
 			}
 			//Sensor einfahren
 			//LightSwitcher.setAngle(-90);
+			
+//			Kompaktor.DIFF_PILOT.travel(-5);
+//			Kompaktor.DIFF_PILOT.rotate(90);
+//			Kompaktor.stretchArm();
+//			Kompaktor.DIFF_PILOT.forward();
+//			while(Kompaktor.LIGHT_SENSOR.readValue() > 30);
+//			Kompaktor.DIFF_PILOT.stop();
+//			Kompaktor.DIFF_PILOT.travel(-5);
+//			Kompaktor.DIFF_PILOT.rotate(-90);
+			
 			Kompaktor.parkArm();
 			//warten auf verbindung
 			Cube.waitForConnection();
@@ -131,21 +141,26 @@ public class BridgeWithCube extends ParcoursRunner{
 			//hineinfahren
 			Kompaktor.DIFF_PILOT.backward();
 			while(!Kompaktor.isTouchedBoth()){
-				if(Kompaktor.isTouchedLeft()){
-					Kompaktor.DIFF_PILOT.stop();
-					Kompaktor.DIFF_PILOT.travel(2);
-					Kompaktor.DIFF_PILOT.rotate(10);
-					Kompaktor.DIFF_PILOT.backward();
-				}
-				if(Kompaktor.isTouchedRight()){
-					Kompaktor.DIFF_PILOT.stop();
-					Kompaktor.DIFF_PILOT.travel(2);
-					Kompaktor.DIFF_PILOT.rotate(-10);
-					Kompaktor.DIFF_PILOT.backward();
-				}
-				Thread.sleep(50);
+//				Thread.sleep(100);
+//				if(!Kompaktor.isTouchedBoth()){
+//					if(Kompaktor.isTouchedLeft()){
+//						Kompaktor.DIFF_PILOT.stop();
+//						Kompaktor.DIFF_PILOT.travel(2);
+//						Kompaktor.DIFF_PILOT.rotate(10);
+//						Kompaktor.DIFF_PILOT.backward();
+//					}
+//					if(Kompaktor.isTouchedRight()){
+//						Kompaktor.DIFF_PILOT.stop();
+//						Kompaktor.DIFF_PILOT.travel(2);
+//						Kompaktor.DIFF_PILOT.rotate(-10);
+//						Kompaktor.DIFF_PILOT.backward();
+//					}
+//				}
+//				Thread.sleep(100);
+				Thread.yield();
 			}
 			Kompaktor.DIFF_PILOT.stop();
+			Kompaktor.DIFF_PILOT.travel(1);
 			//runter fahren
 			Cube.goDown();
 			//warten bis beendet
