@@ -16,8 +16,8 @@ import lejos.nxt.comm.Bluetooth;
  * @author The Coding-Team
  *
  */
-public class Cube {
-	public static final String LIFT = "Lift";
+public class Lift {
+	public static final String LIFT_NAME = "Lift";
 	private static final int GO_DOWN = 0;
 	private static final int IS_DOWN = 1;
 	private static final int CLOSE_CONNECTION = 2;
@@ -34,7 +34,7 @@ public class Cube {
 	 *            you know what this is for (at least i hope so)
 	 */
 	public static void main(String args[]) {
-		openConnection(LIFT);
+		openConnection(LIFT_NAME);
 		try {
 			waitForConnection();
 		} catch (InterruptedException e) {}
@@ -69,7 +69,7 @@ public class Cube {
 				// connection = Bluetooth.connect("Lift", NXTConnection.RAW, new byte[]{(byte)'1',(byte)'2',(byte)'3',(byte)'4'});
 				while ((connection = Bluetooth.connect(btrd)) == null) {
 					// connection failed, try again...
-					Cube.sleep(100);
+					Lift.sleep(100);
 				}
 				// LCD.clear();
 				LCD.drawString("Connected", 0, 0);

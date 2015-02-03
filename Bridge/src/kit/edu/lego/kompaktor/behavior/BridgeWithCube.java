@@ -1,6 +1,6 @@
 package kit.edu.lego.kompaktor.behavior;
 
-import kit.edu.lego.kompaktor.model.Cube;
+import kit.edu.lego.kompaktor.model.Lift;
 import kit.edu.lego.kompaktor.model.Kompaktor;
 import kit.edu.lego.kompaktor.model.LightSwitcher;
 import kit.edu.lego.kompaktor.model.LightSwitcher.RotantionDirection;
@@ -50,7 +50,7 @@ public class BridgeWithCube extends ParcoursRunner{
 			//Brückenfahrt stoppen
 			bridge.stop();
 			// Verbindung zu Lift aufbauen
-			Cube.openConnection(Cube.LIFT);
+			Lift.openConnection(Lift.LIFT_NAME);
 			//drehen vom Abhang weg
 			if(((BridgeRun)bridge).getLastHole() == RotantionDirection.Left){
 				Kompaktor.DIFF_PILOT.rotate(-20);
@@ -146,7 +146,7 @@ public class BridgeWithCube extends ParcoursRunner{
 			
 			Kompaktor.parkArm();
 			//warten auf verbindung
-			Cube.waitForConnection();
+			Lift.waitForConnection();
 //			//warten auf grün
 //			while(Kompaktor.LIGHT_SENSOR.readValue() < 40){
 //				if(Thread.interrupted())
@@ -176,15 +176,15 @@ public class BridgeWithCube extends ParcoursRunner{
 			Kompaktor.DIFF_PILOT.stop();
 			Kompaktor.DIFF_PILOT.travel(3);
 			//runter fahren
-			Cube.goDown();
+			Lift.goDown();
 			//warten bis beendet
-			while(!Cube.canExit()){
+			while(!Lift.canExit()){
 				Thread.sleep(1000);
 			}
 			//raus fahren
 			Kompaktor.DIFF_PILOT.travel(-30);
 			//Verbindung schließen
-			Cube.closeConnection();
+			Lift.closeConnection();
 			finish = true;
 			//wait until interrupted
 			Thread.sleep(Long.MAX_VALUE);
