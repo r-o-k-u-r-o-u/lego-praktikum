@@ -61,7 +61,8 @@ public class Launcher {
 
 			Sound.beepSequenceUp();
 			while (!Kompaktor.isTouched());
-
+			Sound.beepSequenceUp();
+			
 			// assert that the level will end normally for now
 			Kompaktor.startLevel(LEVEL_NAMES.values()[curr]);
 			
