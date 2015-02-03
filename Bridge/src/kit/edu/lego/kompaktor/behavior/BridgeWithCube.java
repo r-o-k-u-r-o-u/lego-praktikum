@@ -8,7 +8,7 @@ import lejos.nxt.Sound;
 
 public class BridgeWithCube extends ParcoursRunner{
 
-	final static int lightThreshold = 40;
+	final static int lightThreshold = 45;
 	
 	public static void main(String[] args) {
 		//wait until it is pressed
@@ -41,45 +41,13 @@ public class BridgeWithCube extends ParcoursRunner{
 		try{
 			//Brücke faren
 			bridge = (BridgeRun)Kompaktor.startLevel(LEVEL_NAMES.BRIDGE, true);
-//			bridge.setDiscoLight(true);
-			//warten auf Licht
-//			int[] ligths = new int[]{0, 0, 0};
-			//int value = Kompaktor.LIGHT_SENSOR.readValue();
-//			int counter = 0;
-			//while(value < lightThreshold && counter < 5){
-//			while(!Kompaktor.onLED()){
 			while(Kompaktor.LIGHT_SENSOR.readValue() < lightThreshold){
 				if(Thread.interrupted())
-					throw new InterruptedException();
-//				if(value < 36 && value > 26)
-//					counter++;
-//				else
-//					counter = 0;
-//				if(Kompaktor.onLED())
-//					counter++;
-//				else
-//					counter = 0;
-				
-				//Thread.sleep(50);
-//				ligths = Kompaktor.readLightDifferenceArr();
-				
-//				value = Kompaktor.LIGHT_SENSOR.readValue();
-				
+					throw new InterruptedException();	
+				Thread.yield();	
 			}
 			//Brückenfahrt stoppen
 			bridge.stop();
-			
-//			//Brücke fahren
-//			Kompaktor.DIFF_PILOT.travel(10);
-//			bridge = (BridgeRun)Kompaktor.startLevel(LEVEL_NAMES.BRIDGE, true);
-////			bridge.setDiscoLight(true);
-//			while(Kompaktor.LIGHT_SENSOR.readValue() < lightThreshold){
-//				if(Thread.interrupted())
-//					throw new InterruptedException();
-////				Thread.sleep(50);
-//			}
-//			//Brückenfahrt stoppen
-//			bridge.stop();
 			// Verbindung zu Lift aufbauen
 			Cube.openConnection(Cube.LIFT);
 			//drehen vom Abhang weg
@@ -89,14 +57,14 @@ public class BridgeWithCube extends ParcoursRunner{
 				Kompaktor.DIFF_PILOT.rotate(20);
 			}
 			//etwas vorwärtsfahren
-			Kompaktor.DIFF_PILOT.travel(15);
+			Kompaktor.DIFF_PILOT.travel(10);
 			//Grenzwert erhöhen für Licht
-			BridgeRun.thresholdWood = 40;
+			BridgeRun.thresholdWood = lightThreshold;
 			//Brückenfahrt
 			bridge = (BridgeRun)Kompaktor.startLevel(LEVEL_NAMES.BRIDGE, true);
 			//soll nur 2 Sekunden laufen
 			long time = System.currentTimeMillis();
-			while(Math.abs(System.currentTimeMillis() - time) < 1000){
+			while(Math.abs(System.currentTimeMillis() - time) < 2000){
 				if(Thread.interrupted())
 					throw new InterruptedException();
 			}
@@ -112,17 +80,17 @@ public class BridgeWithCube extends ParcoursRunner{
 			//LightSwitcher.setAngle(0);
 			Kompaktor.stretchArm();
 			Kompaktor.DIFF_PILOT.forward();
-			while(Kompaktor.LIGHT_SENSOR.readValue() > 33){
+			while(Kompaktor.LIGHT_SENSOR.readValue() > 30){
 				if(Thread.interrupted())
 					throw new InterruptedException();
 			}
 			Kompaktor.DIFF_PILOT.stop();
 			//noch ein kleines Stück vor
-			Kompaktor.DIFF_PILOT.travel(1);
+			Kompaktor.DIFF_PILOT.travel(1.5);
 			//messen des Winkels
 			int left = -90, rigth = 90;
 			int angle = 0;
-			while(Kompaktor.LIGHT_SENSOR.readValue() < 30){
+			while(Kompaktor.LIGHT_SENSOR.readValue() < 30 && angle < 90){
 				if(Thread.interrupted())
 					throw new InterruptedException();
 				LightSwitcher.setAngle(angle);
@@ -132,7 +100,7 @@ public class BridgeWithCube extends ParcoursRunner{
 			//LightSwitcher.setAngle(0);
 			Kompaktor.stretchArm();
 			angle = 0;
-			while(Kompaktor.LIGHT_SENSOR.readValue() < 30){
+			while(Kompaktor.LIGHT_SENSOR.readValue() < 30 && angle > -90){
 				if(Thread.interrupted())
 					throw new InterruptedException();
 				LightSwitcher.setAngle(angle);
@@ -146,23 +114,37 @@ public class BridgeWithCube extends ParcoursRunner{
 			Kompaktor.DIFF_PILOT.travel(-8);
 			//drehen zum Fahrstuhl
 			if(((BridgeRun)bridge).getLastHole() == RotantionDirection.Left){
-				Kompaktor.DIFF_PILOT.rotate(-85);
+				Kompaktor.DIFF_PILOT.rotate(-90);
 			} else {
-				Kompaktor.DIFF_PILOT.rotate(85);
+				Kompaktor.DIFF_PILOT.rotate(90);
 			}
 			//Sensor einfahren
 			//LightSwitcher.setAngle(-90);
 			Kompaktor.parkArm();
 			//warten auf verbindung
 			Cube.waitForConnection();
-			//warten auf grün
-			while(Kompaktor.LIGHT_SENSOR.readValue() < 40){
-				if(Thread.interrupted())
-					throw new InterruptedException();
-			}
+//			//warten auf grün
+//			while(Kompaktor.LIGHT_SENSOR.readValue() < 40){
+//				if(Thread.interrupted())
+//					throw new InterruptedException();
+//			}
 			//hineinfahren
 			Kompaktor.DIFF_PILOT.backward();
-			while(!Kompaktor.isTouched());
+			while(!Kompaktor.isTouchedBoth()){
+				if(Kompaktor.isTouchedLeft()){
+					Kompaktor.DIFF_PILOT.stop();
+					Kompaktor.DIFF_PILOT.travel(2);
+					Kompaktor.DIFF_PILOT.rotate(10);
+					Kompaktor.DIFF_PILOT.backward();
+				}
+				if(Kompaktor.isTouchedRight()){
+					Kompaktor.DIFF_PILOT.stop();
+					Kompaktor.DIFF_PILOT.travel(2);
+					Kompaktor.DIFF_PILOT.rotate(-10);
+					Kompaktor.DIFF_PILOT.backward();
+				}
+				Thread.sleep(50);
+			}
 			Kompaktor.DIFF_PILOT.stop();
 			//runter fahren
 			Cube.goDown();

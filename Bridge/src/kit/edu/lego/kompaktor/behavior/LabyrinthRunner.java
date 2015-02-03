@@ -342,15 +342,15 @@ public class LabyrinthRunner extends ParcoursRunner {
 		return false;
 	}
 
-	@Override
-	public void stop() throws InterruptedException{
-//		int counter = 0;
-		while(this.isAlive()){
-			//System.out.println("inter " + counter++);
-			this.interrupt();
-			this.join(100);
-		}
-	}
+//	@Override
+//	public void stop() throws InterruptedException{
+////		int counter = 0;
+//		while(this.isAlive()){
+//			//System.out.println("inter " + counter++);
+//			this.interrupt();
+//			this.join(100);
+//		}
+//	}
 	
 	/**
 	 * nur verwenden wenn start() nicht aufgerufen wurde
