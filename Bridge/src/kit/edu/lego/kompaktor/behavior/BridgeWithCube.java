@@ -1,9 +1,10 @@
 package kit.edu.lego.kompaktor.behavior;
 
-import kit.edu.lego.kompaktor.model.Cube;
+import kit.edu.lego.kompaktor.model.Lift;
 import kit.edu.lego.kompaktor.model.Kompaktor;
 import kit.edu.lego.kompaktor.model.LightSwitcher;
 import kit.edu.lego.kompaktor.model.LightSwitcher.RotantionDirection;
+import lejos.nxt.Motor;
 import lejos.nxt.Sound;
 
 public class BridgeWithCube extends ParcoursRunner{
@@ -49,7 +50,7 @@ public class BridgeWithCube extends ParcoursRunner{
 			//Brückenfahrt stoppen
 			bridge.stop();
 			// Verbindung zu Lift aufbauen
-			Cube.openConnection(Cube.LIFT);
+			Lift.openConnection(Lift.LIFT_NAME);
 			//drehen vom Abhang weg
 			if(((BridgeRun)bridge).getLastHole() == RotantionDirection.Left){
 				Kompaktor.DIFF_PILOT.rotate(-20);
@@ -89,24 +90,37 @@ public class BridgeWithCube extends ParcoursRunner{
 			Kompaktor.DIFF_PILOT.travel(2);
 			//messen des Winkels
 			int left = -90, rigth = 90;
-			int angle = 0;
-			while(Kompaktor.LIGHT_SENSOR.readValue() < 40 && angle < 90){
-				if(Thread.interrupted())
-					throw new InterruptedException();
-				LightSwitcher.setAngle(angle);
-				rigth = angle;
-				angle += 2;
-			}
-			//LightSwitcher.setAngle(0);
 			Kompaktor.stretchArm();
-			angle = 0;
-			while(Kompaktor.LIGHT_SENSOR.readValue() < 40 && angle > -90){
-				if(Thread.interrupted())
-					throw new InterruptedException();
-				LightSwitcher.setAngle(angle);
-				left = angle;
-				angle -= 2;
-			}
+			int oldSpeed = Motor.A.getSpeed();
+			Motor.A.setSpeed(20);
+			Motor.A.forward();
+			while(Kompaktor.LIGHT_SENSOR.readValue() < 40 & (rigth = LightSwitcher.getRegulatedCurrentAngle()) < 90);
+			Motor.A.setSpeed(oldSpeed);
+			Kompaktor.stretchArm();
+			Motor.A.setSpeed(20);
+			Motor.A.backward();
+			while(Kompaktor.LIGHT_SENSOR.readValue() < 40 & (left = LightSwitcher.getRegulatedCurrentAngle()) < 90);
+			Motor.A.stop();
+			Motor.A.setSpeed(oldSpeed);
+			
+//			int angle = 0;
+//			while(Kompaktor.LIGHT_SENSOR.readValue() < 40 && angle < 90){
+//				if(Thread.interrupted())
+//					throw new InterruptedException();
+//				LightSwitcher.setAngle(angle);
+//				rigth = angle;
+//				angle += 2;
+//			}
+//			//LightSwitcher.setAngle(0);
+//			Kompaktor.stretchArm();
+//			angle = 0;
+//			while(Kompaktor.LIGHT_SENSOR.readValue() < 40 && angle > -90){
+//				if(Thread.interrupted())
+//					throw new InterruptedException();
+//				LightSwitcher.setAngle(angle);
+//				left = angle;
+//				angle -= 2;
+//			}
 			int diff = rigth + left;
 			//anpassen dass genau 90°
 			Kompaktor.DIFF_PILOT.rotate(-diff/2.0);
@@ -132,7 +146,7 @@ public class BridgeWithCube extends ParcoursRunner{
 			
 			Kompaktor.parkArm();
 			//warten auf verbindung
-			Cube.waitForConnection();
+			Lift.waitForConnection();
 //			//warten auf grün
 //			while(Kompaktor.LIGHT_SENSOR.readValue() < 40){
 //				if(Thread.interrupted())
@@ -141,36 +155,36 @@ public class BridgeWithCube extends ParcoursRunner{
 			//hineinfahren
 			Kompaktor.DIFF_PILOT.backward();
 			while(!Kompaktor.isTouchedBoth()){
-//				Thread.sleep(100);
-//				if(!Kompaktor.isTouchedBoth()){
-//					if(Kompaktor.isTouchedLeft()){
-//						Kompaktor.DIFF_PILOT.stop();
-//						Kompaktor.DIFF_PILOT.travel(2);
-//						Kompaktor.DIFF_PILOT.rotate(10);
-//						Kompaktor.DIFF_PILOT.backward();
-//					}
-//					if(Kompaktor.isTouchedRight()){
-//						Kompaktor.DIFF_PILOT.stop();
-//						Kompaktor.DIFF_PILOT.travel(2);
-//						Kompaktor.DIFF_PILOT.rotate(-10);
-//						Kompaktor.DIFF_PILOT.backward();
-//					}
-//				}
-//				Thread.sleep(100);
-				Thread.yield();
+				Thread.sleep(1500);
+				if(!Kompaktor.isTouchedBoth()){
+					if(Kompaktor.isTouchedLeft()){
+						Kompaktor.DIFF_PILOT.stop();
+						Kompaktor.DIFF_PILOT.travel(2);
+						Kompaktor.DIFF_PILOT.rotate(30);
+						Kompaktor.DIFF_PILOT.backward();
+					}
+					if(Kompaktor.isTouchedRight()){
+						Kompaktor.DIFF_PILOT.stop();
+						Kompaktor.DIFF_PILOT.travel(2);
+						Kompaktor.DIFF_PILOT.rotate(-30);
+						Kompaktor.DIFF_PILOT.backward();
+					}
+				}
+				Thread.sleep(700);
+//				Thread.yield();
 			}
 			Kompaktor.DIFF_PILOT.stop();
-			Kompaktor.DIFF_PILOT.travel(1);
+			Kompaktor.DIFF_PILOT.travel(3);
 			//runter fahren
-			Cube.goDown();
+			Lift.goDown();
 			//warten bis beendet
-			while(!Cube.canExit()){
+			while(!Lift.canExit()){
 				Thread.sleep(1000);
 			}
 			//raus fahren
 			Kompaktor.DIFF_PILOT.travel(-30);
 			//Verbindung schließen
-			Cube.closeConnection();
+			Lift.closeConnection();
 			finish = true;
 			//wait until interrupted
 			Thread.sleep(Long.MAX_VALUE);
