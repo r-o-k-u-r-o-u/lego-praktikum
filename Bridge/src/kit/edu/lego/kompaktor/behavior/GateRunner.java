@@ -5,7 +5,7 @@ import kit.edu.lego.kompaktor.model.Kompaktor;
 
 public class GateRunner extends ParcoursRunner {
 
-	private LabyrinthRunner driver;
+//	private LabyrinthRunner driver;
 	ParcoursRunner ropeBridgeRunner;
 
 	public static void main(String[] args) {
@@ -25,17 +25,18 @@ public class GateRunner extends ParcoursRunner {
 	}
 
 	public GateRunner() {
-		driver = new LabyrinthRunner();
+//		driver = new LabyrinthRunner();
 	}
 
 	@Override
 	public void run() {
 
+		int threshWood = 30;
+		
 		try {
 			System.out.println("Calling gate");
 			Gate.connect();
-			Kompaktor.DIFF_PILOT_REVERSE.travel(30);
-//			driver.drive(14, 20);
+
 			
 			//Sound.beepSequenceUp();
 			
@@ -43,33 +44,39 @@ public class GateRunner extends ParcoursRunner {
 			Gate.waitForConnection();
 			System.out.println("Connected to the gate.");
 
+//			Kompaktor.SONIC_SENSOR.setMode(UltrasonicSensor.MODE_CONTINUOUS);
+			Kompaktor.SONIC_SENSOR.continuous();
+			
+			while (Kompaktor.readLightValue() >= threshWood) {
+				
+				if (Kompaktor.readDistanceValue() <= 10)
+				{
+					Kompaktor.DIFF_PILOT_REVERSE.rotate(5);
+				}
+				else {
+					Kompaktor.DIFF_PILOT_REVERSE.rotate(-5);
+				}
+				
+				Kompaktor.DIFF_PILOT_REVERSE.travel(10);
+				
+			}
+			
+			Kompaktor.DIFF_PILOT_REVERSE.travel(20);
+			if (Kompaktor.readDistanceValue() <= 15)
+			{
+				Kompaktor.DIFF_PILOT_REVERSE.rotate(5);
+			}
+			else {
+				Kompaktor.DIFF_PILOT_REVERSE.rotate(-5);
+			}
+			Kompaktor.DIFF_PILOT_REVERSE.travel(20);
+			Kompaktor.DIFF_PILOT_REVERSE.rotate(180);
+			
 			// Now the gate opens & a timer of 20 seconds starts
 			// in this time the robot has to drive through & send a "I passed"
 			// signal
-			//Thread.sleep(1000);
-			
-//			double left, right;
-//			left = Kompaktor.SONIC_SENSOR.getDistance();
-//			Kompaktor.DIFF_PILOT_REVERSE.rotate(-180);
-//			right = Kompaktor.SONIC_SENSOR.getDistance();
-//			Kompaktor.DIFF_PILOT_REVERSE.rotate(90);
-//			double middle = (left + right) / 2.0;
-//			Kompaktor.DIFF_PILOT_REVERSE.travel(middle - left);
-//			Kompaktor.DIFF_PILOT_REVERSE.rotate(90);
-			
-			
-			//driver.straight(80);
-			Kompaktor.DIFF_PILOT_REVERSE.travel(50);
-			Gate.sendPassed();
-			//driver.drive(20, 70);
-			driver.init();
-			//driver.start();
-			//Thread.sleep(5000);
-			//driver.stop();
-			driver.drive(20, 80);
-			driver.rotate(-160);
-			driver.straight(-20);
-			driver.stopHelpThreads();
+
+
 
 			// Robot drives through the gate
 			System.out.println("Driving through.");
@@ -93,9 +100,11 @@ public class GateRunner extends ParcoursRunner {
 		
 //			System.out.println("success="+through);
 			
-			//driver.stop();
-			//driver.join();
-			//driver.stopHelpThreads();
+			Kompaktor.DIFF_PILOT_REVERSE.stop();
+//			driver.stop();
+			
+			Kompaktor.DIFF_PILOT.travel(10);
+			
 			
 			Kompaktor.showText("Starting RopeBridgeRunner");
 			
