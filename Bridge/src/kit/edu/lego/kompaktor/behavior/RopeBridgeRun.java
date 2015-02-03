@@ -1,6 +1,8 @@
 package kit.edu.lego.kompaktor.behavior;
 import kit.edu.lego.kompaktor.model.Kompaktor;
+import kit.edu.lego.kompaktor.model.LightSwitcher;
 import kit.edu.lego.kompaktor.model.LightSwitcher.RotantionDirection;
+import lejos.nxt.Motor;
 
 public class RopeBridgeRun extends ParcoursRunner{
 
@@ -12,7 +14,7 @@ public class RopeBridgeRun extends ParcoursRunner{
 //		DifferentialPilot pilot = new DifferentialPilot(3, 17, Motor.C, Motor.B, true);
 				
 		while(!Kompaktor.isTouched());
-//		LightSwitcher.initAngles();
+		LightSwitcher.initAngles();
 		
 		RopeBridgeRun ropeBridge = new RopeBridgeRun();
 		ropeBridge.init();
@@ -52,28 +54,72 @@ public class RopeBridgeRun extends ParcoursRunner{
 			//ein Stück vorfahren damit auf Brücke
 			Kompaktor.DIFF_PILOT.travel(28);
 			
-			bridge = new BridgeRun();
-			bridge.init();
-			bridge.start();
+			boolean endBridge = false;
+			while(!endBridge){
 			
-			//Erkennen dass über 1000ms kein Holz erkannt wurde, dann ist Ende der Hängebrücke
-			int value = 0;
-			boolean find = false;
-			long lastMillis = System.currentTimeMillis();
-			while(!find){
-				if(Thread.interrupted())
-					throw new InterruptedException();
-				value = Kompaktor.LIGHT_SENSOR.readValue();
-				if(value < 40 && value > 30){
-					lastMillis = System.currentTimeMillis();
+				bridge = new BridgeRun();
+				bridge.setEndless(false);
+				bridge.init();
+				bridge.start();
+				
+				
+				while(!bridge.isDone()){
+					Thread.yield();
 				}
-				find = (System.currentTimeMillis() - lastMillis > 1000);
-				//Thread.sleep(10);
+				//bridge.stop();
+				
+				//Arm ganz an Seite
+				
+				Kompaktor.DIFF_PILOT.stop();
+				
+				float rotSpeed = Motor.A.getSpeed();
+				LightSwitcher.setAngle(-90);
+				Motor.A.setSpeed(100);
+				Motor.A.forward();
+				int positionLeftBlack, positionLeftWhite;
+				while(Kompaktor.LIGHT_SENSOR.readValue() > 30 && LightSwitcher.getRegulatedCurrentAngle() < 85);
+				positionLeftBlack = LightSwitcher.getRegulatedCurrentAngle();
+				while(Kompaktor.LIGHT_SENSOR.readValue() <= 30 && LightSwitcher.getRegulatedCurrentAngle() < 85);
+				positionLeftWhite = LightSwitcher.getRegulatedCurrentAngle();
+				Motor.A.stop();
+				Motor.A.setSpeed(rotSpeed);
+				LightSwitcher.setAngle(90);
+				Motor.A.setSpeed(100);
+				Motor.A.backward();
+				int positionRigthBlack, positionRigthWhite;
+				while(Kompaktor.LIGHT_SENSOR.readValue() > 30 && LightSwitcher.getRegulatedCurrentAngle() > -85);
+				positionRigthBlack = LightSwitcher.getRegulatedCurrentAngle();
+				while(Kompaktor.LIGHT_SENSOR.readValue() <= 30 && LightSwitcher.getRegulatedCurrentAngle() > -85);
+				positionRigthWhite = LightSwitcher.getRegulatedCurrentAngle();
+				Motor.A.stop();
+				
+				Motor.A.setSpeed(rotSpeed);
+				
+				int diffLeft = Math.abs(positionLeftBlack - positionLeftWhite);
+				int diffRight = Math.abs(positionRigthBlack - positionRigthWhite);
+				if(diffLeft > 20 && diffRight > 20){
+					endBridge = true;
+				}
 			}
 			
-			
-	//		System.out.println("Lighth detected: " + value);
-			bridge.stop();
+//			//Erkennen dass über 1000ms kein Holz erkannt wurde, dann ist Ende der Hängebrücke
+//			int value = 0;
+//			boolean find = false;
+//			long lastMillis = System.currentTimeMillis();
+//			while(!find){
+//				if(Thread.interrupted())
+//					throw new InterruptedException();
+//				value = Kompaktor.LIGHT_SENSOR.readValue();
+//				if(value < 40 && value > 30){
+//					lastMillis = System.currentTimeMillis();
+//				}
+//				find = (System.currentTimeMillis() - lastMillis > 1000);
+//				//Thread.sleep(10);
+//			}
+//			
+//			
+//	//		System.out.println("Lighth detected: " + value);
+//			bridge.stop();
 
 	
 			
@@ -104,12 +150,12 @@ public class RopeBridgeRun extends ParcoursRunner{
 				valueWood = Kompaktor.LIGHT_SENSOR.readValue();
 			}
 			Kompaktor.DIFF_PILOT.stop();
-//			//30 Grad zurück drehen
-//			Kompaktor.DIFF_PILOT.setRotateSpeed(rotSpeedDefalut);
-//			if(bridge.getLastHole() == RotantionDirection.Left)
-//				Kompaktor.DIFF_PILOT.rotate(30);
-//			else
-//				Kompaktor.DIFF_PILOT.rotate(-30);
+			//30 Grad zurück drehen
+			Kompaktor.DIFF_PILOT.setRotateSpeed(rotSpeedDefalut);
+			if(bridge.getLastHole() == RotantionDirection.Left)
+				Kompaktor.DIFF_PILOT.rotate(30);
+			else
+				Kompaktor.DIFF_PILOT.rotate(-30);
 			//suchen nach der linie
 			Kompaktor.DIFF_PILOT.setRotateSpeed(15);
 			if(bridge.getLastHole() == RotantionDirection.Left)
