@@ -92,12 +92,12 @@ public class BridgeWithCube extends ParcoursRunner{
 			int left = -90, rigth = 90;
 			Kompaktor.stretchArm();
 			int oldSpeed = Motor.A.getSpeed();
-			Motor.A.setSpeed(10);
+			Motor.A.setSpeed(20);
 			Motor.A.forward();
 			while(Kompaktor.LIGHT_SENSOR.readValue() < 40 & (rigth = LightSwitcher.getRegulatedCurrentAngle()) < 90);
 			Motor.A.setSpeed(oldSpeed);
 			Kompaktor.stretchArm();
-			Motor.A.setSpeed(10);
+			Motor.A.setSpeed(20);
 			Motor.A.backward();
 			while(Kompaktor.LIGHT_SENSOR.readValue() < 40 & (left = LightSwitcher.getRegulatedCurrentAngle()) < 90);
 			Motor.A.stop();
