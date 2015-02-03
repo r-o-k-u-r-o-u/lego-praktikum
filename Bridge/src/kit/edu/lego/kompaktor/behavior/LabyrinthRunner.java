@@ -23,17 +23,17 @@ public class LabyrinthRunner extends ParcoursRunner {
 
 	public LabyrinthRunner() {
 
-		try {
-			Thread.sleep(10000);
-			System.out.println("would interrupt");
-			this.stop();
-			System.out.println("is interrupted");
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-
-		while (Kompaktor.isNotTouched())
-			;
+//		try {
+//			Thread.sleep(10000);
+//			System.out.println("would interrupt");
+//			this.stop();
+//			System.out.println("is interrupted");
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
+//
+//		while (Kompaktor.isNotTouched())
+//			;
 
 	}
 
