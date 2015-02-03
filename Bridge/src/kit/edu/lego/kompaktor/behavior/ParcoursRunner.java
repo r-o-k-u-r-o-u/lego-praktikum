@@ -85,8 +85,10 @@ public abstract class ParcoursRunner extends Thread {
 	//public abstract void transition(String toLevelName);
 	
 	public void stop() throws InterruptedException{
-		this.interrupt();
-		this.join();
+		while(this.isAlive()){
+			this.interrupt();
+			this.join(100);
+		}
 	}
 	
 }
