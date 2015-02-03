@@ -1,9 +1,7 @@
 package kit.edu.lego.kompaktor.behavior;
 
-
 import kit.edu.lego.kompaktor.model.Gate;
 import kit.edu.lego.kompaktor.model.Kompaktor;
-import lejos.nxt.Sound;
 
 public class GateRunner extends ParcoursRunner {
 
