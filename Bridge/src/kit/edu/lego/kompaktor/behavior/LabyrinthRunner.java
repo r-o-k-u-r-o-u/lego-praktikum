@@ -352,4 +352,25 @@ public class LabyrinthRunner extends ParcoursRunner {
 		}
 	}
 	
+	/**
+	 * nur verwenden wenn start() nicht aufgerufen wurde
+	 */
+	public void stopHelpThreads(){
+		//System.out.println("interrupt start");
+		collisionControl.interrupt();
+		//System.out.println("coll inter");
+		distanceMeasure.interrupt();
+		//System.out.println("dist inter");
+		pilot.stop();
+		try {
+			collisionControl.join();
+			//System.out.println("coll finish");
+			distanceMeasure.join();
+			//System.out.println("dist finish");
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
+		pilot.stop();
+	}
+	
 }

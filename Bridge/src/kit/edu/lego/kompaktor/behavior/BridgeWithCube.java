@@ -41,13 +41,14 @@ public class BridgeWithCube extends ParcoursRunner{
 		try{
 			//Brücke faren
 			bridge = (BridgeRun)Kompaktor.startLevel(LEVEL_NAMES.BRIDGE, true);
-			bridge.setDiscoLight(true);
+//			bridge.setDiscoLight(true);
 			//warten auf Licht
 //			int[] ligths = new int[]{0, 0, 0};
 			//int value = Kompaktor.LIGHT_SENSOR.readValue();
 //			int counter = 0;
 			//while(value < lightThreshold && counter < 5){
-			while(!Kompaktor.onLED()){
+//			while(!Kompaktor.onLED()){
+			while(Kompaktor.LIGHT_SENSOR.readValue() < lightThreshold){
 				if(Thread.interrupted())
 					throw new InterruptedException();
 //				if(value < 36 && value > 26)
@@ -59,7 +60,7 @@ public class BridgeWithCube extends ParcoursRunner{
 //				else
 //					counter = 0;
 				
-				Thread.sleep(50);
+				//Thread.sleep(50);
 //				ligths = Kompaktor.readLightDifferenceArr();
 				
 //				value = Kompaktor.LIGHT_SENSOR.readValue();
@@ -68,17 +69,17 @@ public class BridgeWithCube extends ParcoursRunner{
 			//Brückenfahrt stoppen
 			bridge.stop();
 			
-			//Brücke fahren
-			Kompaktor.DIFF_PILOT.travel(10);
-			bridge = (BridgeRun)Kompaktor.startLevel(LEVEL_NAMES.BRIDGE, true);
-			bridge.setDiscoLight(true);
-			while(!Kompaktor.onLED()){
-				if(Thread.interrupted())
-					throw new InterruptedException();
-				Thread.sleep(50);
-			}
-			//Brückenfahrt stoppen
-			bridge.stop();
+//			//Brücke fahren
+//			Kompaktor.DIFF_PILOT.travel(10);
+//			bridge = (BridgeRun)Kompaktor.startLevel(LEVEL_NAMES.BRIDGE, true);
+////			bridge.setDiscoLight(true);
+//			while(Kompaktor.LIGHT_SENSOR.readValue() < lightThreshold){
+//				if(Thread.interrupted())
+//					throw new InterruptedException();
+////				Thread.sleep(50);
+//			}
+//			//Brückenfahrt stoppen
+//			bridge.stop();
 			// Verbindung zu Lift aufbauen
 			Cube.openConnection(Cube.LIFT);
 			//drehen vom Abhang weg
