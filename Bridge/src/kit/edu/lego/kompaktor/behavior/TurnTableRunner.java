@@ -47,9 +47,18 @@ public class TurnTableRunner extends ParcoursRunner {
 
 			TurnTable turnTable = new TurnTable();
 
+			System.out.println("Connecting");
+			
 			// connect to turntable
-			turnTable.connect();
-			turnTable.waitForConnection();
+			while (!turnTable.connect()) {
+				if (Thread.interrupted())
+					throw new InterruptedException();
+				
+				Thread.sleep(500);
+			}
+//			turnTable.waitForConnection();
+			
+			System.out.println("Connected.");
 			
 			// wait until its my turn
 			while (!turnTable.waitHello()) {
@@ -59,6 +68,7 @@ public class TurnTableRunner extends ParcoursRunner {
 				Thread.sleep(200);
 			}
 			
+			System.out.println("My turn.");
 
 			line = new LineRunner();
 			line.start();

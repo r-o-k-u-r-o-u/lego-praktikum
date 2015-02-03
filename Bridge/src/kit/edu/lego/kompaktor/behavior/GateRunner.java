@@ -63,15 +63,18 @@ public class GateRunner extends ParcoursRunner {
 				
 			}
 			
-			Kompaktor.DIFF_PILOT_REVERSE.travel(20);
-			if (Kompaktor.readDistanceValue() <= 15)
-			{
-				Kompaktor.DIFF_PILOT_REVERSE.rotate(5);
+			for (int i = 0; i < 4; i++) {
+				Kompaktor.DIFF_PILOT_REVERSE.travel(10);
+				if (Kompaktor.readDistanceValue() <= 15)
+				{
+					Kompaktor.DIFF_PILOT_REVERSE.rotate(5);
+				}
+				else {
+					Kompaktor.DIFF_PILOT_REVERSE.rotate(-5);
+				}
 			}
-			else {
-				Kompaktor.DIFF_PILOT_REVERSE.rotate(-5);
-			}
-			Kompaktor.DIFF_PILOT_REVERSE.travel(20);
+			
+			Kompaktor.DIFF_PILOT_REVERSE.travel(10);
 			Kompaktor.DIFF_PILOT_REVERSE.rotate(180);
 			
 			// Now the gate opens & a timer of 20 seconds starts
