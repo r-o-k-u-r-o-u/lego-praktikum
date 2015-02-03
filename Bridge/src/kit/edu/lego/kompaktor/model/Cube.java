@@ -24,6 +24,7 @@ public class Cube {
 	private static DataInputStream dis;
 	private static DataOutputStream dos;
 	private static BTConnection connection;
+	private static Thread connectionThread;
 
 	/**
 	 * just a main function...
@@ -32,10 +33,10 @@ public class Cube {
 	 *            you know what this is for (at least i hope so)
 	 */
 	public static void main(String args[]) {
-		while (!openConnection(LIFT)) {
-			LCD.drawString("wait", 0, 1);
-			sleep(1000); // waiting for free connection
-		}
+		openConnection(LIFT);
+		try {
+			waitForConnection();
+		} catch (InterruptedException e) {}
 		goDown();
 		LCD.drawString("Going down", 0, 1);
 		while (!canExit()) {
@@ -54,25 +55,35 @@ public class Cube {
 	 *            the server)
 	 * @return if the connection could be established or not
 	 */
-	public static boolean openConnection(String server) {
-		RemoteDevice btrd = Bluetooth.getKnownDevice(server);
-		if (btrd == null) {
-			// no such device, you should pair your devices first or check the
-			// Devices name
-			return false;
-		}
-		
-//		connection = Bluetooth.connect("Lift", NXTConnection.RAW, new byte[]{(byte)'1',(byte)'2',(byte)'3',(byte)'4'});
-		connection = Bluetooth.connect(btrd);
-		if (connection == null) {
-			// connection failed, try again...
-			return false;
-		}
-		// LCD.clear();
-		LCD.drawString("Connected", 0, 0);
-		dis = connection.openDataInputStream();
-		dos = connection.openDataOutputStream();
-		return true;
+	public static void openConnection(String server) {
+		connectionThread = new Thread() {
+			public void run() {
+				RemoteDevice btrd = Bluetooth.getKnownDevice(server);
+				if (btrd == null) {
+					// no such device, you should pair your devices first or check the
+					// Devices name
+					return;
+				}
+				
+				// connection = Bluetooth.connect("Lift", NXTConnection.RAW, new byte[]{(byte)'1',(byte)'2',(byte)'3',(byte)'4'});
+				while ((connection = Bluetooth.connect(btrd)) == null) {
+					// connection failed, try again...
+					Cube.sleep(100);
+				}
+				// LCD.clear();
+				LCD.drawString("Connected", 0, 0);
+				dis = connection.openDataInputStream();
+				dos = connection.openDataOutputStream();
+			}
+		};
+		connectionThread.start();
+	}
+	
+	/**
+	 *  Call to wait for connection to be established
+	 */
+	public static void waitForConnection() throws InterruptedException {
+		connectionThread.join();
 	}
 
 	/**

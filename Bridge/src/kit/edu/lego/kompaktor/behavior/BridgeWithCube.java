@@ -67,7 +67,8 @@ public class BridgeWithCube extends ParcoursRunner{
 			}
 			//Brückenfahrt stoppen
 			bridge.stop();
-			//Brücke faren
+			
+			//Brücke fahren
 			Kompaktor.DIFF_PILOT.travel(10);
 			bridge = (BridgeRun)Kompaktor.startLevel(LEVEL_NAMES.BRIDGE, true);
 			bridge.setDiscoLight(true);
@@ -78,6 +79,8 @@ public class BridgeWithCube extends ParcoursRunner{
 			}
 			//Brückenfahrt stoppen
 			bridge.stop();
+			// Verbindung zu Lift aufbauen
+			Cube.openConnection(Cube.LIFT);
 			//drehen vom Abhang weg
 			if(((BridgeRun)bridge).getLastHole() == RotantionDirection.Left){
 				Kompaktor.DIFF_PILOT.rotate(-20);
@@ -150,9 +153,7 @@ public class BridgeWithCube extends ParcoursRunner{
 			//LightSwitcher.setAngle(-90);
 			Kompaktor.parkArm();
 			//warten auf verbindung
-			while(!Cube.openConnection(Cube.LIFT)){
-				Thread.sleep(1000);
-			}
+			Cube.waitForConnection();
 			//warten auf grün
 			while(Kompaktor.LIGHT_SENSOR.readValue() < 40){
 				if(Thread.interrupted())

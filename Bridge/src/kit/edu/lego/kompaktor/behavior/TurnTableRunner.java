@@ -48,12 +48,8 @@ public class TurnTableRunner extends ParcoursRunner {
 			TurnTable turnTable = new TurnTable();
 
 			// connect to turntable
-			while (!turnTable.connect()) {
-				if (Thread.interrupted())
-					throw new InterruptedException();
-				
-				Thread.sleep(500);
-			}
+			turnTable.connect();
+			turnTable.waitForConnection();
 			
 			// wait until its my turn
 			while (!turnTable.waitHello()) {
