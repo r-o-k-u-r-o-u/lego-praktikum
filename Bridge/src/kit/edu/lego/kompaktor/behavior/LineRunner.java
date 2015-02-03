@@ -5,12 +5,12 @@ import kit.edu.lego.kompaktor.model.LightSwitcher;
 
 public class LineRunner extends ParcoursRunner {
 
-	final static int angleRotateLine = 20;
-	final static int travelSpeedLine = 20;
-	final static int travelLengthLine = 3;
-	final static int ThresholdAngleForward = 10;
-	final static int ThresholdLine = 40;
-	final static int numberSwitchFinish = 3;
+	public final static int angleRotateLine = 20;
+	public final static int travelSpeedLine = 20;
+	public final static int travelLengthLine = 3;
+	public final static int ThresholdAngleForward = 10;
+	public final static int ThresholdLine = 40;
+	public final static int numberSwitchFinish = 3;
 	
 	public static void main(String[] args) {
 		//wait until it is pressed

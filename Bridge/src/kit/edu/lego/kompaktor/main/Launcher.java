@@ -1,8 +1,12 @@
 package kit.edu.lego.kompaktor.main;
 
+import kit.edu.lego.kompaktor.behavior.BarcodeDetector;
+import kit.edu.lego.kompaktor.behavior.LineRunner;
 import kit.edu.lego.kompaktor.behavior.ParcoursRunner;
+import kit.edu.lego.kompaktor.behavior.UTurnRunner;
 import kit.edu.lego.kompaktor.behavior.ParcoursRunner.LEVEL_NAMES;
 import kit.edu.lego.kompaktor.model.Kompaktor;
+import kit.edu.lego.kompaktor.model.LightSwitcher;
 import lejos.nxt.Button;
 import lejos.nxt.LCD;
 import lejos.nxt.Sound;
@@ -70,14 +74,164 @@ public class Launcher {
 		
 	}
 	
-	private void runParcours() {
-		while (true) {
-			// do something
+	private void runParcours(int curr) throws InterruptedException {
+		LEVEL_NAMES current = LEVEL_NAMES.values()[curr];
+		//wenn UTurn ausgewählt
+		if(current.equals(LEVEL_NAMES.U_TURN)){
+			transitionStartUTurn();
+			//Barcode erstellen und starten
+			BarcodeDetector bar = new BarcodeDetector();
+			bar.init();
+			bar.start();
+			//UTurn starten
+			ParcoursRunner uturn = Kompaktor.startLevel(LEVEL_NAMES.U_TURN, true);
+			//warten bis Barcode gefunden			
+			while (!bar.isDone()) {
+				Thread.yield();
+			}
+			//uturn und barcode stoppen
+			uturn.stop();
+			bar.stop();
+			//transition zu LineFollow
+			transitionEndUTurn();
+			//auf LineRunner setzen
+			current = LEVEL_NAMES.LINE_FOLLOW;
+		}	
+		if(current.equals(LEVEL_NAMES.LINE_FOLLOW)){
+			transitionStartLineFollow();
+			Kompaktor.startLevel(LEVEL_NAMES.LINE_FOLLOW);
+			transitionEndLineFollow();
+			current = LEVEL_NAMES.BRIDGE_ELEVATOR;
+		}
+		if(current.equals(LEVEL_NAMES.BRIDGE_ELEVATOR)){
+			transitionStartBridgeWithCube();
+			Kompaktor.startLevel(LEVEL_NAMES.BRIDGE_ELEVATOR);
+			transitionEndBridgeWithCube();
+			current = LEVEL_NAMES.LABYRINTH;
+		}
+		if(current.equals(LEVEL_NAMES.LABYRINTH)){
+			transitionStartLabyrinth();
+			//Barcode erstellen und starten
+			BarcodeDetector bar = new BarcodeDetector();
+			bar.init();
+			bar.start();
+			//Labyrinth starten
+			ParcoursRunner labyrinth = Kompaktor.startLevel(LEVEL_NAMES.LABYRINTH, true);
+			//warten bis Barcode gefunden			
+			while (!bar.isDone()) {
+				Thread.yield();
+			}
+			//Labyrinth und barcode stoppen
+			labyrinth.stop();
+			bar.stop();
+			//transition zu Gate
+			transitionEndLabyrinth();
+			//auf LineRunner setzen
+			current = LEVEL_NAMES.GATE;
+		}
+		if(current.equals(LEVEL_NAMES.GATE)){
+			transitionStartGate();
+			Kompaktor.startLevel(LEVEL_NAMES.GATE);
+			transitionEndGate();
+			current = LEVEL_NAMES.TURN_TABLE;
+		}
+		if(current.equals(LEVEL_NAMES.TURN_TABLE)){
+			transitionStartTurnTable();
+			Kompaktor.startLevel(LEVEL_NAMES.TURN_TABLE);
+			transitionEndTurnTable();
+			//current = LEVEL_NAMES.TURN_TABLE;
 		}
 	}
 	
-//	public ParcoursRunner getSegmentRunnerThread(ParcoursRunner.LEVEL_NAMES levelName) {
-//		return ParcoursRunner.getNewRunner(levelName);
-//	}
+	
+	private void transitionStartUTurn(){
+		//Arm parken
+		Kompaktor.parkArm();
+	}
+	
+	private void transitionEndUTurn(){
+		//drehen
+		Kompaktor.DIFF_PILOT.rotate(180);
+	}
+	
+	private void transitionStartLineFollow(){
+		//Sensor ausrichten
+		Kompaktor.stretchArm();
+		//vorwärts fahren bis Linie erkannt
+		Kompaktor.DIFF_PILOT.forward();
+		while(Kompaktor.LIGHT_SENSOR.readValue() < LineRunner.ThresholdLine);
+		Kompaktor.DIFF_PILOT.stop();
+	}
+	
+	private void transitionEndLineFollow() throws InterruptedException{
+		//detector ausrichten
+		Kompaktor.stretchArm();
+		//neuen Barcode scannen
+		BarcodeDetector bar = new BarcodeDetector();
+		bar.init();
+		bar.start();
+		//vorwärts fahren
+		Kompaktor.DIFF_PILOT.forward();
+		//sobald barcode gefunden wird gestoppt
+		while(!bar.isDone());
+		Kompaktor.DIFF_PILOT.stop();
+		bar.stop();
+	}
+	
+	private void transitionStartBridgeWithCube(){
+		//etwas vorfahren auf die Brücke
+		Kompaktor.parkArm();
+		Kompaktor.DIFF_PILOT.travel(20);
+	}
+	
+	private void transitionEndBridgeWithCube(){
+		
+	}
+	
+	private void transitionStartLabyrinth(){
+		//Arm einfahren
+		Kompaktor.parkArm();
+	}
+	
+	private void transitionEndLabyrinth(){
+		
+	}
+	
+	private void transitionStartGate(){
+		//Arm einfahren
+		Kompaktor.parkArm();
+		//etwas vorwärtsfahren
+		Kompaktor.DIFF_PILOT_REVERSE.travel(30);
+	}
+	
+	private void transitionEndGate() throws InterruptedException{
+		//detector ausrichten
+		Kompaktor.stretchArm();
+		//neuen Barcode scannen
+		BarcodeDetector bar = new BarcodeDetector();
+		bar.init();
+		bar.start();
+		//vorwärts fahren
+		Kompaktor.DIFF_PILOT.forward();
+		//sobald barcode gefunden wird gestoppt
+		while(!bar.isDone());
+		Kompaktor.DIFF_PILOT.stop();
+		bar.stop();
+	}
+	
+	private void transitionStartTurnTable(){
+		//Arm einfahren
+		Kompaktor.startArm();
+		//etwas vorwärtsfahren
+		Kompaktor.DIFF_PILOT.travel(10);
+	}
+	
+	private void transitionEndTurnTable(){
+		Sound.beepSequenceUp();
+		Sound.beepSequenceUp();
+		Sound.beepSequenceUp();
+		Sound.beepSequenceUp();
+	}
+	
 
 }
