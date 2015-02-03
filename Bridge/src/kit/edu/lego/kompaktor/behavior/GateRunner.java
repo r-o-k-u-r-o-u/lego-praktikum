@@ -7,7 +7,7 @@ import lejos.nxt.Sound;
 
 public class GateRunner extends ParcoursRunner {
 
-	private LabyrinthRunner driver;
+//	private LabyrinthRunner driver;
 	ParcoursRunner ropeBridgeRunner;
 
 	public static void main(String[] args) {
@@ -27,16 +27,18 @@ public class GateRunner extends ParcoursRunner {
 	}
 
 	public GateRunner() {
-		driver = new LabyrinthRunner();
+//		driver = new LabyrinthRunner();
 	}
 
 	@Override
 	public void run() {
 
+		int threshWood = 30;
+		
 		try {
 			System.out.println("Calling gate");
 			Gate.connect();
-			driver.drive(14, 30);
+//			driver.drive(14, 30);
 			
 			Sound.beepSequenceUp();
 			
@@ -44,13 +46,43 @@ public class GateRunner extends ParcoursRunner {
 			Gate.waitForConnection();
 			System.out.println("Connected to the gate.");
 
+//			Kompaktor.SONIC_SENSOR.setMode(UltrasonicSensor.MODE_CONTINUOUS);
+			Kompaktor.SONIC_SENSOR.continuous();
+			
+			while (Kompaktor.readLightValue() >= threshWood) {
+				
+				if (Kompaktor.readDistanceValue() <= 10)
+				{
+					Sound.beep();
+					Kompaktor.DIFF_PILOT_REVERSE.rotate(5);
+				}
+				else {
+					Kompaktor.DIFF_PILOT_REVERSE.rotate(-5);
+				}
+				
+				Kompaktor.DIFF_PILOT_REVERSE.travel(10);
+				
+			}
+			
+			Kompaktor.DIFF_PILOT_REVERSE.travel(20);
+			if (Kompaktor.readDistanceValue() <= 15)
+			{
+				Sound.beep();
+				Kompaktor.DIFF_PILOT_REVERSE.rotate(5);
+			}
+			else {
+				Kompaktor.DIFF_PILOT_REVERSE.rotate(-5);
+			}
+			Kompaktor.DIFF_PILOT_REVERSE.travel(20);
+			Kompaktor.DIFF_PILOT_REVERSE.rotate(180);
+			
 			// Now the gate opens & a timer of 20 seconds starts
 			// in this time the robot has to drive through & send a "I passed"
 			// signal
-			Thread.sleep(1000);
-			driver.straight(80);
-			driver.rotate(-160);
-			driver.straight(-20);
+//			Thread.sleep(1000);
+//			driver.straight(80);
+//			driver.rotate(-160);
+//			driver.straight(-20);
 
 			// Robot drives through the gate
 			System.out.println("Driving through.");
@@ -74,8 +106,12 @@ public class GateRunner extends ParcoursRunner {
 		
 			System.out.println("success="+through);
 			
-			driver.stop();
+			Kompaktor.DIFF_PILOT_REVERSE.stop();
+//			driver.stop();
 			//driver.join();
+			
+			Kompaktor.DIFF_PILOT.travel(10);
+			
 			
 			Kompaktor.showText("Starting RopeBridgeRunner");
 			
