@@ -38,7 +38,12 @@ public class BridgeRun extends ParcoursRunner {
 	private boolean discoLight = false;
 	private boolean endless = true;
 	private boolean isDone = false;
+	private long lastCorrectionTime;
 	
+	public long getLastCorrectionTime() {
+		return lastCorrectionTime;
+	}
+
 	public boolean isEndless() {
 		return endless;
 	}
@@ -108,6 +113,8 @@ public class BridgeRun extends ParcoursRunner {
 					//pilot.rotate((LightSwitcher.getRegulatedCurrentAngleDouble() < 0) ? -angleRotateBridge : angleRotateBridge);
 					Thread.yield();
 				}
+				//neue Zeit
+				lastCorrectionTime = System.currentTimeMillis();
 			}
 			
 			isDone = true;
@@ -122,6 +129,7 @@ public class BridgeRun extends ParcoursRunner {
 	@Override
 	public void init() {
 		Kompaktor.DIFF_PILOT.setTravelSpeed(travelSpeedBridge);
+		lastCorrectionTime = System.currentTimeMillis();
 	}
 
 	@Override
