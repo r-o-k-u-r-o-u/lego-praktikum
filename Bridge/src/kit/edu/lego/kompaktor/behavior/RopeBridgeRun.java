@@ -40,7 +40,7 @@ public class RopeBridgeRun extends ParcoursRunner{
 			before = new LineRunner();
 			before.init();
 			before.start();
-			
+			double travelSpeedDefalut = Kompaktor.DIFF_PILOT.getTravelSpeed();
 			//stoppen wenn zu oft keine Linie gefunden
 			while(!before.isDone()){
 				if(Thread.interrupted())
@@ -68,6 +68,7 @@ public class RopeBridgeRun extends ParcoursRunner{
 					lastMillis = System.currentTimeMillis();
 				}
 				find = (System.currentTimeMillis() - lastMillis > 1000);
+				//Thread.sleep(10);
 			}
 			
 			
@@ -82,11 +83,14 @@ public class RopeBridgeRun extends ParcoursRunner{
 			Kompaktor.stretchArm();
 			
 			double rotSpeedDefalut = Kompaktor.DIFF_PILOT.getRotateSpeed();
+			
 			Kompaktor.DIFF_PILOT.setRotateSpeed(30);
 			if(bridge.getLastHole() == RotantionDirection.Left)
 				Kompaktor.DIFF_PILOT.rotateRight();
 			else 
 				Kompaktor.DIFF_PILOT.rotateLeft();
+			//Licht mus an sein
+			Kompaktor.setFloodlight(true);
 			//bis Holz erkennt
 			int valueWood = Kompaktor.LIGHT_SENSOR.readValue();
 			
@@ -100,12 +104,12 @@ public class RopeBridgeRun extends ParcoursRunner{
 				valueWood = Kompaktor.LIGHT_SENSOR.readValue();
 			}
 			Kompaktor.DIFF_PILOT.stop();
-			//30 Grad zurück drehen
-			Kompaktor.DIFF_PILOT.setRotateSpeed(rotSpeedDefalut);
-			if(bridge.getLastHole() == RotantionDirection.Left)
-				Kompaktor.DIFF_PILOT.rotate(30);
-			else
-				Kompaktor.DIFF_PILOT.rotate(-30);
+//			//30 Grad zurück drehen
+//			Kompaktor.DIFF_PILOT.setRotateSpeed(rotSpeedDefalut);
+//			if(bridge.getLastHole() == RotantionDirection.Left)
+//				Kompaktor.DIFF_PILOT.rotate(30);
+//			else
+//				Kompaktor.DIFF_PILOT.rotate(-30);
 			//suchen nach der linie
 			Kompaktor.DIFF_PILOT.setRotateSpeed(15);
 			if(bridge.getLastHole() == RotantionDirection.Left)
@@ -121,6 +125,7 @@ public class RopeBridgeRun extends ParcoursRunner{
 			Kompaktor.DIFF_PILOT.travel(20);
 			//Ausgang wiederherstellen
 			Kompaktor.DIFF_PILOT.setRotateSpeed(rotSpeedDefalut);
+			Kompaktor.DIFF_PILOT.setTravelSpeed(travelSpeedDefalut);
 			
 			line = new LineRunner();
 			line.start();

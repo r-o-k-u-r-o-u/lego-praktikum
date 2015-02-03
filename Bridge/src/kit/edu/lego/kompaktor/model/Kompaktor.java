@@ -140,17 +140,59 @@ public class Kompaktor {
 	}
 	
 	
+	public static boolean onLED() throws InterruptedException {
+		
+		int[] val = readLightDifferenceArr();
+		
+		if (val[0] < 6) {
+			
+			if (val[2] >= 40) {
+				return true;
+			} else if (val[2] >= 25) {
+				return true;
+			} else {
+				return false;
+			}
+			
+		} else {
+			return false;
+		}
+		
+	}
+	
+	
+ public static boolean onRedLED() throws InterruptedException {
+		
+		int[] val = readLightDifferenceArr();
+		
+		if (val[0] < 6) {
+			
+			if (val[2] >= 40) {
+				return false;
+			} else if (val[2] >= 25) {
+				return true;
+			} else {
+				return false;
+			}
+			
+		} else {
+			return false;
+		}
+		
+	}
+	
+	
  public synchronized static int[] readLightDifferenceArr() throws InterruptedException {
 		
 		boolean floodOn = LIGHT_SENSOR.isFloodlightOn();
 		int vals[] = new int[3];
 		
 		setFloodlight(true);
+		Thread.sleep(20);
 		vals[1] = LIGHT_SENSOR.readValue();
 
-		Thread.sleep(10);
-		
 		setFloodlight(false);
+		Thread.sleep(20);
 		vals[2] = LIGHT_SENSOR.readValue();
 		
 		setFloodlight(floodOn);
@@ -166,11 +208,11 @@ public class Kompaktor {
 		boolean floodOn = LIGHT_SENSOR.isFloodlightOn();
 		
 		setFloodlight(true);
+		Thread.sleep(20);
 		int val1 = LIGHT_SENSOR.readValue();
 		
-		Thread.sleep(10);
-		
 		setFloodlight(false);
+		Thread.sleep(20);
 		int val2 = LIGHT_SENSOR.readValue();
 		
 		setFloodlight(floodOn);

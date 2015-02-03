@@ -12,30 +12,26 @@ import lejos.nxt.comm.Bluetooth;
 
 public class Gate {
 	
-	private RemoteDevice remoteDevice;
-	private BTConnection connection;
-	private DataInputStream dataInputStream;
-	private DataOutputStream dataOutputStream;
-	private boolean success;
+	private static RemoteDevice remoteDevice;
+	private static BTConnection connection;
+	private static DataInputStream dataInputStream;
+	private static DataOutputStream dataOutputStream;
+	private static boolean success;
+	private static Thread connectionThread;
 	
 	public static void main(String[] args) {
 		
-		Gate gate = new Gate();
-		
 		System.out.println("Calling gate");
 		// Wait for connection
-		while (!gate.connect()) {
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
+		Gate.connect();
+		try {
+			Gate.waitForConnection();
+		} catch (InterruptedException e1) {}
 		System.out.println("Connected to the gate.");
 		
 
 		System.out.println("Sending passed");
-		while (!gate.sendPassed()) {
+		while (!Gate.sendPassed()) {
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
@@ -47,7 +43,7 @@ public class Gate {
 
 	}
 	
-	public boolean sendPassed() {
+	public static boolean sendPassed() {
 		try {
 			dataOutputStream.writeBoolean(true);
 			dataOutputStream.flush();
@@ -68,37 +64,42 @@ public class Gate {
 		return success;
 	}
 	
-	private void log(String message) {
+	private static void log(String message) {
 		System.out.println(message);
 	}
 	
 	
-	public boolean connect() {
-		
-		remoteDevice = new RemoteDevice("TestName", "00165304779A", 0);
-		if (remoteDevice == null) {
-			log("unknown device" + remoteDevice);
-			log("cannot connect to TurnTable");
-		}
-		
-		// check if device was found
-		if (remoteDevice != null) {
-			connection = Bluetooth.connect(remoteDevice);
-			
-			// check if connection was established
-			if (connection != null) {
-				dataOutputStream = connection.openDataOutputStream();
-				dataInputStream = connection.openDataInputStream();
+	public static void connect() {
+		connectionThread = new Thread() {
+			public void run() {
+				remoteDevice = new RemoteDevice("TestName", "00165304779A", 0);
+				if (remoteDevice == null) {
+					log("unknown device" + remoteDevice);
+					log("cannot connect to TurnTable");
+				}
 				
-				return true;
-			} else {
-				return false;
+				// check if device was found
+				if (remoteDevice != null) {
+					
+					// check if connection was established
+					while ((connection = Bluetooth.connect(remoteDevice)) == null)
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e) {}
+					
+					dataOutputStream = connection.openDataOutputStream();
+					dataInputStream = connection.openDataInputStream();
+				}
 			}
-		} else {
-			return false;
-		}
+		};
+		connectionThread.start();
 	}
 	
-	
+	/**
+	 *  Call to wait for connection to be established
+	 */
+	public static void waitForConnection() throws InterruptedException {
+		connectionThread.join();
+	}
 	
 }

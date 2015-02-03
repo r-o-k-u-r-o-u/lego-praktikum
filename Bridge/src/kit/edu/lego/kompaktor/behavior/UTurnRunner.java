@@ -1,7 +1,6 @@
 package kit.edu.lego.kompaktor.behavior;
 
 import kit.edu.lego.kompaktor.model.Kompaktor;
-import kit.edu.lego.kompaktor.model.LightSwitcher;
 
 public class UTurnRunner extends ParcoursRunner{
 	
