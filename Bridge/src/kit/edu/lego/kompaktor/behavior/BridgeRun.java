@@ -35,7 +35,16 @@ public class BridgeRun extends ParcoursRunner {
 	
 	private LightSwitcher switchThread;
 	private LightSwitcher.RotantionDirection lastHole;
+	private boolean discoLight = false;
 	
+	public boolean isDiscoLight() {
+		return discoLight;
+	}
+
+	public void setDiscoLight(boolean discoLight) {
+		this.discoLight = discoLight;
+	}
+
 	public LightSwitcher.RotantionDirection getLastHole(){
 		return lastHole;
 	}
@@ -52,7 +61,9 @@ public class BridgeRun extends ParcoursRunner {
 				Kompaktor.DIFF_PILOT.stop();
 				Kompaktor.DIFF_PILOT.forward();
 				//while(Kompaktor.LIGHT_SENSOR.readValue() > thresholdWood){
-				while(Kompaktor.readLightDifferenceArr()[1] > thresholdWood){
+//				while(Kompaktor.readLightDifferenceArr()[1] > thresholdWood){
+				while(discoLight && Kompaktor.readLightDifferenceArr()[1] > thresholdWood ||
+						!discoLight && Kompaktor.LIGHT_SENSOR.readValue() > thresholdWood){
 					if(Thread.interrupted())
 						throw new InterruptedException();
 					Thread.yield();	
@@ -63,7 +74,9 @@ public class BridgeRun extends ParcoursRunner {
 				
 				
 				//while(Kompaktor.LIGHT_SENSOR.readValue() <= thresholdWood) {
-				while(Kompaktor.readLightDifferenceArr()[1] <= thresholdWood) {
+//				while(Kompaktor.readLightDifferenceArr()[1] <= thresholdWood) {
+				while(discoLight && Kompaktor.readLightDifferenceArr()[1] <= thresholdWood ||
+						!discoLight && Kompaktor.LIGHT_SENSOR.readValue() <= thresholdWood) {
 					if(Thread.interrupted())
 						throw new InterruptedException();
 					double value = LightSwitcher.getRegulatedCurrentAngleDouble();
