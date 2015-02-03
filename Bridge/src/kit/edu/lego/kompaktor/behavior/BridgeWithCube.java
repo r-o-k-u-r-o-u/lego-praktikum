@@ -67,7 +67,11 @@ public class BridgeWithCube extends ParcoursRunner{
 			}
 			//Brückenfahrt stoppen
 			bridge.stop();
-			//Brücke faren
+			
+			// Verbindung zu Lift aufbauen
+			Cube.openConnection(Cube.LIFT);
+			
+			//Brücke fahren
 			bridge = (BridgeRun)Kompaktor.startLevel(LEVEL_NAMES.BRIDGE, true);
 			Kompaktor.DIFF_PILOT.travel(10);
 			while(!Kompaktor.onLED()){
@@ -149,9 +153,7 @@ public class BridgeWithCube extends ParcoursRunner{
 			//LightSwitcher.setAngle(-90);
 			Kompaktor.parkArm();
 			//warten auf verbindung
-			while(!Cube.openConnection(Cube.LIFT)){
-				Thread.sleep(1000);
-			}
+			Cube.waitForConnection();
 			//warten auf grün
 			while(Kompaktor.LIGHT_SENSOR.readValue() < 40){
 				if(Thread.interrupted())

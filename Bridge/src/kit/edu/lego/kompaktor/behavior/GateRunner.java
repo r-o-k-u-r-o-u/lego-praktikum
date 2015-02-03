@@ -34,21 +34,14 @@ public class GateRunner extends ParcoursRunner {
 	public void run() {
 
 		try {
-
-			Gate gate = new Gate();
-			
+			System.out.println("Calling gate");
+			Gate.connect();
 			driver.drive(14, 30);
 			
 			Sound.beepSequenceUp();
-			System.out.println("Calling gate");
+			
 			// Wait for connection
-			while (!gate.connect()) {
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
+			Gate.waitForConnection();
 			System.out.println("Connected to the gate.");
 
 			// Now the gate opens & a timer of 20 seconds starts
@@ -72,7 +65,7 @@ public class GateRunner extends ParcoursRunner {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				through = gate.sendPassed();
+				through = Gate.sendPassed();
 				
 				if (System.currentTimeMillis() - time > 3000) {
 					break;
