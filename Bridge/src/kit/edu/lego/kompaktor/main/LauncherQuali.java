@@ -115,7 +115,7 @@ public class LauncherQuali {
 	private void transitionStartLineFollow(){
 		//detector ausrichten
 				Kompaktor.stretchArm();
-		Kompaktor.DIFF_PILOT.travel(50);
+		//Kompaktor.DIFF_PILOT.travel(50);
 	}
 	
 	private void transitionEndLineFollow() throws InterruptedException{
