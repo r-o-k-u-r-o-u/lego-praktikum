@@ -51,6 +51,11 @@ public class GateRunner extends ParcoursRunner {
 			
 			while (Kompaktor.readLightValue() >= threshWood) {
 				
+				if (Kompaktor.isTouched()) {
+					Kompaktor.DIFF_PILOT_REVERSE.travel(-5);
+				}
+				
+				
 				if (Kompaktor.readDistanceValue() <= 10)
 				{
 					Kompaktor.DIFF_PILOT_REVERSE.rotate(5);
@@ -63,7 +68,7 @@ public class GateRunner extends ParcoursRunner {
 				
 			}
 			
-			for (int i = 0; i < 4; i++) {
+			for (int i = 0; i < 5; i++) {
 				Kompaktor.DIFF_PILOT_REVERSE.travel(10);
 				if (Kompaktor.readDistanceValue() <= 15)
 				{
