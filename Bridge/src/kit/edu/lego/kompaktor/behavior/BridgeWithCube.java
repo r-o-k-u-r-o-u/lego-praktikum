@@ -123,9 +123,9 @@ public class BridgeWithCube extends ParcoursRunner{
 //			}
 			int diff = rigth + left;
 			//anpassen dass genau 90°
-			Kompaktor.DIFF_PILOT.rotate(-diff/2.0);
+			Kompaktor.DIFF_PILOT.rotate(-diff/2.0 + 10);
 			//Stück zurück
-			Kompaktor.DIFF_PILOT.travel(-8);
+			Kompaktor.DIFF_PILOT.travel(-7);
 			//drehen zum Fahrstuhl
 			if(((BridgeRun)bridge).getLastHole() == RotantionDirection.Left){
 				Kompaktor.DIFF_PILOT.rotate(-90);
