@@ -97,7 +97,7 @@ public class GateRunner extends ParcoursRunner {
 			boolean through = false;
 			while (!through) {
 				try {
-					Thread.sleep(100);
+					Thread.sleep(Kompaktor.SLEEP_INTERVAL_LONG);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -124,7 +124,7 @@ public class GateRunner extends ParcoursRunner {
 			
 			while (ropeBridgeRunner.isDone()) {
 				try {
-					Thread.sleep(100);
+					Thread.sleep(Kompaktor.SLEEP_INTERVAL_LONG);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}

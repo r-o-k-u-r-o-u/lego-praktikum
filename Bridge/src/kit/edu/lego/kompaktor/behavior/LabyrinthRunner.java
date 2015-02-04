@@ -119,6 +119,7 @@ public class LabyrinthRunner extends ParcoursRunner {
 		while (!impact()) {
 			if (Thread.interrupted())
 				throw new InterruptedException();
+			Thread.sleep(Kompaktor.SLEEP_INTERVAL);
 		}
 
 		if (impact) {

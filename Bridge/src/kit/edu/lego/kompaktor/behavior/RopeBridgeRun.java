@@ -46,6 +46,7 @@ public class RopeBridgeRun extends ParcoursRunner{
 			while(!before.isDone()){
 				if(Thread.interrupted())
 					throw new InterruptedException();
+				Thread.sleep(Kompaktor.SLEEP_INTERVAL);
 			}
 			before.interrupt();
 			before.join();
@@ -59,12 +60,18 @@ public class RopeBridgeRun extends ParcoursRunner{
 			int oldSpeed = Motor.A.getSpeed();
 			Motor.A.setSpeed(20);
 			Motor.A.forward();
-			while(Kompaktor.LIGHT_SENSOR.readValue() > 28 & (rigth = LightSwitcher.getRegulatedCurrentAngle()) < 90);
+			
+			while(Kompaktor.LIGHT_SENSOR.readValue() > 28 & (rigth = LightSwitcher.getRegulatedCurrentAngle()) < 90)
+				Thread.sleep(Kompaktor.SLEEP_INTERVAL);
+			
 			Motor.A.setSpeed(oldSpeed);
 			Kompaktor.stretchArm();
 			Motor.A.setSpeed(20);
 			Motor.A.backward();
-			while(Kompaktor.LIGHT_SENSOR.readValue() > 28 & (left = LightSwitcher.getRegulatedCurrentAngle()) < 90);
+			
+			while(Kompaktor.LIGHT_SENSOR.readValue() > 28 & (left = LightSwitcher.getRegulatedCurrentAngle()) < 90)
+				Thread.sleep(Kompaktor.SLEEP_INTERVAL);
+			
 			Motor.A.stop();
 			Motor.A.setSpeed(oldSpeed);
 			int diff = rigth + left;

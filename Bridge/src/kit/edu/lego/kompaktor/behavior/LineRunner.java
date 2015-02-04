@@ -67,9 +67,9 @@ public class LineRunner extends ParcoursRunner {
 			while(true){
 				switchThread = new LightSwitcher();
 				if(value >= 0 ) //^ (failure % 2 > 0)
-					switchThread.setDirection(LightSwitcher.RotantionDirection.Right);
+					switchThread.setDirection(LightSwitcher.RotationDirection.Right);
 				else
-					switchThread.setDirection(LightSwitcher.RotantionDirection.Left);
+					switchThread.setDirection(LightSwitcher.RotationDirection.Left);
 				
 	//			switchThread.start();
 				switchThread.startSweep();
@@ -78,7 +78,7 @@ public class LineRunner extends ParcoursRunner {
 				while(Kompaktor.LIGHT_SENSOR.readValue() < ThresholdLine){
 					if(Thread.interrupted())
 						throw new InterruptedException();
-					Thread.yield();	
+					Thread.sleep(Kompaktor.SLEEP_INTERVAL);
 				}
 				value = LightSwitcher.getRegulatedCurrentAngle();
 				switchThread.interrupt();

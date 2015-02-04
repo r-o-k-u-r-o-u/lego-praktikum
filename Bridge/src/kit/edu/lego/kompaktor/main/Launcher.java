@@ -64,7 +64,11 @@ public class Launcher {
 			Kompaktor.showText("Selected LEVEL =\n\n" + LEVEL_NAMES.values()[curr] + "\n\nUse BUMPER to start");
 
 			Sound.beepSequenceUp();
-			while (!Kompaktor.isTouched());
+			while (!Kompaktor.isTouched())
+				try {
+					Thread.sleep(Kompaktor.SLEEP_INTERVAL);
+				} catch (InterruptedException e1) {}
+			
 			Sound.beepSequenceUp();
 			
 			// assert that the level will end normally for now
@@ -90,10 +94,10 @@ public class Launcher {
 			bar.start();
 			//UTurn starten
 			ParcoursRunner uturn = Kompaktor.startLevel(LEVEL_NAMES.LABYRINTH, true);
-			//warten bis Barcode gefunden			
-			while (!bar.isDone()) {
-				Thread.yield();
-			}
+			//warten bis Barcode gefunden
+			while (!bar.isDone())
+				Thread.sleep(Kompaktor.SLEEP_INTERVAL);
+
 			//uturn und barcode stoppen
 			uturn.stop();
 			bar.stop();
@@ -123,9 +127,9 @@ public class Launcher {
 			//Labyrinth starten
 			ParcoursRunner labyrinth = Kompaktor.startLevel(LEVEL_NAMES.LABYRINTH, true);
 			//warten bis Barcode gefunden			
-			while (!bar.isDone()) {
-				Thread.yield();
-			}
+			while (!bar.isDone()) 
+				Thread.sleep(Kompaktor.SLEEP_INTERVAL);
+			
 			//Labyrinth und barcode stoppen
 			labyrinth.stop();
 			bar.stop();
@@ -159,12 +163,15 @@ public class Launcher {
 		Kompaktor.DIFF_PILOT.rotate(180);
 	}
 	
-	private void transitionStartLineFollow(){
+	private void transitionStartLineFollow() throws InterruptedException {
 		//Sensor ausrichten
 		Kompaktor.stretchArm();
 		//vorwärts fahren bis Linie erkannt
 		Kompaktor.DIFF_PILOT.forward();
-		while(Kompaktor.LIGHT_SENSOR.readValue() < LineRunner.ThresholdLine);
+		
+		while(Kompaktor.LIGHT_SENSOR.readValue() < LineRunner.ThresholdLine)
+			Thread.sleep(Kompaktor.SLEEP_INTERVAL);
+		
 		Kompaktor.DIFF_PILOT.stop();
 	}
 	
@@ -177,8 +184,10 @@ public class Launcher {
 		bar.start();
 		//vorwärts fahren
 		Kompaktor.DIFF_PILOT.forward();
+		
 		//sobald barcode gefunden wird gestoppt
-		while(!bar.isDone());
+		while(!bar.isDone())
+			Thread.sleep(Kompaktor.SLEEP_INTERVAL);
 		Kompaktor.DIFF_PILOT.stop();
 		bar.stop();
 	}
@@ -218,8 +227,10 @@ public class Launcher {
 		bar.start();
 		//vorwärts fahren
 		Kompaktor.DIFF_PILOT.forward();
+		
 		//sobald barcode gefunden wird gestoppt
-		while(!bar.isDone());
+		while(!bar.isDone())
+			Thread.sleep(Kompaktor.SLEEP_INTERVAL);
 		Kompaktor.DIFF_PILOT.stop();
 		bar.stop();
 	}

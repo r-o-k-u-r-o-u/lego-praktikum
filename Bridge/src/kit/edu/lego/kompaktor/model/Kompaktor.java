@@ -24,6 +24,9 @@ public class Kompaktor {
 	public static final UltrasonicSensor SONIC_SENSOR = new UltrasonicSensor(SensorPort.S4);
 	public static final DifferentialPilot DIFF_PILOT = new DifferentialPilot(3, 17, Motor.C, Motor.B, true);
 	public static final DifferentialPilot DIFF_PILOT_REVERSE = new DifferentialPilot(3, 17, Motor.C, Motor.B, false);	
+	public static final int SLEEP_INTERVAL = 10;
+	public static final int SLEEP_INTERVAL_SHORT = 1;
+	public static final int SLEEP_INTERVAL_LONG = 100;
 	
 	private static boolean armInitialized = false;
 	
@@ -47,7 +50,11 @@ public class Kompaktor {
 		currentRunner.init();
 		currentRunner.start();
 
-		while (!currentRunner.isDone());
+		while (!currentRunner.isDone()) {
+			try {
+				Thread.sleep(Kompaktor.SLEEP_INTERVAL);
+			} catch (InterruptedException e) {}
+		}
 
 		try {
 			currentRunner.stop();

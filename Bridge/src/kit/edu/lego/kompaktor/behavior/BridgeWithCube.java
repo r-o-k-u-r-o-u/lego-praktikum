@@ -3,7 +3,7 @@ package kit.edu.lego.kompaktor.behavior;
 import kit.edu.lego.kompaktor.model.Lift;
 import kit.edu.lego.kompaktor.model.Kompaktor;
 import kit.edu.lego.kompaktor.model.LightSwitcher;
-import kit.edu.lego.kompaktor.model.LightSwitcher.RotantionDirection;
+import kit.edu.lego.kompaktor.model.LightSwitcher.RotationDirection;
 import lejos.nxt.Motor;
 import lejos.nxt.Sound;
 
@@ -52,7 +52,7 @@ public class BridgeWithCube extends ParcoursRunner{
 			// Verbindung zu Lift aufbauen
 			Lift.openConnection(Lift.LIFT_NAME);
 			//drehen vom Abhang weg
-			if(((BridgeRun)bridge).getLastHole() == RotantionDirection.Left){
+			if(((BridgeRun)bridge).getLastHole() == RotationDirection.Left){
 				Kompaktor.DIFF_PILOT.rotate(-20);
 			} else {
 				Kompaktor.DIFF_PILOT.rotate(20);
@@ -68,11 +68,12 @@ public class BridgeWithCube extends ParcoursRunner{
 			while(Math.abs(System.currentTimeMillis() - time) < 2000){
 				if(Thread.interrupted())
 					throw new InterruptedException();
+				Thread.sleep(Kompaktor.SLEEP_INTERVAL_SHORT);
 			}
 			//stoppen
 			bridge.stop();
 			//zum Loch drehen
-			if(((BridgeRun)bridge).getLastHole() == RotantionDirection.Left){
+			if(((BridgeRun)bridge).getLastHole() == RotationDirection.Left){
 				Kompaktor.DIFF_PILOT.rotate(-85);//-85
 			} else {
 				Kompaktor.DIFF_PILOT.rotate(85);//85
@@ -84,6 +85,7 @@ public class BridgeWithCube extends ParcoursRunner{
 			while(Kompaktor.LIGHT_SENSOR.readValue() > 40){
 				if(Thread.interrupted())
 					throw new InterruptedException();
+				Thread.sleep(Kompaktor.SLEEP_INTERVAL_SHORT);
 			}
 			Kompaktor.DIFF_PILOT.stop();
 			//noch ein kleines Stück vor
@@ -94,12 +96,18 @@ public class BridgeWithCube extends ParcoursRunner{
 			int oldSpeed = Motor.A.getSpeed();
 			Motor.A.setSpeed(20);
 			Motor.A.forward();
-			while(Kompaktor.LIGHT_SENSOR.readValue() < 40 & (rigth = LightSwitcher.getRegulatedCurrentAngle()) < 90);
+			
+			while(Kompaktor.LIGHT_SENSOR.readValue() < 40 & (rigth = LightSwitcher.getRegulatedCurrentAngle()) < 90)
+				Thread.sleep(Kompaktor.SLEEP_INTERVAL);
+			
 			Motor.A.setSpeed(oldSpeed);
 			Kompaktor.stretchArm();
 			Motor.A.setSpeed(20);
 			Motor.A.backward();
-			while(Kompaktor.LIGHT_SENSOR.readValue() < 40 & (left = LightSwitcher.getRegulatedCurrentAngle()) < 90);
+			
+			while(Kompaktor.LIGHT_SENSOR.readValue() < 40 & (left = LightSwitcher.getRegulatedCurrentAngle()) < 90)
+				Thread.sleep(Kompaktor.SLEEP_INTERVAL);
+			
 			Motor.A.stop();
 			Motor.A.setSpeed(oldSpeed);
 			
@@ -127,7 +135,7 @@ public class BridgeWithCube extends ParcoursRunner{
 			//Stück zurück
 			Kompaktor.DIFF_PILOT.travel(-7);
 			//drehen zum Fahrstuhl
-			if(((BridgeRun)bridge).getLastHole() == RotantionDirection.Left){
+			if(((BridgeRun)bridge).getLastHole() == RotationDirection.Left){
 				Kompaktor.DIFF_PILOT.rotate(-80);
 			} else {
 				Kompaktor.DIFF_PILOT.rotate(80);
@@ -179,7 +187,7 @@ public class BridgeWithCube extends ParcoursRunner{
 			Lift.goDown();
 			//warten bis beendet
 			while(!Lift.canExit()){
-				Thread.sleep(1000);
+				Thread.sleep(Kompaktor.SLEEP_INTERVAL_LONG);
 			}
 			//raus fahren
 			Kompaktor.DIFF_PILOT.travel(-30);
