@@ -65,7 +65,7 @@ public class TurnTable {
 			TurnTableCommand command = receiveCommand();
 //			assertCommand(command, TurnTableCommand.HELLO);
 			
-			if (command == TurnTableCommand.HELLO) {
+			if (command == TurnTableCommand.HELLO || command == TurnTableCommand.UNKNOWN) {
 				return true;
 			} else {
 				return false;
@@ -89,7 +89,7 @@ public class TurnTable {
 	public boolean waitDone() {
 		try {
 			TurnTableCommand command = receiveCommand();
-			assertCommand(command, TurnTableCommand.DONE);
+			//assertCommand(command, TurnTableCommand.DONE);
 		} catch (IOException e) {
 			return false;
 		}
