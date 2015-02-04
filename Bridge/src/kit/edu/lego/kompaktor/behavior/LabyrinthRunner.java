@@ -12,7 +12,7 @@ public class LabyrinthRunner extends ParcoursRunner {
 
 	private volatile int d, pd;
 
-	private final int STEER_POWER = 70, DISTANCE_TO_WALL = 10,
+	private final int STEER_POWER = 70, DISTANCE_TO_WALL = 8,
 			OK_DEVIATION = 5, MAX_DISTANCE_TO_WALL = 35,
 			TRAVEL_AFTER_LOSING_WALL = 6;
 
@@ -23,7 +23,9 @@ public class LabyrinthRunner extends ParcoursRunner {
 	public LabyrinthRunner() {
 
 	}
-
+	/**
+	 * Starts the labyrinth.
+	 */
 	public void run() {
 		try {
 			// Movement
@@ -105,6 +107,12 @@ public class LabyrinthRunner extends ParcoursRunner {
 		}
 	}
 
+	/**
+	 * Method to solve a collision that happened.
+	 * @param leftAngle The angle for turning when the left side is hit.
+	 * @param rightAngle The angle for turning when the right side is hit.
+	 * @throws InterruptedException
+	 */
 	private void resolveCollision(int leftAngle, int rightAngle)
 			throws InterruptedException {
 
@@ -135,7 +143,12 @@ public class LabyrinthRunner extends ParcoursRunner {
 		leftImpact = false;
 		event = false;
 	}
-
+	
+	/**
+	 * Method for driving the robot along the wall.
+	 * @param distanceToWall distance to be maintained to the wall
+	 * @throws InterruptedException 
+	 */
 	synchronized void drive(int distanceToWall) throws InterruptedException {
 		if (Thread.interrupted())
 			throw new InterruptedException();
@@ -230,6 +243,9 @@ public class LabyrinthRunner extends ParcoursRunner {
 		return impact || rightImpact || leftImpact;
 	}
 
+	/**
+	 * Initialization has to be called before starting the Labyrinth.
+	 */
 	@Override
 	public void init() {
 
