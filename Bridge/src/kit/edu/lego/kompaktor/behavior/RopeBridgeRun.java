@@ -69,7 +69,7 @@ public class RopeBridgeRun extends ParcoursRunner{
 			Motor.A.setSpeed(oldSpeed);
 			int diff = rigth + left;
 			//anpassen dass genau 90°
-			Kompaktor.DIFF_PILOT.rotate(-diff/2.0 + 10);
+			Kompaktor.DIFF_PILOT.rotate(-diff/2.0);
 			
 			Kompaktor.DIFF_PILOT.travel(130);
 			

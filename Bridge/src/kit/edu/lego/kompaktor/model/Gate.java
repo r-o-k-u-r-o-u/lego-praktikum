@@ -56,6 +56,10 @@ public class Gate {
 		
 		try {
 			success = dataInputStream.readBoolean();
+			
+			if (success) {
+				connection.close();
+			}
 		} catch (IOException e) {
 			log("Could not read boolean");
 			success = false;

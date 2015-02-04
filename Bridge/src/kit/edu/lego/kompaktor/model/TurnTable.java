@@ -53,11 +53,18 @@ public class TurnTable {
 	public boolean waitHello() {
 		try {
 			TurnTableCommand command = receiveCommand();
-			assertCommand(command, TurnTableCommand.HELLO);
+//			assertCommand(command, TurnTableCommand.HELLO);
+			
+			if (command == TurnTableCommand.HELLO) {
+				return true;
+			} else {
+				return false;
+			}
+			
+			
 		} catch (IOException e) {
 			return false;
 		}
-		return true;
 	}
 	
 	public boolean turn() {
