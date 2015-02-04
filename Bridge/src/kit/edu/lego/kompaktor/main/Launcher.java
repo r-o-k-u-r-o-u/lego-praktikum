@@ -89,7 +89,7 @@ public class Launcher {
 			bar.init();
 			bar.start();
 			//UTurn starten
-			ParcoursRunner uturn = Kompaktor.startLevel(LEVEL_NAMES.U_TURN, true);
+			ParcoursRunner uturn = Kompaktor.startLevel(LEVEL_NAMES.LABYRINTH, true);
 			//warten bis Barcode gefunden			
 			while (!bar.isDone()) {
 				Thread.yield();
