@@ -27,22 +27,22 @@ public class LightSwitcher extends Thread {
 	final static int angleRigthSmall = angleMiddle + 20;
 	final static NXTRegulatedMotor motor = Motor.A;
 	
-	public enum RotantionRange{
+	public enum RotationRange {
 		SMALL, MIDDLE, FULL
 	}
 	
-	public enum RotantionDirection{
+	public enum RotationDirection {
 		Right, Left
 	}
 	
-	private RotantionRange rotationRange;
-	private RotantionDirection rotationDirection;
-	private RotantionDirection lastRotationDirection;
+	private RotationRange rotationRange;
+	private RotationDirection rotationDirection;
+	private RotationDirection lastRotationDirection;
 	private int switchCounter;
 	
 	public LightSwitcher() {
-		rotationRange = RotantionRange.FULL;
-		rotationDirection = RotantionDirection.Left;
+		rotationRange = RotationRange.FULL;
+		rotationDirection = RotationDirection.Left;
 		switchCounter = 0;
 	}
 	
@@ -51,15 +51,15 @@ public class LightSwitcher extends Thread {
 	}
 	
 	public void startSweep(){
-		rotationRange = RotantionRange.MIDDLE;
+		rotationRange = RotationRange.MIDDLE;
 		super.start();
 	}
 	
-	public void setDirection(RotantionDirection rotationDirection){
+	public void setDirection(RotationDirection rotationDirection){
 		this.rotationDirection = rotationDirection;
 	}
 	
-	public RotantionDirection getLastRotationDirection() {
+	public RotationDirection getLastRotationDirection() {
 		return lastRotationDirection;
 	}
 
@@ -74,13 +74,13 @@ public class LightSwitcher extends Thread {
 					actualAngleLeft = angleLeftSmall;
 					actualAngleRigth = angleRigthSmall;
 					rotationSpeed = rotationSpeedSmall;
-					rotationRange = RotantionRange.MIDDLE;
+					rotationRange = RotationRange.MIDDLE;
 					break;
 				case MIDDLE:
 					actualAngleLeft = angleLeftMiddle;
 					actualAngleRigth = angleRigthMiddle;
 					rotationSpeed = rotationSpeedMiddle;
-					rotationRange = RotantionRange.FULL;
+					rotationRange = RotationRange.FULL;
 					break;
 				default:
 					actualAngleLeft = angleLeftFull;
@@ -89,15 +89,15 @@ public class LightSwitcher extends Thread {
 					break;
 				}
 				motor.setSpeed(rotationSpeed);
-				if(rotationDirection == RotantionDirection.Right){
-					lastRotationDirection = RotantionDirection.Right;
+				if(rotationDirection == RotationDirection.Right){
+					lastRotationDirection = RotationDirection.Right;
 					motor.rotateTo(angleMiddle, true);
 					Thread.sleep(rotationAngle * 1000 / (rotationSpeedFull * 4));
 	//				Thread.sleep(angleMiddle * 1000 / (rotationSpeed * 2));
 					motor.rotateTo(actualAngleRigth, true);
 	//				Thread.sleep((angleMiddle - actualAngleRigth) * 1000 / (rotationSpeed));
 					Thread.sleep(rotationAngle * 1000 / (rotationSpeedFull * 2) + 100);
-					lastRotationDirection = RotantionDirection.Left;
+					lastRotationDirection = RotationDirection.Left;
 					motor.rotateTo(angleMiddle, true);
 	//				Thread.sleep((angleMiddle - actualAngleRigth) * 1000 / (rotationSpeed));
 					Thread.sleep(rotationAngle * 1000 / (rotationSpeedFull * 2));
@@ -105,14 +105,14 @@ public class LightSwitcher extends Thread {
 	//				Thread.sleep((actualAngleLeft - angleMiddle) * 1000 / (rotationSpeed));
 					Thread.sleep(rotationAngle * 1000 / (rotationSpeedFull * 2) + 100);
 				} else {
-					lastRotationDirection = RotantionDirection.Left;
+					lastRotationDirection = RotationDirection.Left;
 					motor.rotateTo(angleMiddle, true);
 					Thread.sleep(rotationAngle * 1000 / (rotationSpeedFull * 4));
 	//				Thread.sleep(angleMiddle * 1000 / (rotationSpeed * 2));
 					motor.rotateTo(actualAngleLeft, true);
 	//				Thread.sleep((angleMiddle - actualAngleRigth) * 1000 / (rotationSpeed));
 					Thread.sleep(rotationAngle * 1000 / (rotationSpeedFull * 2) + 100);
-					lastRotationDirection = RotantionDirection.Right;
+					lastRotationDirection = RotationDirection.Right;
 					motor.rotateTo(angleMiddle, true);
 	//				Thread.sleep((angleMiddle - actualAngleRigth) * 1000 / (rotationSpeed));
 					Thread.sleep(rotationAngle * 1000 / (rotationSpeedFull * 2));

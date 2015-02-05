@@ -1,7 +1,7 @@
 package kit.edu.lego.kompaktor.behavior;
 import kit.edu.lego.kompaktor.model.Kompaktor;
 import kit.edu.lego.kompaktor.model.LightSwitcher;
-import kit.edu.lego.kompaktor.model.LightSwitcher.RotantionDirection;
+import kit.edu.lego.kompaktor.model.LightSwitcher.RotationDirection;
 
 public class BridgeRun extends ParcoursRunner {
 	
@@ -34,7 +34,7 @@ public class BridgeRun extends ParcoursRunner {
 	}
 	
 	private LightSwitcher switchThread;
-	private LightSwitcher.RotantionDirection lastHole;
+	private LightSwitcher.RotationDirection lastHole;
 	private boolean discoLight = false;
 	private boolean endless = true;
 	private boolean isDone = false;
@@ -60,7 +60,7 @@ public class BridgeRun extends ParcoursRunner {
 		this.discoLight = discoLight;
 	}
 
-	public LightSwitcher.RotantionDirection getLastHole(){
+	public LightSwitcher.RotationDirection getLastHole(){
 		return lastHole;
 	}
 	
@@ -98,9 +98,9 @@ public class BridgeRun extends ParcoursRunner {
 						throw new InterruptedException();
 					double value = LightSwitcher.getRegulatedCurrentAngleDouble();
 					if(value < 0)
-						lastHole = RotantionDirection.Left;
+						lastHole = RotationDirection.Left;
 					else
-						lastHole = RotantionDirection.Right;
+						lastHole = RotationDirection.Right;
 
 					double converted = value < 0 ? - value : value;
 					if(converted > 89.5)

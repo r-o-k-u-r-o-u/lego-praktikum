@@ -88,7 +88,7 @@ public class Gate {
 					// check if connection was established
 					while ((connection = Bluetooth.connect(remoteDevice)) == null)
 						try {
-							Thread.sleep(100);
+							Thread.sleep(Kompaktor.SLEEP_INTERVAL_LONG);
 						} catch (InterruptedException e) {}
 					
 					dataOutputStream = connection.openDataOutputStream();

@@ -86,7 +86,7 @@ public class Lift {
 	public static void waitForConnection() throws InterruptedException {
 		connectionThread.join();
 		while (!isReady()) {
-			sleep(100);
+			sleep(Kompaktor.SLEEP_INTERVAL_LONG);
 		}
 	}
 	

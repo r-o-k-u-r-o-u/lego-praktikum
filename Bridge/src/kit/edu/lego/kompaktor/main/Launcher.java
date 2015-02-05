@@ -64,7 +64,11 @@ public class Launcher {
 			Kompaktor.showText("Selected LEVEL =\n\n" + LEVEL_NAMES.values()[curr] + "\n\nUse BUMPER to start");
 
 			Sound.beepSequenceUp();
-			while (!Kompaktor.isTouched());
+			while (!Kompaktor.isTouched())
+				try {
+					Thread.sleep(Kompaktor.SLEEP_INTERVAL);
+				} catch (InterruptedException e1) {}
+			
 			Sound.beepSequenceUp();
 			
 			// assert that the level will end normally for now
@@ -90,10 +94,10 @@ public class Launcher {
 			bar.start();
 			//UTurn starten
 			ParcoursRunner uturn = Kompaktor.startLevel(LEVEL_NAMES.LABYRINTH, true);
-			//warten bis Barcode gefunden			
-			while (!bar.isDone()) {
-				Thread.yield();
-			}
+			//warten bis Barcode gefunden
+			while (!bar.isDone())
+				Thread.sleep(Kompaktor.SLEEP_INTERVAL);
+
 			//uturn und barcode stoppen
 			uturn.stop();
 			bar.stop();
@@ -123,9 +127,9 @@ public class Launcher {
 			//Labyrinth starten
 			ParcoursRunner labyrinth = Kompaktor.startLevel(LEVEL_NAMES.LABYRINTH, true);
 			//warten bis Barcode gefunden			
-			while (!bar.isDone()) {
-				Thread.yield();
-			}
+			while (!bar.isDone()) 
+				Thread.sleep(Kompaktor.SLEEP_INTERVAL);
+			
 			//Labyrinth und barcode stoppen
 			labyrinth.stop();
 			bar.stop();
@@ -144,7 +148,26 @@ public class Launcher {
 			transitionStartTurnTable();
 			Kompaktor.startLevel(LEVEL_NAMES.TURN_TABLE);
 			transitionEndTurnTable();
-			//current = LEVEL_NAMES.TURN_TABLE;
+			current = LEVEL_NAMES.BOSS;
+		}
+		if(current.equals(LEVEL_NAMES.BOSS)){
+			transitionStartBoss();
+			//Barcode erstellen und starten
+//			BarcodeDetector bar = new BarcodeDetector();
+//			bar.init();
+//			bar.start();
+			//Labyrinth starten
+//			ParcoursRunner boss = Kompaktor.startLevel(LEVEL_NAMES.LABYRINTH, true);
+			Kompaktor.startLevel(LEVEL_NAMES.LABYRINTH);
+			//warten bis Barcode gefunden			
+//			while (!bar.isDone()) 
+//				Thread.sleep(Kompaktor.SLEEP_INTERVAL);
+			
+			//Labyrinth und barcode stoppen
+//			boss.stop();
+//			bar.stop();
+			//Ende
+			transitionEndBoss();
 		}
 	}
 	
@@ -159,12 +182,15 @@ public class Launcher {
 		Kompaktor.DIFF_PILOT.rotate(180);
 	}
 	
-	private void transitionStartLineFollow(){
+	private void transitionStartLineFollow() throws InterruptedException {
 		//Sensor ausrichten
 		Kompaktor.stretchArm();
 		//vorwärts fahren bis Linie erkannt
 		Kompaktor.DIFF_PILOT.forward();
-		while(Kompaktor.LIGHT_SENSOR.readValue() < LineRunner.ThresholdLine);
+		
+		while(Kompaktor.LIGHT_SENSOR.readValue() < LineRunner.ThresholdLine)
+			Thread.sleep(Kompaktor.SLEEP_INTERVAL);
+		
 		Kompaktor.DIFF_PILOT.stop();
 	}
 	
@@ -177,8 +203,10 @@ public class Launcher {
 		bar.start();
 		//vorwärts fahren
 		Kompaktor.DIFF_PILOT.forward();
+		
 		//sobald barcode gefunden wird gestoppt
-		while(!bar.isDone());
+		while(!bar.isDone())
+			Thread.sleep(Kompaktor.SLEEP_INTERVAL);
 		Kompaktor.DIFF_PILOT.stop();
 		bar.stop();
 	}
@@ -218,8 +246,10 @@ public class Launcher {
 		bar.start();
 		//vorwärts fahren
 		Kompaktor.DIFF_PILOT.forward();
+		
 		//sobald barcode gefunden wird gestoppt
-		while(!bar.isDone());
+		while(!bar.isDone())
+			Thread.sleep(Kompaktor.SLEEP_INTERVAL);
 		Kompaktor.DIFF_PILOT.stop();
 		bar.stop();
 	}
@@ -232,11 +262,22 @@ public class Launcher {
 	}
 	
 	private void transitionEndTurnTable(){
+		
+	}
+	
+	private void transitionStartBoss(){
+		Kompaktor.parkArm();
+		Kompaktor.DIFF_PILOT_REVERSE.rotate(180);
+		Kompaktor.DIFF_PILOT_REVERSE.travel(20);
+		Kompaktor.DIFF_PILOT_REVERSE.rotate(60);
+		Kompaktor.DIFF_PILOT_REVERSE.travel(20);
+	}
+	
+	private void transitionEndBoss(){
 		Sound.beepSequenceUp();
 		Sound.beepSequenceUp();
 		Sound.beepSequenceUp();
 		Sound.beepSequenceUp();
 	}
-	
 
 }

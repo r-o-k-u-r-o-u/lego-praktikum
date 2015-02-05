@@ -63,7 +63,12 @@ public class LauncherQuali {
 			Kompaktor.showText("Selected LEVEL =\n\n" + LEVEL_NAMES.values()[curr] + "\n\nUse BUMPER to start");
 
 			Sound.beepSequenceUp();
-			while (!Kompaktor.isTouched());
+			
+			while (!Kompaktor.isTouched())
+				try {
+					Thread.sleep(Kompaktor.SLEEP_INTERVAL);
+				} catch (InterruptedException e1) {}
+			
 			Sound.beepSequenceUp();
 			
 			// assert that the level will end normally for now
@@ -97,7 +102,7 @@ public class LauncherQuali {
 			ParcoursRunner labyrinth = Kompaktor.startLevel(LEVEL_NAMES.LABYRINTH, true);
 			//warten bis Barcode gefunden			
 			while (!bar.isDone()) {
-				Thread.yield();
+				Thread.sleep(Kompaktor.SLEEP_INTERVAL);
 			}
 			//Labyrinth und barcode stoppen
 			labyrinth.stop();
@@ -110,7 +115,7 @@ public class LauncherQuali {
 	private void transitionStartLineFollow(){
 		//detector ausrichten
 				Kompaktor.stretchArm();
-		Kompaktor.DIFF_PILOT.travel(50);
+		//Kompaktor.DIFF_PILOT.travel(50);
 	}
 	
 	private void transitionEndLineFollow() throws InterruptedException{
@@ -123,7 +128,8 @@ public class LauncherQuali {
 		//vorwärts fahren
 		Kompaktor.DIFF_PILOT.forward();
 		//sobald barcode gefunden wird gestoppt
-		while(!bar.isDone());
+		while(!bar.isDone())
+			Thread.sleep(Kompaktor.SLEEP_INTERVAL);
 		Kompaktor.DIFF_PILOT.stop();
 		bar.stop();
 		Kompaktor.DIFF_PILOT.travel(20);

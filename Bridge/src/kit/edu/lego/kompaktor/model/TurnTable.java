@@ -7,6 +7,9 @@ import java.io.IOException;
 import javax.bluetooth.RemoteDevice;
 
 
+
+
+
 //import lejos.nxt.Motor;
 import lejos.nxt.comm.BTConnection;
 import lejos.nxt.comm.Bluetooth;
@@ -27,27 +30,34 @@ public class TurnTable {
 
 	private DataOutputStream dataOutputStream;
 	private DataInputStream dataInputStream;
+	private Thread connectionThread;
 
-	public boolean connect() {
-		String deviceName = "TurnTable";
-		RemoteDevice device = lookupDevice(deviceName);
-		
-		// check if device was found
-		if (device != null) {
-			BTConnection connection = Bluetooth.connect(device);
-			
-			// check if connection was established
-			if (connection != null) {
-				dataOutputStream = connection.openDataOutputStream();
-				dataInputStream = connection.openDataInputStream();
+	public void connect() {
+		connectionThread = new Thread() {
+			public void run() {
+				String deviceName = "TurnTable";
+				RemoteDevice device = lookupDevice(deviceName);
 				
-				return true;
-			} else {
-				return false;
+				// check if device was found
+				if (device != null) {
+					BTConnection connection;
+					
+					// check if connection was established
+					while ((connection = Bluetooth.connect(device)) == null)
+						try {
+							Thread.sleep(Kompaktor.SLEEP_INTERVAL);
+						} catch (InterruptedException e) {}
+					
+					dataOutputStream = connection.openDataOutputStream();
+					dataInputStream = connection.openDataInputStream();
+				}
 			}
-		} else {
-			return false;
-		}
+		};
+		connectionThread.start();
+	}
+	
+	public void waitForConnection() throws InterruptedException {
+		connectionThread.join();
 	}
 	
 	public boolean waitHello() {
@@ -55,7 +65,7 @@ public class TurnTable {
 			TurnTableCommand command = receiveCommand();
 //			assertCommand(command, TurnTableCommand.HELLO);
 			
-			if (command == TurnTableCommand.HELLO) {
+			if (command == TurnTableCommand.HELLO || command == TurnTableCommand.UNKNOWN) {
 				return true;
 			} else {
 				return false;
@@ -79,16 +89,11 @@ public class TurnTable {
 	public boolean waitDone() {
 		try {
 			TurnTableCommand command = receiveCommand();
-//			assertCommand(command, TurnTableCommand.DONE);
-			
-			if (command == TurnTableCommand.DONE) {
-				return true;
-			} else {
-				return false;
-			}
+			//assertCommand(command, TurnTableCommand.DONE);
 		} catch (IOException e) {
 			return false;
 		}
+		return true;
 	}
 	
 	public boolean sendCYA() {

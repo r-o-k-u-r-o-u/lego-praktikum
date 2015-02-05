@@ -50,13 +50,9 @@ public class TurnTableRunner extends ParcoursRunner {
 			System.out.println("Connecting");
 			
 			// connect to turntable
-			while (!turnTable.connect()) {
-				if (Thread.interrupted())
-					throw new InterruptedException();
-				
-				Thread.sleep(500);
-			}
-//			turnTable.waitForConnection();
+			turnTable.connect();
+			
+			turnTable.waitForConnection();
 			
 			System.out.println("Connected.");
 			
@@ -64,8 +60,7 @@ public class TurnTableRunner extends ParcoursRunner {
 			while (!turnTable.waitHello()) {
 				if (Thread.interrupted())
 					throw new InterruptedException();
-				
-				Thread.sleep(200);
+				Thread.sleep(Kompaktor.SLEEP_INTERVAL_LONG);
 			}
 			
 			System.out.println("My turn.");
@@ -77,8 +72,7 @@ public class TurnTableRunner extends ParcoursRunner {
 			while (!line.isDone()) {
 				if (Thread.interrupted())
 					throw new InterruptedException();
-				
-				Thread.sleep(10);
+				Thread.sleep(Kompaktor.SLEEP_INTERVAL);
 			}
 
 			line.stop();
@@ -92,6 +86,7 @@ public class TurnTableRunner extends ParcoursRunner {
 			while (!Kompaktor.isTouched()) {
 				if (Thread.interrupted())
 					throw new InterruptedException();
+				Thread.sleep(Kompaktor.SLEEP_INTERVAL);
 			}
 
 			Kompaktor.DIFF_PILOT.stop();
@@ -99,8 +94,7 @@ public class TurnTableRunner extends ParcoursRunner {
 			while (!turnTable.turn()) {
 				if (Thread.interrupted())
 					throw new InterruptedException();
-				
-				Thread.sleep(200);
+				Thread.sleep(Kompaktor.SLEEP_INTERVAL_LONG);
 			}
 			
 			
@@ -108,8 +102,7 @@ public class TurnTableRunner extends ParcoursRunner {
 			while (!turnTable.waitDone()) {
 				if (Thread.interrupted())
 					throw new InterruptedException();
-				
-				Thread.sleep(200);
+				Thread.sleep(Kompaktor.SLEEP_INTERVAL_LONG);
 			}
 			
 
@@ -129,6 +122,7 @@ public class TurnTableRunner extends ParcoursRunner {
 
 				if (Thread.interrupted())
 					throw new InterruptedException();
+				Thread.sleep(Kompaktor.SLEEP_INTERVAL);
 			}
 
 			turnTable.sendCYA();

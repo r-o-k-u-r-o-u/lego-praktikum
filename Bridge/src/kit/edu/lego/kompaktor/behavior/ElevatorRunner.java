@@ -1,7 +1,7 @@
 package kit.edu.lego.kompaktor.behavior;
 import kit.edu.lego.kompaktor.model.Kompaktor;
 import kit.edu.lego.kompaktor.model.LightSwitcher;
-import kit.edu.lego.kompaktor.model.LightSwitcher.RotantionDirection;
+import kit.edu.lego.kompaktor.model.LightSwitcher.RotationDirection;
 import lejos.nxt.Sound;
 
 
@@ -36,9 +36,9 @@ public class ElevatorRunner extends ParcoursRunner {
 	}
 	
 	private LightSwitcher switchThread;
-	private LightSwitcher.RotantionDirection lastHole;
+	private LightSwitcher.RotationDirection lastHole;
 	
-	public LightSwitcher.RotantionDirection getLastHole(){
+	public LightSwitcher.RotationDirection getLastHole(){
 		return lastHole;
 	}
 	
@@ -56,7 +56,7 @@ public class ElevatorRunner extends ParcoursRunner {
 				while(Kompaktor.LIGHT_SENSOR.readValue() > thresholdWood){
 					if(Thread.interrupted())
 						throw new InterruptedException();
-					Thread.yield();	
+					Thread.sleep(Kompaktor.SLEEP_INTERVAL_SHORT);
 				}
 				switchThread.interrupt();
 				Kompaktor.DIFF_PILOT.stop();
@@ -69,9 +69,9 @@ public class ElevatorRunner extends ParcoursRunner {
 						throw new InterruptedException();
 					double value = LightSwitcher.getRegulatedCurrentAngleDouble();
 					if(value < 0)
-						lastHole = RotantionDirection.Left;
+						lastHole = RotationDirection.Left;
 					else
-						lastHole = RotantionDirection.Right;
+						lastHole = RotationDirection.Right;
 
 					double converted = value < 0 ? - value : value;
 					if(converted > 89.5)
