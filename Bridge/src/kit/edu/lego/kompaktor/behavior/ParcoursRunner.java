@@ -11,13 +11,14 @@ public abstract class ParcoursRunner extends Thread {
 		LINE_FOLLOW("LineFollow"),
 		BRIDGE("Bridge"),
 		BRIDGE_ELEVATOR("Bridge&Elevator"),
-		LED_CUBE("LED-Cube"),
+//		LED_CUBE("LED-Cube"),
 		ELEVATOR("Elevator"),
 		LABYRINTH("Labyrinth"),
 		GATE("Gate"),
 		ROPE_BRIDGE("RopeBridge"),
 		SEESAW("Seesaw"),
-		TURN_TABLE("TurnTable");
+		TURN_TABLE("TurnTable"),
+		BOSS("Boss");
 		
 	    private final String text;
 
