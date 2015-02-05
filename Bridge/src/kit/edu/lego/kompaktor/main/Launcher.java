@@ -144,6 +144,20 @@ public class Launcher {
 			transitionEndGate();
 			current = LEVEL_NAMES.TURN_TABLE;
 		}
+		//extra Einstieg für RopeBridge
+		if(current.equals(LEVEL_NAMES.ROPE_BRIDGE)){
+			transitionStartRopeBridge();
+			Kompaktor.startLevel(LEVEL_NAMES.ROPE_BRIDGE);
+			transitionEndRopeBridge();
+			current = LEVEL_NAMES.TURN_TABLE;
+		}
+		//extra Einstieg für Linie hinter RopeBridge
+		if(current.equals(LEVEL_NAMES.LINE_AFTER_ROPE_BRIDGE)){
+			transitionStartLineAfterRopeBridge();
+			Kompaktor.startLevel(LEVEL_NAMES.LINE_AFTER_ROPE_BRIDGE);
+			transitionEndLineAfterRopeBridge();
+			current = LEVEL_NAMES.TURN_TABLE;
+		}
 		if(current.equals(LEVEL_NAMES.TURN_TABLE)){
 			transitionStartTurnTable();
 			Kompaktor.startLevel(LEVEL_NAMES.TURN_TABLE);
@@ -252,6 +266,24 @@ public class Launcher {
 			Thread.sleep(Kompaktor.SLEEP_INTERVAL);
 		Kompaktor.DIFF_PILOT.stop();
 		bar.stop();
+	}
+	
+	private void transitionStartRopeBridge(){
+		//Arm ausfahren (mit init)
+		Kompaktor.stretchArm();
+	}
+	
+	private void transitionEndRopeBridge() throws InterruptedException{
+		transitionEndGate();
+	}
+	
+	private void transitionStartLineAfterRopeBridge(){
+		//Arm ausfahren (mit init)
+		Kompaktor.stretchArm();
+	}
+	
+	private void transitionEndLineAfterRopeBridge() throws InterruptedException{
+		transitionEndGate();
 	}
 	
 	private void transitionStartTurnTable(){
