@@ -71,6 +71,15 @@ public class LauncherQuali {
 			
 			Sound.beepSequenceUp();
 			
+			Kompaktor.parkArm();
+			
+			while (!Kompaktor.isTouched())
+				try {
+					Thread.sleep(Kompaktor.SLEEP_INTERVAL);
+				} catch (InterruptedException e1) {}
+			
+			Sound.beepSequenceUp();
+			
 			// assert that the level will end normally for now
 			//Kompaktor.startLevel(LEVEL_NAMES.values()[curr]);
 			try {
@@ -132,13 +141,15 @@ public class LauncherQuali {
 			Thread.sleep(Kompaktor.SLEEP_INTERVAL);
 		Kompaktor.DIFF_PILOT.stop();
 		bar.stop();
-		Kompaktor.DIFF_PILOT.travel(20);
+		Kompaktor.DIFF_PILOT.travel(40);
+		
 	}
 	
 	private void transitionStartLabyrinth(){
 		//Arm einfahren
 		Kompaktor.parkArm();
-		Kompaktor.DIFF_PILOT.rotate(180);
+		Kompaktor.DIFF_PILOT.rotate(-110);
+		Kompaktor.DIFF_PILOT.travel(-50);
 	}
 	
 	private void transitionEndLabyrinth(){
