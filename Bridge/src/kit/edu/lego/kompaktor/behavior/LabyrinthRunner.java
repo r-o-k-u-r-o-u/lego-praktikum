@@ -12,17 +12,18 @@ public class LabyrinthRunner extends ParcoursRunner {
 
 	private volatile int d, pd;
 
-	private final int STEER_POWER = 70, DISTANCE_TO_WALL = 8,
-			OK_DEVIATION = 5, MAX_DISTANCE_TO_WALL = 35,
-			TRAVEL_AFTER_LOSING_WALL = 6;
+	private final int STEER_POWER = 70, DISTANCE_TO_WALL = 8, OK_DEVIATION = 5,
+			MAX_DISTANCE_TO_WALL = 35, TRAVEL_AFTER_LOSING_WALL = 6;
 
 	private DifferentialPilot pilot; // volatile entfernt
 	private TouchSensor sensorLeft, sensorRight;
 	private Thread collisionControl = null;
+	private Thread distanceMeasure = null;
 
 	public LabyrinthRunner() {
 
 	}
+
 	/**
 	 * Starts the labyrinth.
 	 */
@@ -54,8 +55,7 @@ public class LabyrinthRunner extends ParcoursRunner {
 							throw new InterruptedException();
 						continue;
 					}
-					
-					
+
 					pilot.rotate(-90);
 					while (d > MAX_DISTANCE_TO_WALL) {
 						if (Thread.interrupted())
@@ -94,11 +94,13 @@ public class LabyrinthRunner extends ParcoursRunner {
 		} catch (InterruptedException e) {
 			// System.out.println("interrupt start");
 			collisionControl.interrupt();
+			distanceMeasure.interrupt();
 			// System.out.println("dist inter");
 			pilot.stop();
 			try {
 				collisionControl.join();
 				// System.out.println("coll finish");
+				distanceMeasure.join();
 				// System.out.println("dist finish");
 			} catch (InterruptedException e1) {
 				e1.printStackTrace();
@@ -109,8 +111,11 @@ public class LabyrinthRunner extends ParcoursRunner {
 
 	/**
 	 * Method to solve a collision that happened.
-	 * @param leftAngle The angle for turning when the left side is hit.
-	 * @param rightAngle The angle for turning when the right side is hit.
+	 * 
+	 * @param leftAngle
+	 *            The angle for turning when the left side is hit.
+	 * @param rightAngle
+	 *            The angle for turning when the right side is hit.
 	 * @throws InterruptedException
 	 */
 	private void resolveCollision(int leftAngle, int rightAngle)
@@ -144,11 +149,13 @@ public class LabyrinthRunner extends ParcoursRunner {
 		leftImpact = false;
 		event = false;
 	}
-	
+
 	/**
 	 * Method for driving the robot along the wall.
-	 * @param distanceToWall distance to be maintained to the wall
-	 * @throws InterruptedException 
+	 * 
+	 * @param distanceToWall
+	 *            distance to be maintained to the wall
+	 * @throws InterruptedException
 	 */
 	synchronized void drive(int distanceToWall) throws InterruptedException {
 		if (Thread.interrupted())
@@ -263,20 +270,20 @@ public class LabyrinthRunner extends ParcoursRunner {
 			public void run() {
 				try {
 
-					int i = 0;
-					Kompaktor.SONIC_SENSOR.continuous();
-					pd = Kompaktor.readDistanceValue();
+//					int i = 0;
+//					Kompaktor.SONIC_SENSOR.continuous();
+//					pd = Kompaktor.readDistanceValue();
 					while (true) {
 						if (Thread.interrupted())
 							throw new InterruptedException();
-						d = Kompaktor.readDistanceValue();
-
-						if (i == 0)
-							pd = d;
-						i++;
-						if (i == 25) {
-							i = 0;
-						}
+//						d = Kompaktor.readDistanceValue();
+//
+//						if (i == 0)
+//							pd = d;
+//						i++;
+//						if (i == 25) {
+//							i = 0;
+//						}
 
 						if (Thread.interrupted())
 							throw new InterruptedException();
@@ -303,6 +310,7 @@ public class LabyrinthRunner extends ParcoursRunner {
 								}
 							}
 						}
+						Thread.sleep(1);
 					}
 
 				} catch (InterruptedException e) {
@@ -312,8 +320,33 @@ public class LabyrinthRunner extends ParcoursRunner {
 
 		});
 
-		collisionControl.start();
+		distanceMeasure = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					int i = 0;
+					Kompaktor.SONIC_SENSOR.continuous();
+					pd = Kompaktor.readDistanceValue();
+					while (true) {
+						if (Thread.interrupted())
+							throw new InterruptedException();
+						d = Kompaktor.readDistanceValue();
+						if (i == 0)
+							pd = d;
+						i++;
+						if (i == 25) {
+							i = 0;
+						}
+						Thread.sleep(1);
+					}
+				} catch (InterruptedException e) {
+				}
+			}
+		});
 
+		
+		collisionControl.start();
+		distanceMeasure.start();
 	}
 
 	@Override
@@ -327,10 +360,12 @@ public class LabyrinthRunner extends ParcoursRunner {
 	public void stopHelpThreads() {
 		// System.out.println("interrupt start");
 		collisionControl.interrupt();
+		distanceMeasure.interrupt();
 		// System.out.println("coll inter");
 		pilot.stop();
 		try {
 			collisionControl.join();
+			distanceMeasure.join();
 			// System.out.println("dist finish");
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
