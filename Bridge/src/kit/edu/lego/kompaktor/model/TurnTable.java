@@ -79,11 +79,16 @@ public class TurnTable {
 	public boolean waitDone() {
 		try {
 			TurnTableCommand command = receiveCommand();
-			assertCommand(command, TurnTableCommand.DONE);
+//			assertCommand(command, TurnTableCommand.DONE);
+			
+			if (command == TurnTableCommand.DONE) {
+				return true;
+			} else {
+				return false;
+			}
 		} catch (IOException e) {
 			return false;
 		}
-		return true;
 	}
 	
 	public boolean sendCYA() {
