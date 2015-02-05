@@ -50,7 +50,7 @@ public class LabyrinthRunner extends ParcoursRunner {
 					pilot.travel(TRAVEL_AFTER_LOSING_WALL);
 					if (Thread.interrupted())
 						throw new InterruptedException();
-					if (d < MAX_DISTANCE_TO_WALL) {
+					if (d < DISTANCE_TO_WALL + OK_DEVIATION) {
 						if (Thread.interrupted())
 							throw new InterruptedException();
 						continue;
