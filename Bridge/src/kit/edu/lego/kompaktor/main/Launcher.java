@@ -269,7 +269,7 @@ public class Launcher {
 		Kompaktor.parkArm();
 		Kompaktor.DIFF_PILOT_REVERSE.rotate(180);
 		Kompaktor.DIFF_PILOT_REVERSE.travel(20);
-		Kompaktor.DIFF_PILOT_REVERSE.rotate(60);
+		Kompaktor.DIFF_PILOT_REVERSE.rotate(-60);
 		Kompaktor.DIFF_PILOT_REVERSE.travel(20);
 	}
 	

@@ -132,6 +132,8 @@ public class BridgeWithCube extends ParcoursRunner{
 			int diff = rigth + left;
 			//anpassen dass genau 90°
 			Kompaktor.DIFF_PILOT.rotate(-diff/2.0);
+			//Arm einziehen
+			Kompaktor.parkArm();
 			//Stück zurück
 			Kompaktor.DIFF_PILOT.travel(-7);
 			//drehen zum Fahrstuhl
@@ -152,7 +154,7 @@ public class BridgeWithCube extends ParcoursRunner{
 //			Kompaktor.DIFF_PILOT.travel(-5);
 //			Kompaktor.DIFF_PILOT.rotate(-90);
 			
-			Kompaktor.parkArm();
+			
 			//warten auf verbindung
 			Lift.waitForConnection();
 //			//warten auf grün
