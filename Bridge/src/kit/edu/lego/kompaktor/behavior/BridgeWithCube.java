@@ -10,6 +10,7 @@ import lejos.nxt.Sound;
 public class BridgeWithCube extends ParcoursRunner{
 
 	final static int lightThreshold = 45;
+	final static int searchSpeed = 60;
 	
 	public static void main(String[] args) {
 		//wait until it is pressed
@@ -94,7 +95,7 @@ public class BridgeWithCube extends ParcoursRunner{
 			int left = -90, rigth = 90;
 			Kompaktor.stretchArm();
 			int oldSpeed = Motor.A.getSpeed();
-			Motor.A.setSpeed(20);
+			Motor.A.setSpeed(searchSpeed);
 			Motor.A.forward();
 			
 			while(Kompaktor.LIGHT_SENSOR.readValue() < 40 & (rigth = LightSwitcher.getRegulatedCurrentAngle()) < 90)
@@ -102,7 +103,7 @@ public class BridgeWithCube extends ParcoursRunner{
 			
 			Motor.A.setSpeed(oldSpeed);
 			Kompaktor.stretchArm();
-			Motor.A.setSpeed(20);
+			Motor.A.setSpeed(searchSpeed);
 			Motor.A.backward();
 			
 			while(Kompaktor.LIGHT_SENSOR.readValue() < 40 & (left = LightSwitcher.getRegulatedCurrentAngle()) < 90)

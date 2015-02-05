@@ -12,16 +12,7 @@ public class BarcodeDetector extends ParcoursRunner{
 	
 	public static void main(String[] args) {
 		
-//		TouchSensor touchright = ParcoursRunner.TOUCH_RIGHT;
-//		TouchSensor touchleft = ParcoursRunner.TOUCH_LEFT;
-//		LightSensor ligthSensor = new LightSensor(SensorPort.S1, true);
-//		DifferentialPilot pilot = ParcoursRunner.DIFF_PILOT;
-		
-//		while(!touchright.isPressed() && !touchleft.isPressed());
 		while (!Kompaktor.isTouched());
-//		LightSwitcher.initAngles();
-		//Sensor an die Seite
-//		LightSwitcher.setAngle(-90);
 		Kompaktor.parkArm();
 		
 		//vorwärtsfahren

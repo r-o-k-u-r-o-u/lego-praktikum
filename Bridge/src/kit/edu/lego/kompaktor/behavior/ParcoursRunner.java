@@ -66,20 +66,7 @@ public abstract class ParcoursRunner extends Thread {
 		}
 	}
 	
-//	protected TouchSensor touchRight;
-//	protected TouchSensor touchLeft;
-//	protected LightSensor lightSensor;
-//	protected UltrasonicSensor sonicSensor;
-//	protected DifferentialPilot pilot;
-//	protected DifferentialPilot pilot_reverse;
-	
 	public ParcoursRunner() {
-//		touchRight = TOUCH_RIGHT;
-//		touchLeft = TOUCH_LEFT;
-//		lightSensor = LIGHT_SENSOR;
-//		sonicSensor = SONIC_SENSOR;
-//		pilot = DIFF_PILOT;
-//		pilot_reverse = DIFF_PILOT_REVERSE;
 	}
 	
 	public abstract void run();

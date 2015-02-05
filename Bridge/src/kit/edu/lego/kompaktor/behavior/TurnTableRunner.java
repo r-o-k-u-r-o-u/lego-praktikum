@@ -13,26 +13,11 @@ public class TurnTableRunner extends ParcoursRunner {
 	private boolean isDone = false;
 	
 	public static void main(String[] args) {
-		//wait until it is pressed
-//		TouchSensor touchRight = ParcoursRunner.TOUCH_RIGHT;
-//		TouchSensor touchLeft = ParcoursRunner.TOUCH_LEFT;
-//		LightSensor ligthSensor = new LightSensor(SensorPort.S1, true);
-//		DifferentialPilot pilot = new DifferentialPilot(3, 17, Motor.C, Motor.B, true);
 		
+		//wait until it is pressed
 		while(!Kompaktor.isTouched());
-//		LightSwitcher.initAngles();
 		
 		Kompaktor.startLevel(LEVEL_NAMES.TURN_TABLE);
-		
-//		TurnTableRunner turn = new TurnTableRunner();
-//		turn.init();
-//		turn.start();
-//		while(!turn.isDone());
-//		try {
-//			turn.stop();
-//		} catch (InterruptedException e) {
-//			e.printStackTrace();
-//		}
 		
 		//end
 		while(!Kompaktor.isTouched());
