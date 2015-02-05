@@ -268,7 +268,7 @@ public class Launcher {
 	private void transitionStartBoss(){
 		Kompaktor.parkArm();
 		Kompaktor.DIFF_PILOT_REVERSE.rotate(180);
-		Kompaktor.DIFF_PILOT_REVERSE.travel(20);
+		Kompaktor.DIFF_PILOT_REVERSE.travel(40);
 		Kompaktor.DIFF_PILOT_REVERSE.rotate(-60);
 		Kompaktor.DIFF_PILOT_REVERSE.travel(40);
 	}
