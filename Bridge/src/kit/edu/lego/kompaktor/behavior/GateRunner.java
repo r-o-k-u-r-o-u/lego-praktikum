@@ -68,24 +68,46 @@ public class GateRunner extends ParcoursRunner {
 				
 			}
 			
-			for (int i = 0; i < 5; i++) {
+			for (int i = 0; i < 4; i++) {
 				Kompaktor.DIFF_PILOT_REVERSE.travel(10);
-				if (Kompaktor.readDistanceValue() <= 15)
-				{
-					Kompaktor.DIFF_PILOT_REVERSE.rotate(5);
-				}
-				else {
-					Kompaktor.DIFF_PILOT_REVERSE.rotate(-5);
+
+				if (Kompaktor.isTouched()) {
+					if (Kompaktor.isTouchedLeft()) {
+						Kompaktor.DIFF_PILOT_REVERSE.travel(-3);
+						Kompaktor.DIFF_PILOT_REVERSE.rotate(-30);
+					} else if (Kompaktor.isTouchedRight()) {
+						Kompaktor.DIFF_PILOT_REVERSE.travel(-3);
+						Kompaktor.DIFF_PILOT_REVERSE.rotate(30);
+					}
+				} else {
+					if (Kompaktor.readDistanceValue() <= 15)
+					{
+						Kompaktor.DIFF_PILOT_REVERSE.rotate(10);
+					}
+					else {
+						Kompaktor.DIFF_PILOT_REVERSE.rotate(-10);
+					}
 				}
 			}
 			
-			Kompaktor.DIFF_PILOT_REVERSE.travel(10);
+			for (int i = 0; i < 2; i++) {
+				Kompaktor.DIFF_PILOT_REVERSE.travel(10);
+
+					if (Kompaktor.readDistanceValue() <= 20)
+					{
+						Kompaktor.DIFF_PILOT_REVERSE.rotate(10);
+					}
+					else {
+						Kompaktor.DIFF_PILOT_REVERSE.rotate(-10);
+					}
+			}
+			
+//			Kompaktor.DIFF_PILOT_REVERSE.travel(10);
 			Kompaktor.DIFF_PILOT_REVERSE.rotate(180);
 			
 			// Now the gate opens & a timer of 20 seconds starts
 			// in this time the robot has to drive through & send a "I passed"
 			// signal
-
 
 
 			// Robot drives through the gate
@@ -112,8 +134,6 @@ public class GateRunner extends ParcoursRunner {
 			
 			Kompaktor.DIFF_PILOT_REVERSE.stop();
 //			driver.stop();
-			
-			Kompaktor.DIFF_PILOT.travel(10);
 			
 			
 			Kompaktor.showText("Starting RopeBridgeRunner");

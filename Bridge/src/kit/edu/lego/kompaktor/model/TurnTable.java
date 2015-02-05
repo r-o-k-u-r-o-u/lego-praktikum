@@ -10,6 +10,8 @@ import javax.bluetooth.RemoteDevice;
 
 
 
+
+
 //import lejos.nxt.Motor;
 import lejos.nxt.comm.BTConnection;
 import lejos.nxt.comm.Bluetooth;
@@ -88,6 +90,7 @@ public class TurnTable {
 	
 	public boolean waitDone() {
 		try {
+			@SuppressWarnings("unused")
 			TurnTableCommand command = receiveCommand();
 			//assertCommand(command, TurnTableCommand.DONE);
 		} catch (IOException e) {
@@ -114,6 +117,7 @@ public class TurnTable {
 		return device;
 	}
 
+	@SuppressWarnings("unused")
 	private void assertCommand(TurnTableCommand command,
 			TurnTableCommand assertetedCommand) throws IOException {
 		if (command != assertetedCommand) {

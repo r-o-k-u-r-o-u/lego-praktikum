@@ -78,7 +78,7 @@ public class TurnTableRunner extends ParcoursRunner {
 			line.stop();
 
 			Kompaktor.DIFF_PILOT.travel(10);
-			Kompaktor.DIFF_PILOT.rotate(-180);
+			Kompaktor.DIFF_PILOT.rotate(180);
 			Kompaktor.DIFF_PILOT.backward();
 //			LightSwitcher.setAngle(-90);
 			Kompaktor.parkArm();
