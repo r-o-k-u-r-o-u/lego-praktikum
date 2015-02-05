@@ -71,6 +71,16 @@ public class Launcher {
 			
 			Sound.beepSequenceUp();
 			
+			Kompaktor.parkArm();
+				
+			while (!Kompaktor.isTouched())
+				try {
+					Thread.sleep(Kompaktor.SLEEP_INTERVAL);
+				} catch (InterruptedException e1) {}
+			
+			Sound.beepSequenceUp();
+			
+			
 			// assert that the level will end normally for now
 			//Kompaktor.startLevel(LEVEL_NAMES.values()[curr]);
 			try {
@@ -248,7 +258,6 @@ public class Launcher {
 		//Arm einfahren
 		Kompaktor.parkArm();
 		//etwas vorwärtsfahren
-		Kompaktor.DIFF_PILOT_REVERSE.travel(30);
 	}
 	
 	private void transitionEndGate() throws InterruptedException{

@@ -34,7 +34,6 @@ public class GateRunner extends ParcoursRunner {
 		int threshWood = 30;
 		
 		
-		
 		try {
 			System.out.println("Calling gate");
 			Gate.connect();
@@ -46,6 +45,8 @@ public class GateRunner extends ParcoursRunner {
 			Gate.waitForConnection();
 			System.out.println("Connected to the gate.");
 
+			Kompaktor.DIFF_PILOT_REVERSE.travel(25);
+			
 //			Kompaktor.SONIC_SENSOR.setMode(UltrasonicSensor.MODE_CONTINUOUS);
 			Kompaktor.SONIC_SENSOR.continuous();
 			
