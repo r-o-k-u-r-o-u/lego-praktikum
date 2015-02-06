@@ -132,7 +132,7 @@ public class LauncherQuali {
 			Thread.sleep(Kompaktor.SLEEP_INTERVAL);
 		Kompaktor.DIFF_PILOT.stop();
 		bar.stop();
-		Kompaktor.DIFF_PILOT.travel(20);
+		Kompaktor.DIFF_PILOT.travel(30);
 	}
 	
 	private void transitionStartLabyrinth(){
