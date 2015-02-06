@@ -8,7 +8,7 @@ import lejos.robotics.navigation.DifferentialPilot;
 public class LabyrinthRunner extends ParcoursRunner {
 
 	private volatile boolean impact = false, leftImpact = false,
-			rightImpact = false, event = false;
+			rightImpact = false, event = false, lookForCollisions;
 
 	private volatile int d, pd;
 
@@ -20,8 +20,12 @@ public class LabyrinthRunner extends ParcoursRunner {
 	private Thread collisionControl = null;
 	private Thread distanceMeasure = null;
 
-	public LabyrinthRunner() {
-
+	public LabyrinthRunner(boolean lookForCollisions) {
+		this.lookForCollisions = lookForCollisions;
+	}
+	
+	public void setCollisions(boolean b) {
+		lookForCollisions = b;
 	}
 
 	/**

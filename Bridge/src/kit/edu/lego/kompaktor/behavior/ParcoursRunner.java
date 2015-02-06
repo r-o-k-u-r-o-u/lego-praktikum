@@ -56,7 +56,7 @@ public abstract class ParcoursRunner extends Thread {
 		case BRIDGE_ELEVATOR:return new BridgeWithCube();
 //		case LED_CUBE:		return new ;
 		case ELEVATOR:		return new ElevatorRunner();
-		case LABYRINTH:		return new LabyrinthRunner();
+		case LABYRINTH:		return new LabyrinthRunner(false);
 		case GATE: 			return new GateRunner();
 		case ROPE_BRIDGE:	return new RopeBridgeRun();
 		case LINE_AFTER_ROPE_BRIDGE: return new LineRunner();
