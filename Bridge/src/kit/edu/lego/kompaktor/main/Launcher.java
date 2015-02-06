@@ -151,26 +151,30 @@ public class Launcher {
 		if(current.equals(LEVEL_NAMES.GATE)){
 			transitionStartGate();
 			Kompaktor.startLevel(LEVEL_NAMES.GATE);
-			transitionEndGate();
-			current = LEVEL_NAMES.TURN_TABLE;
+//			transitionEndGate();
+//			current = LEVEL_NAMES.TURN_TABLE;
+			transitionEndTurnTable();
+			current = LEVEL_NAMES.BOSS;
 		}
 		//extra Einstieg für RopeBridge
 		if(current.equals(LEVEL_NAMES.ROPE_BRIDGE)){
 			transitionStartRopeBridge();
 			Kompaktor.startLevel(LEVEL_NAMES.ROPE_BRIDGE);
-			transitionEndRopeBridge();
-			current = LEVEL_NAMES.TURN_TABLE;
+//			transitionEndRopeBridge();
+//			current = LEVEL_NAMES.TURN_TABLE;
+			transitionEndTurnTable();
+			current = LEVEL_NAMES.BOSS;
 		}
 		//extra Einstieg für Linie hinter RopeBridge
 		if(current.equals(LEVEL_NAMES.LINE_AFTER_ROPE_BRIDGE)){
 			transitionStartLineAfterRopeBridge();
 			Kompaktor.startLevel(LEVEL_NAMES.LINE_AFTER_ROPE_BRIDGE);
-			transitionEndLineAfterRopeBridge();
-			current = LEVEL_NAMES.TURN_TABLE;
-		}
-		if(current.equals(LEVEL_NAMES.TURN_TABLE)){
-			transitionStartTurnTable();
-			Kompaktor.startLevel(LEVEL_NAMES.TURN_TABLE);
+//			transitionEndLineAfterRopeBridge();
+//			current = LEVEL_NAMES.TURN_TABLE;
+//		}
+//		if(current.equals(LEVEL_NAMES.TURN_TABLE)){
+//			transitionStartTurnTable();
+//			Kompaktor.startLevel(LEVEL_NAMES.TURN_TABLE);
 			transitionEndTurnTable();
 			current = LEVEL_NAMES.BOSS;
 		}
